@@ -11,7 +11,7 @@ VBA Expressions is a powerful mathematical expressions evaluator for VBA strings
 * __Binary relations__: `< <= <> >= = >`
 * __More than 20 built-in functions__: `Max`, `Min`, `Avg`, `Sin`, `Ceil`, `Floor`...
 * __Very flexible__: variables, constants and user-defined functions (UDFs) support.
-* __Implied multiplication for variables, constants and functions__: `5avg(2;abs(-3-7tan(5));9)-12pi-e+(7/sin(30)-4!)*min(cos(30);cos(150))` is valid expression; `5(2)` is not.
+* __Implied multiplication for variables, constants and functions__: `5avg(2;abs(-3-7tan(5));9)` is valid expression; `5(2)` is not.
 * __Evaluation of arrays of expressions given as text strings, as in Java__: curly brackets must be used to define arrays`{{...};{...}}`
 * __Floating point notation input support__: `-5E-5`, `(1.434E3+1000)*2/3.235E-5` are valid inputs.
 * __Free of external VBA dependencies__: does not use dll.
