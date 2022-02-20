@@ -42,7 +42,7 @@ Variable      =     Alphabet [{Decimal}] [{(Digit | Alphabet)}]
 Alphabet      =     "A-Z" | "a-z"
 Decimal       =     "."
 Digit         =     "0-9"
-Operator      =     "+" | "-" | "\*" | "/" | "\" | "^" | "%" | "<" | "<=" | "<>" | ">" | ">=" | "=" | "&" | "|" | "||"
+Operator      =     "+" | "-" | "*" | "/" | "\" | "^" | "%" | "<" | "<=" | "<>" | ">" | ">=" | "=" | "&" | "|" | "||"
 Function      =     "abs" | "sin" | "cos" | "min" |...|[UDF]
 ```
 
