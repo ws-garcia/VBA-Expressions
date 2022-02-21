@@ -54,7 +54,7 @@ Private Sub Parentheses()
                         "(((((((((((-123.456-654.321)*1.1)*2.2)*3.3)+4.4)+5.5)+6.6)*7.7)*8.8)+9.9)+10.10)" _
                         )
     expected = "-419741.48578672"
-    Assert.AreEqual actual, expected
+    Assert.AreEqual expected, actual
 
 TestExit:
     Exit Sub
@@ -70,7 +70,7 @@ Private Sub ParenthesesAndSingleFunction()
                         "(1+(2-5)*3+8/(5+3)^2)/sqr(4^2+3^2)" _
                         )
     expected = "-1.575"
-    Assert.AreEqual actual, expected
+    Assert.AreEqual expected, actual
 
 TestExit:
     Exit Sub
@@ -86,7 +86,7 @@ Private Sub FunctionsWithMoreThanOneArgument()
                         "min(5;6;max(-0.6;-3))" _
                         )
     expected = "-0.6"
-    Assert.AreEqual actual, expected
+    Assert.AreEqual expected, actual
 
 TestExit:
     Exit Sub
@@ -103,7 +103,7 @@ Private Sub NestedFunctions()
                         , "x = " & Exp(1) _
                         )
     expected = "1.5574077246549"
-    Assert.AreEqual actual, expected
+    Assert.AreEqual expected, actual
 
 TestExit:
     Exit Sub
@@ -119,7 +119,7 @@ Private Sub FloatingPointArithmetic()
                         "(1.434E3+1000)*2/3.235E-5" _
                         )
     expected = "150479134.46677"
-    Assert.AreEqual actual, expected
+    Assert.AreEqual expected, actual
 
 TestExit:
     Exit Sub
@@ -135,7 +135,7 @@ Private Sub ExponentiationPrecedence()
                         "4^3^2" _
                         )
     expected = "262144"
-    Assert.AreEqual actual, expected
+    Assert.AreEqual expected, actual
 
 TestExit:
     Exit Sub
@@ -151,7 +151,7 @@ Private Sub Factorials()
                         "25!/(24!)" _
                         )
     expected = "25"
-    Assert.AreEqual actual, expected
+    Assert.AreEqual expected, actual
 
 TestExit:
     Exit Sub
@@ -167,7 +167,7 @@ Private Sub Precedence()
                         "5avg(2;abs(-3-7tan(5));9)-12pi-e+(7/sin(30)-4!)*min(cos(30);cos(150))" _
                         )
     expected = "7.56040693890688"
-    Assert.AreEqual actual, expected
+    Assert.AreEqual expected, actual
 
 TestExit:
     Exit Sub
@@ -184,7 +184,7 @@ Private Sub Variables()
                         , "Pi.e = 1; Pie.1 = 2; Pie = 3" _
                         )
     expected = "19.7"
-    Assert.AreEqual actual, expected
+    Assert.AreEqual expected, actual
 
 TestExit:
     Exit Sub
@@ -210,7 +210,7 @@ Private Sub UDFsAndArrays()
                         "GCD(1280;240;100;30*cos(0);10*DET({{sin(atn(1)*2); 0; 0}; {0; 2; 0}; {0; 0; 3}}))" _
                         )
     expected = "10"
-    Assert.AreEqual actual, expected
+    Assert.AreEqual expected, actual
 
 TestExit:
     Exit Sub
@@ -227,7 +227,7 @@ Private Sub LogicalOperatorsNumericOutput()
                         , "x = 6" _
                         )
     expected = "2.30366074313039"
-    Assert.AreEqual actual, expected
+    Assert.AreEqual expected, actual
 
 TestExit:
     Exit Sub
@@ -244,7 +244,7 @@ Private Sub TestLogicalOperatorsBooleanOutput()
                         , "x = 6" _
                         )
     expected = "True"
-    Assert.AreEqual actual, expected
+    Assert.AreEqual expected, actual
 
 TestExit:
     Exit Sub
@@ -252,3 +252,20 @@ TestFail:
     Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
+'@TestMethod("VBA Expressions")
+Private Sub TestTrigFunctions()
+    On Error GoTo TestFail
+    
+    actual = GetResult( _
+                        "tan(pi/4)^3-((3*sin(pi/4)-sin(3*pi/4))/(3*cos(pi/4)+cos(3*pi/4)))" _
+                        )
+    expected = "0"
+    Assert.AreEqual expected, actual
+
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
+    Resume TestExit
+End Sub
+
