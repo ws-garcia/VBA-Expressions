@@ -268,4 +268,19 @@ TestFail:
     Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
+'@TestMethod("VBA Expressions")
+Private Sub TestModFunction()
+    On Error GoTo TestFail
+    
+    actual = GetResult( _
+                        "- (-1) + (+1) + 1.000 / 1.000 + 1 * (1) * (0.2) * (5) * (-1) * (--1) + 4 % 5 % 45   % 1 " _
+                        )
+    expected = "2"
+    Assert.AreEqual expected, actual
 
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
+    Resume TestExit
+End Sub
