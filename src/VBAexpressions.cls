@@ -383,6 +383,13 @@ Public Property Let GallopingMode(AValue As Boolean)
 End Property
 
 ''' <summary>
+''' Gets the parsed status of the actual expression.
+''' </summary>
+Public Property Get ReadyToEval() As Boolean
+    ReadyToEval = GeneratedTree
+End Property
+
+''' <summary>
 ''' Gets the result aftter evaluate the give  expression.
 ''' </summary>
 Public Property Get Result() As String
@@ -2279,6 +2286,7 @@ Private Sub Parse(ByRef Expression As String)
     If ValidTree Then    'Call the validate function
         GeneratedTree = True
     Else
+        GeneratedTree = False
         If P_ERRTYPE = errNone Then
             BuildErrMessage errSyntaxError
         End If
