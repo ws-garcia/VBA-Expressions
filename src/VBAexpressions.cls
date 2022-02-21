@@ -7,6 +7,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = True
+'@Exposed
 Option Explicit
 '#
 '///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -496,18 +497,10 @@ Private Function ApplyLawOfSigns(ByRef Expression As String) As String
     
     tmpResult = Expression
     Do While tmpResult Like "*[+-][+-]*"
-        If InStrB(1, tmpResult, "+-") Then
-            tmpResult = Replace(tmpResult, "+-", op_minus)
-        End If
-        If InStrB(1, tmpResult, "-+") Then
-            tmpResult = Replace(tmpResult, "-+", op_minus)
-        End If
-        If InStrB(1, tmpResult, "++") Then
-            tmpResult = Replace(tmpResult, "++", op_plus)
-        End If
-        If InStrB(1, tmpResult, "--") Then
-            tmpResult = Replace(tmpResult, "--", op_plus)
-        End If
+        SignSubstitution tmpResult, "+-", op_minus
+        SignSubstitution tmpResult, "-+", op_minus
+        SignSubstitution tmpResult, "++", op_plus
+        SignSubstitution tmpResult, "--", op_plus
     Loop
     ApplyLawOfSigns = tmpResult
 End Function
@@ -737,7 +730,7 @@ Private Sub BottomLevelEval(ByRef aToken As Token)
                         If AscW(aToken.Arg1.Operand) <> 126 Then '"~"
                             aToken.EvalResult = Not CBool(aToken.Arg1.Operand)
                         Else
-                            aToken.EvalResult = Not CBool(MidB(aToken.Arg1.Operand, 3))
+                            aToken.EvalResult = Not CBool(MidB$(aToken.Arg1.Operand, 3))
                         End If
                     Else
                         aToken.EvalResult = CBool(aToken.Arg1.Operand)
@@ -799,7 +792,7 @@ Private Sub BuildErrMessage(ErrorType As ExpressionErrors, Optional AditionalCon
     End Select
 End Sub
 
-Private Function callback(ByRef sClassName) As Object
+Private Function callback(ByRef sClassName As String) As Object
     Set callback = CallByName(New VBAcallBack, sClassName, VbGet)
 End Function
 
@@ -966,6 +959,7 @@ End Sub
 ''' Evaluate a math expression.
 ''' </summary>
 ''' <param name="ValuesToEvalIn">The values to use for eval the parse tree.</param>
+'@DefaultMember
 Public Function Eval(Optional ByRef ValuesToEvalWith As String = vbNullString) As String
 Attribute Eval.VB_UserMemId = 0
     If Not AssignedExpression Then
@@ -1302,7 +1296,7 @@ Private Function GetCBItemIdx(ByRef cbBuffer As ClusterBuffer, ByRef ItemName As
     If LenB(ItemName) Then
         Select Case AscW(ItemName)
             Case 43, 45 'Unary expression
-                tmpItemName = MidB(ItemName, 3)
+                tmpItemName = MidB$(ItemName, 3)
             Case Else
                 tmpItemName = ItemName
         End Select
@@ -1479,7 +1473,7 @@ Private Function GetLCOpInfo(ByRef Expression As String) As TokenInfo
     Do 'Discard false positives
         EqualSymbolPos = InStrB(EqualSymbolPos + 1, Expression, op_equal)
         If EqualSymbolPos > 2 Then
-            testChar = MidB(Expression, EqualSymbolPos - 2, 2)
+            testChar = MidB$(Expression, EqualSymbolPos - 2, 2)
         Else
             testChar = vbNullString
         End If
@@ -1488,7 +1482,7 @@ Private Function GetLCOpInfo(ByRef Expression As String) As TokenInfo
     Do
         GreatterThanSymbolPos = InStrB(GreatterThanSymbolPos + 1, Expression, op_gt)
         If GreatterThanSymbolPos Then
-            testChar = MidB(Expression, GreatterThanSymbolPos + 2, 2)
+            testChar = MidB$(Expression, GreatterThanSymbolPos + 2, 2)
         Else
             testChar = vbNullString
         End If
@@ -1496,7 +1490,7 @@ Private Function GetLCOpInfo(ByRef Expression As String) As TokenInfo
     Do
         LessThanSymbolPos = InStrB(LessThanSymbolPos + 1, Expression, op_lt)
         If LessThanSymbolPos Then
-            testChar = MidB(Expression, LessThanSymbolPos + 2, 2)
+            testChar = MidB$(Expression, LessThanSymbolPos + 2, 2)
         Else
             testChar = vbNullString
         End If
@@ -1547,7 +1541,7 @@ Private Function GetLCOpInfo(ByRef Expression As String) As TokenInfo
                     Do 'Discard false positives: "||"
                         LogORSymbolPos = InStrB(LogORSymbolPos + 1, Expression, op_or)
                         If LogORSymbolPos Then
-                            testChar = MidB(Expression, LogORSymbolPos + 2, 2)
+                            testChar = MidB$(Expression, LogORSymbolPos + 2, 2)
                         Else
                             testChar = vbNullString
                         End If
@@ -1568,12 +1562,12 @@ Private Function GetLogicalNeg(ByRef aToken As Token) As Boolean()
     Dim tmpBoolArr(0 To 1) As Boolean
     
     If aToken.Arg1.NegationFlagOn Then
-        tmpBoolArr(0) = Not CBool(MidB(aToken.Arg1.Operand, 3))
+        tmpBoolArr(0) = Not CBool(MidB$(aToken.Arg1.Operand, 3))
     Else
         tmpBoolArr(0) = CBool(aToken.Arg1.Operand)
     End If
     If aToken.Arg2.NegationFlagOn Then
-        tmpBoolArr(1) = Not CBool(MidB(aToken.Arg2.Operand, 3))
+        tmpBoolArr(1) = Not CBool(MidB$(aToken.Arg2.Operand, 3))
     Else
         tmpBoolArr(1) = CBool(aToken.Arg2.Operand)
     End If
@@ -2075,7 +2069,7 @@ End Function
 Private Function IsLikeSciNot(ByRef Chars As String) As Boolean
     If LenB(Chars) Then
         If AscW(Chars) = 69 Then 'Sci not token "E"
-            If IsDigit(MidB(Chars, 3, 2)) Then 'Check 2nd char
+            If IsDigit(MidB$(Chars, 3, 2)) Then 'Check 2nd char
                 IsLikeSciNot = True
             End If
         Else
@@ -2439,6 +2433,12 @@ Private Function Sign(ByRef Expression As String) As Double
     Sign = (Sgn(CDbl(Expression)))
 End Function
 
+Private Sub SignSubstitution(ByRef Expression As String, FindStr As String, Replacement As String)
+    If InStrB(1, Expression, FindStr) Then
+        Expression = Replace(Expression, FindStr, Replacement)
+    End If
+End Sub
+
 Private Function Sine(ByRef Expression As String) As Double
     Dim tmpEval As Double
     
@@ -2682,7 +2682,7 @@ Private Sub VariablesInit(ByRef Expression As String)
     Dim i As Long
     Dim tmpIdx As Long
     
-    Call InitCBbuffer(ExprVariables)
+    InitCBbuffer ExprVariables
     ParseVariables Expression
     For i = 0 To ExprVariables.Index
         tmpIdx = GetCBItemIdx(P_CONSTANTS, ExprVariables.Storage(i).name)
