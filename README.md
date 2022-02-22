@@ -33,7 +33,7 @@ Allowed expressions must follow the following grammar:
 ```
 Expression    =     ([{"("}]  SubExpr [{Operator [{"("}] SubExpr [{")"}]}] [{")"}] | {["("] ["{"] List [{";" List}] ["}"] [")"]}
 SubExpr       =     Token [{Operator Token}]
-Token         =     [{Unary}] Argument [(Operator | Function) ["("] [{Unary}] Argument [")"]]
+Token         =     [{Unary}] Argument [(Operator | Function) ["("] [{Unary}] [Argument] [")"]]
 Argument      =     (List | Variable | Operand)
 List          =     ["{"] SubExpr [{";" SubExpr}] ["}"]
 Unary         =     "-" | "+" | ~
@@ -42,7 +42,7 @@ Variable      =     Alphabet [{Decimal}] [{(Digit | Alphabet)}]
 Alphabet      =     "A-Z" | "a-z"
 Decimal       =     "."
 Digit         =     "0-9"
-Operator      =     "+" | "-" | "*" | "/" | "\" | "^" | "%" | "<" | "<=" | "<>" | ">" | ">=" | "=" | "&" | "|" | "||"
+Operator      =     "+" | "-" | "*" | "/" | "\" | "^" | "%" | "!" | "<" | "<=" | "<>" | ">" | ">=" | "=" | "&" | "|" | "||"
 Function      =     "abs" | "sin" | "cos" | "min" |...|[UDF]
 ```
 
