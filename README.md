@@ -87,6 +87,62 @@ However, matrix functions need to take care of creating arrays from a string, th
 
 As an illustration, the `UDFunctions.cls` module has an implementation of the `DET` function with an example of using the array handle function. In addition, the `GCD` function is implemented as a demo.
 
+## Using the code
+VBA Expressions is an easy-to-use library, this section shows some examples of how to use the most common properties and methods
+
+```
+Sub SimpleMathEval()
+    Dim Evaluator As VBAexpressions
+    Set Evaluator = New VBAexpressions
+    With Evaluator
+        .Create "(((((((((((-123.456-654.321)*1.1)*2.2)*3.3)+4.4)+5.5)+6.6)*7.7)*8.8)+9.9)+10.10)"
+        If .ReadyToEval Then    'Evaluates only if the expression was successfully parsed.
+            .Eval
+        End If
+    End With
+End Sub
+Sub LateVariableAssignment()
+    Dim Evaluator As VBAexpressions
+    Set Evaluator = New VBAexpressions
+    With Evaluator
+        .Create "Pi.e * 5.2Pie.1 + 3.1Pie"
+        If .ReadyToEval Then
+            Debug.Print "Variables: "; .CurrentVariables    'Print the list of parsed variables
+            .Eval ("Pi.e=1; Pie.1=2; Pie=3")                'Late variable assignment
+            Debug.Print .Expression; " = "; .Result; _
+                        "; for: "; .CurrentVarValues        'Print stored result, expression and values used in evaluation
+        End If
+    End With
+End Sub
+Sub EarlyVariableAssignment()
+    Dim Evaluator As VBAexpressions
+    Set Evaluator = New VBAexpressions
+    With Evaluator
+        .Create "Pi.e * 5.2Pie.1 + 3.1Pie"
+        If .ReadyToEval Then
+            Debug.Print "Variables: "; .CurrentVariables
+            .VarValue("Pi.e") = 1
+            .VarValue("Pie.1") = 2
+            .VarValue("Pie") = 3
+            .Eval
+            Debug.Print .Expression; " = "; .Result; _
+                        "; for: "; .CurrentVarValues
+        End If
+    End With
+End Sub
+Sub TrigFunctions()
+    Dim Evaluator As VBAexpressions
+    Set Evaluator = New VBAexpressions
+    With Evaluator
+        .Create "asin(sin(30))"
+        If .ReadyToEval Then
+            .Degrees = True               'Eval in degrees
+            .Eval
+        End If
+    End With
+End Sub
+```
+
 ## Licence
 
 Copyright (C) 2022  [W. García](https://github.com/ws-garcia/).
