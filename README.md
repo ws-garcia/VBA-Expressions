@@ -70,6 +70,27 @@ Users can enter variables and set/assign their values for the calculations. Vari
 ## User-defined functions (UDF)
 Users can register custom modules to expose and use their functions through the VBAcallBack.cls module. All UDFs must have a single Variant argument that will receive an one-dimensional array of strings (one element for each function argument).
 
+Here is a working example of UDF function creation
+```
+Sub AddingNewFunctions()
+    Dim Evaluator As VBAexpressions
+    Dim UDFnames() As Variant
+    Dim Result As String
+    
+    Set Evaluator = New VBAexpressions
+    UDFnames() = Array("GCD", "DET")
+    With Evaluator
+        .DeclareUDF UDFnames, "UserDefFunctions"                        'Declare the Greatest Common Divisor and Determinant functions
+                                                                        'defined in the UDfunctions class module. This need
+                                                                        'an instance in the VBAcallBack class module.
+        ' The determinant of a diagonal matrix. It is defined
+        ' as the product of the elements in its diagonal.
+        ' For our case: 1*2*3=6. (Note that sin(atn(1)*2)=sin(pi/2)=1)
+        .Create "GCD(1280;240;100;30*cos(0);10*DET({{sin(atn(1)*2); 0; 0}; {0; 2; 0}; {0; 0; 3}}))"
+        Result = .Eval
+    End With
+End Sub
+```
 ## Working with arrays
 VBA expressions can evaluate matrix functions whose arguments are given as arrays/vectors, using a syntax like [Java](https://www.w3schools.com/java/java_arrays.asp). The following expression will calculate the determinant (`DET`) of a matrix composed of 3 vectors with 3 elements each:
 
