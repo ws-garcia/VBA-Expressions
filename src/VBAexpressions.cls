@@ -167,7 +167,6 @@ Private P_GALLOPING_MODE As Boolean
 Private P_RESULT As Variant
 Private P_SEPARATORCHAR As String
 Private SubTreeData() As String
-Private UnaryFlag As Boolean
 Private UserDefFunctions As ClusterBuffer
 
 '#
