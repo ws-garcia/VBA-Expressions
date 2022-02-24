@@ -94,7 +94,7 @@ End Sub
 ## Working with arrays
 VBA expressions can evaluate matrix functions whose arguments are given as arrays/vectors, using a syntax like [Java](https://www.w3schools.com/java/java_arrays.asp). The following expression will calculate the determinant (`DET`) of a matrix composed of 3 vectors with 3 elements each:
 
-`DET({{sin(atn(1)*2); 0; 0}; {0; 2; 0}; {0; 0; 3}})`
+`DET({{(sin(atn(1)*2)); 0; 0}; {0; 2; 0}; {0; 0; 3}})`
 
 If the user needs to evaluate a function that accepts more than one argument, including more than one array, all arrays arguments must be passed surrounded by parentheses "({...})". For example, a function call that emulates the SQL IN statement using an array argument and a reference value can be written as follows.
 
