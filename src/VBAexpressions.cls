@@ -167,7 +167,6 @@ Private P_GALLOPING_MODE As Boolean
 Private P_RESULT As Variant
 Private P_SEPARATORCHAR As String
 Private SubTreeData() As String
-Private UnaryFlag As Boolean
 Private UserDefFunctions As ClusterBuffer
 
 '#
@@ -219,7 +218,6 @@ Private Type Token
     EvalResult As String
     Logical As Boolean
     OperationToken As OperatorToken
-    UnaryFlag As Boolean
 End Type
 Private Type TokenInfo
     OperationToken As OperatorToken
@@ -712,19 +710,14 @@ Private Sub BottomLevelEval(ByRef aToken As Token)
                 aToken.EvalResult = CastOPtype(aToken.Arg1.Operand, aToken.Arg1.NegationFlagOn) / _
                                     CastOPtype(aToken.Arg2.Operand, aToken.Arg2.NegationFlagOn)
             Case OperatorToken.otPower
-                If aToken.UnaryFlag Then
-                    Dim kFctr As Double
-                    If AscW(aToken.Arg1.DefString) = 45 Then
-                        kFctr = -1
-                    Else
-                        kFctr = 1
-                    End If
-                    aToken.EvalResult = kFctr * CastOPtype(aToken.Arg1.Operand, aToken.Arg1.NegationFlagOn) ^ _
-                                            CastOPtype(aToken.Arg2.Operand, aToken.Arg2.NegationFlagOn)
+                Dim kFctr As Double
+                If AscW(aToken.Arg1.DefString) = 45 Then
+                    kFctr = -1
                 Else
-                    aToken.EvalResult = CastOPtype(aToken.Arg1.Operand, aToken.Arg1.NegationFlagOn) ^ _
-                                        CastOPtype(aToken.Arg2.Operand, aToken.Arg2.NegationFlagOn)
+                    kFctr = 1
                 End If
+                aToken.EvalResult = kFctr * CastOPtype(aToken.Arg1.Operand, aToken.Arg1.NegationFlagOn) ^ _
+                                            CastOPtype(aToken.Arg2.Operand, aToken.Arg2.NegationFlagOn)
             Case OperatorToken.otMod
                 aToken.EvalResult = CastOPtype(aToken.Arg1.Operand, aToken.Arg1.NegationFlagOn) Mod _
                                     CastOPtype(aToken.Arg2.Operand, aToken.Arg2.NegationFlagOn)
@@ -1376,7 +1369,6 @@ Private Function GetEvalToken(ByRef Expression As String) As Token
         '@--------------------------------------------------------------------
         ' Fill token data
         GetEvalToken.DefString = MidB$(Expression, TokenStart, TokenEnd - TokenStart + 2)
-        GetEvalToken.UnaryFlag = GetEvalToken.DefString Like "[-+]*"
         GetEvalToken.OperationToken = TokenDet.OperationToken
         SplitToken GetEvalToken.DefString, tmpArgs, GetEvalToken.OperationToken
         GetEvalToken.Arg1.DefString = tmpArgs(LBound(tmpArgs))
@@ -1403,7 +1395,6 @@ Private Function GetEvalToken(ByRef Expression As String) As Token
         GetEvalToken.Logical = TokenDet.LogicalToken
         GetEvalToken.Arg1.NegationFlagOn = (InStrB(1, GetEvalToken.Arg1.DefString, op_neg) = 1) '~*
         GetEvalToken.DefString = Expression
-        GetEvalToken.UnaryFlag = GetEvalToken.DefString Like "[-+]*"
         GetEvalToken.Arg1.FuncName = GetFunctionName(GetEvalToken.Arg1.DefString)
         GetEvalToken.Arg1.UDFFunctionIn = IsUDFFunction
         GetEvalToken.Arg1.FunctionIn = (GetEvalToken.Arg1.FuncName <> vbNullString) Or GetEvalToken.Arg1.UDFFunctionIn
@@ -1414,16 +1405,34 @@ Private Function GetEvalToken(ByRef Expression As String) As Token
     End If
 End Function
 
+Private Function ValidFuntionName(ByRef Expression As String, _
+                                    ByRef FuntionName As String, _
+                                    StartPos As Long) As Boolean
+    Dim cLeft As Boolean
+    Dim cRight As Boolean
+    
+    If StartPos > 1 Then
+        cLeft = Not IsLetter(MidB$(Expression, StartPos - 2, 2))
+    Else
+        cLeft = True
+    End If
+    cRight = Not IsLetter(MidB$(Expression, StartPos + LenB(FuntionName), 2))
+    ValidFuntionName = cLeft And cRight
+End Function
 Private Function GetFunctionName(ByRef Expression As String) As String
     Dim EFjCounter As Long
     Dim GFNbool As Boolean
     Dim ExpCopy As String
+    Dim tmpPos As Long
     
     ExpCopy = LCase$(Expression)
     For EFjCounter = LBound(FunctionsId) To UBound(FunctionsId)
-        If InStrB(1, ExpCopy, FunctionsId(EFjCounter)) Then
-            GFNbool = True
-            Exit For
+        tmpPos = InStrB(1, ExpCopy, FunctionsId(EFjCounter))
+        If tmpPos Then
+            GFNbool = ValidFuntionName(ExpCopy, FunctionsId(EFjCounter), tmpPos)
+            If GFNbool Then
+                Exit For
+            End If
         End If
     Next EFjCounter
     If GFNbool Then
@@ -1432,9 +1441,12 @@ Private Function GetFunctionName(ByRef Expression As String) As String
     Else 'Check for UDFs
         Dim i As Long
         For i = 0 To UserDefFunctions.Index
-            If InStrB(1, ExpCopy, UserDefFunctions.Storage(i).name) Then
-                GFNbool = True
-                Exit For
+            tmpPos = InStrB(1, ExpCopy, UserDefFunctions.Storage(i).name)
+            If tmpPos Then
+                GFNbool = GFNbool = ValidFuntionName(ExpCopy, UserDefFunctions.Storage(i).name, tmpPos)
+                If GFNbool Then
+                    Exit For
+                End If
             End If
         Next i
         If Not GFNbool Then
@@ -1634,10 +1646,8 @@ Private Sub GetOperand(ByRef CurToken As Token, ByRef CurArg As Argument, _
                 End If
             End If
         End If
-        If CurToken.UnaryFlag Then
-            If AscW(CurArg.DefString) = 45 Then
-                CurArg.Operand = ApplyLawOfSigns(op_minus + CurArg.Operand)
-            End If
+        If AscW(CurArg.DefString) = 45 Then
+            CurArg.Operand = ApplyLawOfSigns(op_minus + CurArg.Operand)
         End If
     Else     'Explicit function or data
         If CurArg.LinkedVar > -1 Then     'Variable substitution
@@ -1646,10 +1656,8 @@ Private Sub GetOperand(ByRef CurToken As Token, ByRef CurArg As Argument, _
             Else
                 CurArg.Operand = ExprVariables.Storage(CurArg.LinkedVar).value
             End If
-            If CurToken.UnaryFlag Then
-                If AscW(CurArg.DefString) = 45 Then
-                    CurArg.Operand = ApplyLawOfSigns(op_minus + CurArg.Operand)
-                End If
+            If AscW(CurArg.DefString) = 45 Then
+                CurArg.Operand = ApplyLawOfSigns(op_minus + CurArg.Operand)
             End If
         Else
             If CurArg.FactorialIn Then
@@ -2609,7 +2617,7 @@ Private Sub TokenizeSubExpr(ByRef Expression As String, ByRef SubExpressionsData
             outBuffer.CompCluster = True
             outBuffer.CompArrCluster = True
         Else
-            'Code here for trap error of missing () in a composite array and standard input
+            'Todo: Code here for trap error of missing () in a composite array and standard input
         End If
     End If
 End Sub
