@@ -1405,20 +1405,6 @@ Private Function GetEvalToken(ByRef Expression As String) As Token
     End If
 End Function
 
-Private Function ValidFuntionName(ByRef Expression As String, _
-                                    ByRef FuntionName As String, _
-                                    StartPos As Long) As Boolean
-    Dim cLeft As Boolean
-    Dim cRight As Boolean
-    
-    If StartPos > 1 Then
-        cLeft = Not IsLetter(MidB$(Expression, StartPos - 2, 2))
-    Else
-        cLeft = True
-    End If
-    cRight = Not IsLetter(MidB$(Expression, StartPos + LenB(FuntionName), 2))
-    ValidFuntionName = cLeft And cRight
-End Function
 Private Function GetFunctionName(ByRef Expression As String) As String
     Dim EFjCounter As Long
     Dim GFNbool As Boolean
@@ -1443,7 +1429,7 @@ Private Function GetFunctionName(ByRef Expression As String) As String
         For i = 0 To UserDefFunctions.Index
             tmpPos = InStrB(1, ExpCopy, UserDefFunctions.Storage(i).name)
             If tmpPos Then
-                GFNbool = GFNbool = ValidFuntionName(ExpCopy, UserDefFunctions.Storage(i).name, tmpPos)
+                GFNbool = ValidFuntionName(ExpCopy, UserDefFunctions.Storage(i).name, tmpPos)
                 If GFNbool Then
                     Exit For
                 End If
@@ -2634,6 +2620,21 @@ Private Function UnicToken(ByRef Source() As String, ByRef value As String) As B
         UTiCounter = UTiCounter + 1
     Loop While Not tmpResult And UTiCounter < UTjCounter
     UnicToken = Not tmpResult
+End Function
+
+Private Function ValidFuntionName(ByRef Expression As String, _
+                                    ByRef FuntionName As String, _
+                                    StartPos As Long) As Boolean
+    Dim cLeft As Boolean
+    Dim cRight As Boolean
+    
+    If StartPos > 1 Then
+        cLeft = Not IsLetter(MidB$(Expression, StartPos - 2, 2))
+    Else
+        cLeft = True
+    End If
+    cRight = Not IsLetter(MidB$(Expression, StartPos + LenB(FuntionName), 2))
+    ValidFuntionName = cLeft And cRight
 End Function
 
 Private Function ValidTree() As Boolean
