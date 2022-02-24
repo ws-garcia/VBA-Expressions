@@ -259,8 +259,8 @@ Private Sub Class_Initialize()
     e = Exp(1)
     P_SEPARATORCHAR = ";"
     P_GALLOPING_MODE = True
-    FunctionsId() = Split(BuildinFunctIDList, P_SEPARATORCHAR)
-    FunctionsName() = Split(BuildinFunctNameList, P_SEPARATORCHAR)
+    FunctionsId() = Split(BuildinFunctIDList, ";")
+    FunctionsName() = Split(BuildinFunctNameList, ";")
     InitCBbuffer P_CONSTANTS
     InitCBbuffer UserDefFunctions
     '@--------------------------------------------------------------------
