@@ -98,7 +98,7 @@ VBA expressions can evaluate matrix functions whose arguments are given as array
 
 If the user needs to evaluate a function that accepts more than one argument, including more than one array, all arrays arguments must be passed surrounded by parentheses "({...})". For example, a function call that emulates the SQL IN statement using an array argument and a reference value can be written as follows.
 
-`IN_(({{sin(atn(1)*2); 2; 3; 4; 5}});1)`
+`IN_(({{(sin(atn(1)*2)); 2; 3; 4; 5}});1)`
 
 The above will pass this array of strings to the `IN_` function:
 
