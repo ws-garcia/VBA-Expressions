@@ -167,6 +167,7 @@ Private P_GALLOPING_MODE As Boolean
 Private P_RESULT As Variant
 Private P_SEPARATORCHAR As String
 Private SubTreeData() As String
+Private UnaryFlag As Boolean
 Private UserDefFunctions As ClusterBuffer
 
 '#
@@ -608,7 +609,7 @@ Public Function ArrayFromString(ByRef StrArray As String) As String()
             arrCapacity = arrCapacity * 2
             ReDim Preserve tmpStr(0 To arrCapacity - 1)
         End If
-        tmpStr(aIndex) = Split(MidB$(StrCopy, VectorStartPos, VectorEndPos - VectorStartPos + 1), ";")
+        tmpStr(aIndex) = Split(MidB$(StrCopy, VectorStartPos, VectorEndPos - VectorStartPos + 1), P_SEPARATORCHAR)
     Loop While i <= StrLen
     NumRows = aIndex
     NumCols = UBound(tmpStr(aIndex))
@@ -646,14 +647,14 @@ Public Function ArrayToString(ByRef InputArray As Variant) As String
                 If j = LB2 Then
                     tmpData = tmpData & "{" & GetArrItm(InputArray, MultiDimArr, i, j)
                 Else
-                    tmpData = tmpData & ";" & GetArrItm(InputArray, MultiDimArr, i, j)
+                    tmpData = tmpData & P_SEPARATORCHAR & GetArrItm(InputArray, MultiDimArr, i, j)
                 End If
                 If j = UB2 Then
                     tmpData = tmpData & "}"
                 End If
             Next j
             If i < UB Then
-                tmpData = tmpData & ";"
+                tmpData = tmpData & P_SEPARATORCHAR
             End If
         Next i
         ArrayToString = "{" & tmpData & "}"
@@ -1080,7 +1081,7 @@ Private Function Factorial(ByRef Expression As String) As String
     Dim tmpElm As Double
     Dim Fsgn As Long
     
-    If InStrB(1, Expression, ";") = 0 And InStrB(1, Expression, ".") = 0 Then
+    If InStrB(1, Expression, P_SEPARATORCHAR) = 0 And InStrB(1, Expression, ".") = 0 Then
         tmpEval = 1
         tmpElm = CDbl(Expression)
         Fsgn = Sgn(tmpElm)
@@ -2503,7 +2504,7 @@ Private Function SplitArgs(ByRef args As String) As String()
             End If
         Else
             SargStart = tmpPos
-            SargEnd = InStrB(tmpPos, args, ";")
+            SargEnd = InStrB(tmpPos, args, P_SEPARATORCHAR)
             If SargEnd = 0 Then
                 SargEnd = LenArgsStr + 1
             End If
