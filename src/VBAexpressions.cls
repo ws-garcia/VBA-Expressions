@@ -143,6 +143,7 @@ Private Const d_lCurly As String = "{"
 Private Const d_rCurly As String = "}"
 Private Const d_lParenthesis As String = "("
 Private Const d_rParenthesis As String = ")"
+Private Const d_Apostrophe As String = "'"
 '#
 '///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ' VARIABLES:
@@ -804,14 +805,18 @@ Private Sub CastCase(ByRef Expression As String, ByRef outStr As String)
     End If
 End Sub
 
-Private Function CastOPtype(ByRef strOperand As String, ByRef Negate As Boolean) As Double
-    If AscW(strOperand) < 58 Then
-        CastOPtype = CDbl(strOperand)
+Private Function CastOPtype(ByRef strOperand As String, ByRef Negate As Boolean) As Variant
+    If InStrB(1, strOperand, d_Apostrophe) Then 'Literal strings like ['string']
+        CastOPtype = strOperand
     Else
-        If Not Negate Then
-            CastOPtype = -1 * CBool(strOperand)
+        If AscW(strOperand) < 58 Then
+            CastOPtype = CDbl(strOperand)
         Else
-            CastOPtype = -1 * (Not CBool(strOperand))
+            If Not Negate Then
+                CastOPtype = -1 * CBool(strOperand)
+            Else
+                CastOPtype = -1 * (Not CBool(strOperand))
+            End If
         End If
     End If
 End Function
@@ -933,8 +938,8 @@ End Function
 
 Public Function Create(ByRef aExpression As Variant) As VBAexpressions
     If aExpression <> vbNullString Then
-        ExprToEval = RemoveDupNegation(ApplyLawOfSigns(Join$(Split(aExpression, " "), vbNullString)))
-        If ExprToEval <> RemoveDupNegation(ApplyLawOfSigns(Join$(Split(P_EXPRESSION, " "), vbNullString))) Then
+        ExprToEval = RemoveDupNegation(ApplyLawOfSigns(ReconstructLiteralStrings(CStr(aExpression), Join$(Split(aExpression, " "), vbNullString))))
+        If ExprToEval <> RemoveDupNegation(ApplyLawOfSigns(ReconstructLiteralStrings(CStr(P_EXPRESSION), Join$(Split(P_EXPRESSION, " "), vbNullString)))) Then
             P_EXPRESSION = aExpression
             VariablesInit ExprToEval
             Parse ExprToEval
@@ -2079,6 +2084,16 @@ Private Function IsLikeSciNot(ByRef Chars As String) As Boolean
     End If
 End Function
 
+Private Function IsLiteralString(ByRef aString As String) As Boolean
+    If LenB(aString) Then
+        If AscW(aString) = 39 Then 'Apostrophe
+            IsLiteralString = (InStrB(3, aString, d_Apostrophe) = LenB(aString) - 1)
+        Else
+            IsLiteralString = False
+        End If
+    End If
+End Function
+
 Private Function IsPlusOrMinus(ByRef Char As String) As Boolean
     If LenB(Char) Then
         Select Case AscW(Char)
@@ -2310,13 +2325,18 @@ Private Sub ParseVariables(ByRef Expression As String)
     Do
         tmpChr = MidB$(Expression, curPos, 2)
         varLen = 0
-        If IsLetter(tmpChr) Then
+        If IsLetter(tmpChr) Or tmpChr = d_Apostrophe Then
             varInitPos = curPos
-            Do
-                varLen = varLen + 2
-                curPos = curPos + 2
-                tmpChr = MidB$(Expression, curPos, 2)
-            Loop While IsExtAlphaNumeric(tmpChr) And curPos < lenExpr
+            If tmpChr <> d_Apostrophe Then
+                Do
+                    varLen = varLen + 2
+                    curPos = curPos + 2
+                    tmpChr = MidB$(Expression, curPos, 2)
+                Loop While IsExtAlphaNumeric(tmpChr) And curPos < lenExpr
+            Else
+                curPos = InStrB(varInitPos + 2, Expression, d_Apostrophe)
+                varLen = curPos - varInitPos + 2
+            End If
             If varInitPos > 2 Then
                 tmpPos = varInitPos - 2
             Else
@@ -2326,7 +2346,9 @@ Private Sub ParseVariables(ByRef Expression As String)
                 tmpVar = MidB$(Expression, varInitPos, varLen)
                 If Not ReservedToken(tmpVar) Then
                     If GetFunctionName(LCase$(tmpVar)) = vbNullString Then
-                        AddVariable tmpVar, ConstantKey
+                        If Not IsLiteralString(tmpVar) Then 'Exclude literal strings
+                            AddVariable tmpVar, ConstantKey
+                        End If
                     End If
                 End If
             Else
@@ -2336,7 +2358,9 @@ Private Sub ParseVariables(ByRef Expression As String)
                     charsBefore = MidB$(Expression, tmpPos + 1, varInitPos - (tmpPos + 1)) 'Chars before variable
                     If IsNumeric(charsBefore) Then 'implied multiplication found
                         If GetFunctionName(LCase$(tmpVar)) = vbNullString Then
-                            AddVariable tmpVar, ConstantKey
+                            If Not IsLiteralString(tmpVar) Then
+                                AddVariable tmpVar, ConstantKey
+                            End If
                         End If
                         Expression = MidB$(Expression, 1, varInitPos - LenB(charsBefore) - 1) & _
                                         charsBefore & op_mult & tmpVar & _
@@ -2371,6 +2395,34 @@ Private Function Power(ByRef Expression As String) As Double
     tmpEval = CDbl(tmpData(LBound(tmpData))) ^ _
                     CDbl(tmpData(LBound(tmpData) + 1))
     Power = tmpEval
+End Function
+
+Private Function ReconstructLiteralStrings(InputExpr As String, StoredExp As String) As String
+    Dim curPosInput As Long
+    Dim lastPosInput As Long
+    Dim curPosStored As Long
+    Dim lastPosStored As Long
+    Dim closingMarkInput As Long
+    Dim closingMarkStored As Long
+    Dim tmpResult As String
+    
+    lastPosInput = 1
+    lastPosStored = -1
+    curPosInput = InStrB(lastPosInput, InputExpr, d_Apostrophe)
+    tmpResult = StoredExp
+    Do While curPosInput        'Found literal string
+        lastPosStored = lastPosStored + 2
+        curPosStored = InStrB(lastPosStored, tmpResult, d_Apostrophe)
+        closingMarkInput = InStrB(curPosInput + 2, InputExpr, d_Apostrophe)
+        closingMarkStored = InStrB(curPosStored + 2, tmpResult, d_Apostrophe)
+        tmpResult = MidB$(tmpResult, 1, curPosStored - 1) _
+                    & MidB$(InputExpr, curPosInput, closingMarkInput - curPosInput + 2) _
+                    & MidB$(tmpResult, closingMarkStored + 2)
+        lastPosStored = closingMarkStored + 2
+        lastPosInput = closingMarkInput + 2
+        curPosInput = InStrB(lastPosInput, InputExpr, d_Apostrophe)
+    Loop
+    ReconstructLiteralStrings = tmpResult
 End Function
 
 Private Function RemoveDupNegation(ByRef Expression As String) As String
@@ -2680,11 +2732,11 @@ Private Sub VariableAssignment(ByRef vString As String)
     Dim avIcounter As Long
     Dim VarIdx As Long
     
-    tmpAssignment() = Split(Join(Split(vString, " "), vbNullString), P_SEPARATORCHAR)
+    tmpAssignment() = Split(ReconstructLiteralStrings(vString, Join(Split(vString, " "), vbNullString)), P_SEPARATORCHAR)
     For avIcounter = LBound(tmpAssignment) To UBound(tmpAssignment)
         tmpValues() = Split(tmpAssignment(avIcounter), "=")
         If tmpValues(UBound(tmpValues)) <> vbNullString Then
-            If IsNumeric(tmpValues(UBound(tmpValues))) Then
+            If IsNumeric(tmpValues(UBound(tmpValues))) Or IsLiteralString(tmpValues(UBound(tmpValues))) Then
                 VarIdx = GetCBItemIdx(ExprVariables, tmpValues(LBound(tmpValues)))
                 If VarIdx > -1 Then
                     ExprVariables.Storage(VarIdx).value = tmpValues(UBound(tmpValues))
