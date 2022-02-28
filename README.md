@@ -37,7 +37,7 @@ Token         =     [{Unary}] Argument [(Operator | Function) ["("] [{Unary}] [A
 Argument      =     (List | Variable | Operand)
 List          =     "{" ["{"] SubExpr [{";" SubExpr}] ["}"] "}"
 Unary         =     "-" | "+" | ~
-Operand       =     ({Digit} ["."] [{Digit}] ["E"("-" | "+"){Digit}] | (True | False))
+Operand       =     ({Digit} ["."] [{Digit}] ["E"("-" | "+"){Digit}] | (True | False) | "'"Alphabet"'")
 Variable      =     Alphabet [{Decimal}] [{(Digit | Alphabet)}]
 Alphabet      =     "A-Z" | "a-z"
 Decimal       =     "."
@@ -160,6 +160,15 @@ Sub TrigFunctions()
             .Degrees = True               'Eval in degrees
             .Eval
         End If
+    End With
+End Sub
+Sub StringComp()
+    Dim Evaluator As VBAexpressions
+    Set Evaluator = New VBAexpressions
+    
+    With Evaluator
+        .Create "Region = 'Central America'"            'Create a expression with `Region` as variable
+        .Eval ("Region = 'Asia'")                       'Assign value to variable and then evaluate
     End With
 End Sub
 ```

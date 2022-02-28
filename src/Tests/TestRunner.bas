@@ -284,3 +284,21 @@ TestFail:
     Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
+'@TestMethod("VBA Expressions")
+Private Sub testStringComp()
+    On Error GoTo TestFail
+    
+    actual = GetResult( _
+                        "Region = 'Central America'" _
+                        , "Region = 'Asia'" _
+                        )
+    expected = "False"
+    Assert.AreEqual expected, actual
+
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
+    Resume TestExit
+End Sub
+
