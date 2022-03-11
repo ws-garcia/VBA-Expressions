@@ -204,7 +204,7 @@ End Enum
 Private Type Argument
     DefString As String
     FactorialIn As Boolean
-    FuncName As String
+    funcName As String
     FunctionIn As Boolean
     Implicit As Boolean
     LinkedIndex As Long
@@ -213,7 +213,7 @@ Private Type Argument
     Operand As String
     UDFFunctionIn As Boolean
 End Type
-Private Type Token
+Private Type token
     Arg1 As Argument
     Arg2 As Argument
     ConstantToken As Boolean
@@ -234,18 +234,18 @@ Private Type ClusterTree
     CompArrCluster As Boolean
     CompCluster As Boolean
     EvalResult As String
-    Index As Long
-    Storage() As Token
+    index As Long
+    Storage() As token
 End Type
 Private Type ClusterItem
-    Index As Long
+    index As Long
     name As String
     value As String
     Assigned As Boolean
 End Type
 Private Type ClusterBuffer
     Capacity As Long
-    Index As Long
+    index As Long
     Storage() As ClusterItem
 End Type
 
@@ -296,8 +296,8 @@ Public Property Get Constants() As Collection
     Dim i As Long
     
     Set Constants = New Collection
-    For i = 0 To P_CONSTANTS.Index
-        Constants.Add P_CONSTANTS.Storage(i).value, P_CONSTANTS.Storage(i).name
+    For i = 0 To P_CONSTANTS.index
+        Constants.add P_CONSTANTS.Storage(i).value, P_CONSTANTS.Storage(i).name
     Next i
 End Property
 
@@ -308,7 +308,7 @@ Public Property Get CurrentVarValues() As String
     Dim i As Long
     Dim tmpResult As String
     
-    For i = 0 To ExprVariables.Index
+    For i = 0 To ExprVariables.index
         If tmpResult = vbNullString Then
             tmpResult = ExprVariables.Storage(i).name & " = " & _
                         ExprVariables.Storage(i).value
@@ -327,7 +327,7 @@ Public Property Get CurrentVariables() As String
     Dim i As Long
     Dim tmpResult As String
     
-    For i = 0 To ExprVariables.Index
+    For i = 0 To ExprVariables.index
         If tmpResult = vbNullString Then
             tmpResult = ExprVariables.Storage(i).name
         Else
@@ -462,8 +462,8 @@ Private Sub AddVariable(ByRef variable As String, ByRef aKey As String)
         AppendToCBbuffer ExprVariables, aKey
         VarIdx = GetCBItemIdx(P_CONSTANTS, aKey)
         If VarIdx > -1 Then 'Assign the value from constants
-            ExprVariables.Storage(ExprVariables.Index).value = P_CONSTANTS.Storage(VarIdx).value
-            ExprVariables.Storage(ExprVariables.Index).Assigned = True
+            ExprVariables.Storage(ExprVariables.index).value = P_CONSTANTS.Storage(VarIdx).value
+            ExprVariables.Storage(ExprVariables.index).Assigned = True
         End If
     End If
 End Sub
@@ -472,32 +472,32 @@ Private Function aFloor(ByRef Expression As String) As Double
     aFloor = Floor(CDbl(Expression))
 End Function
 
-Private Sub AppendToBuffer(ByRef aBuffer As ClusterTree, ByRef aToken As Token)
-    aBuffer.Index = aBuffer.Index + 1
+Private Sub AppendToBuffer(ByRef aBuffer As ClusterTree, ByRef aToken As token)
+    aBuffer.index = aBuffer.index + 1
     On Error GoTo BufferAppend_errHandler
-    aBuffer.Storage(aBuffer.Index) = aToken
+    aBuffer.Storage(aBuffer.index) = aToken
     Exit Sub
 BufferAppend_errHandler:
     err.Clear
     ExpandBuffer aBuffer
-    aBuffer.Storage(aBuffer.Index) = aToken
+    aBuffer.Storage(aBuffer.index) = aToken
 End Sub
 
 Private Sub AppendToCBbuffer(ByRef aBuffer As ClusterBuffer, ByRef ItemName As String, Optional ByRef ItemValue As String = vbNullString)
-    aBuffer.Index = aBuffer.Index + 1
+    aBuffer.index = aBuffer.index + 1
     On Error GoTo BufferAppend_errHandler
-    aBuffer.Storage(aBuffer.Index).Index = aBuffer.Index
-    aBuffer.Storage(aBuffer.Index).Assigned = (ItemValue <> vbNullString)
-    aBuffer.Storage(aBuffer.Index).name = ItemName
-    aBuffer.Storage(aBuffer.Index).value = ItemValue
+    aBuffer.Storage(aBuffer.index).index = aBuffer.index
+    aBuffer.Storage(aBuffer.index).Assigned = (ItemValue <> vbNullString)
+    aBuffer.Storage(aBuffer.index).name = ItemName
+    aBuffer.Storage(aBuffer.index).value = ItemValue
     Exit Sub
 BufferAppend_errHandler:
     err.Clear
     ExpandCBbuffer aBuffer
-    aBuffer.Storage(aBuffer.Index).Index = aBuffer.Index
-    aBuffer.Storage(aBuffer.Index).Assigned = (ItemValue <> vbNullString)
-    aBuffer.Storage(aBuffer.Index).name = ItemName
-    aBuffer.Storage(aBuffer.Index).value = ItemValue
+    aBuffer.Storage(aBuffer.index).index = aBuffer.index
+    aBuffer.Storage(aBuffer.index).Assigned = (ItemValue <> vbNullString)
+    aBuffer.Storage(aBuffer.index).name = ItemName
+    aBuffer.Storage(aBuffer.index).value = ItemValue
 End Sub
 
 Private Function ApplyLawOfSigns(ByRef Expression As String) As String
@@ -697,7 +697,7 @@ Private Function average(ByRef Expression As String) As Double
     average = tmpEval
 End Function
 
-Private Sub BottomLevelEval(ByRef aToken As Token)
+Private Sub BottomLevelEval(ByRef aToken As token)
     If aToken.OperationToken < 100 Then 'Arithmetic operators
         Select Case aToken.OperationToken
             Case OperatorToken.otSum
@@ -851,16 +851,16 @@ Private Function CheckArgument(ByRef ArgDefStr As String, ByRef IsFactorial As B
 End Function
 
 Private Function CheckVarValues() As Boolean
-    If ExprVariables.Index > -1 And AssignedExpression Then
+    If ExprVariables.index > -1 And AssignedExpression Then
         Dim i As Long
         Dim cviCounter As Long
         
-        For i = 0 To ExprVariables.Index
+        For i = 0 To ExprVariables.index
             If ExprVariables.Storage(i).Assigned Then
                 cviCounter = cviCounter + 1
             End If
         Next i
-        CheckVarValues = (cviCounter = ExprVariables.Index + 1)
+        CheckVarValues = (cviCounter = ExprVariables.index + 1)
     Else
         CheckVarValues = True
     End If
@@ -870,7 +870,7 @@ End Function
 ''' Traverses and evaluates the current parse tree.
 ''' </summary>
 Private Function Compute() As String
-    Dim B As Long
+    Dim b As Long
     Dim t As Long
     Dim i As Long
     Dim OperationIndex As Long
@@ -879,41 +879,41 @@ Private Function Compute() As String
     Dim PrevOP2 As String
     
     BaseIndex = UBound(SubTreeData) + 1
-    For B = LBound(EvalTree) To UBound(EvalTree)              'Loop all subexpressions
+    For b = LBound(EvalTree) To UBound(EvalTree)              'Loop all subexpressions
         OperationIndex = BaseIndex
-        For t = 0 To EvalTree(B).Index                         'Loop all tokens
+        For t = 0 To EvalTree(b).index                         'Loop all tokens
             OperationIndex = OperationIndex + 1
-            If Not EvalTree(B).Storage(t).ConstantToken Then   'Gallop
+            If Not EvalTree(b).Storage(t).ConstantToken Then   'Gallop
                 If P_GALLOPING_MODE Then
-                    PrevOP1 = EvalTree(B).Storage(t).Arg1.Operand
-                    PrevOP2 = EvalTree(B).Storage(t).Arg2.Operand
+                    PrevOP1 = EvalTree(b).Storage(t).Arg1.Operand
+                    PrevOP2 = EvalTree(b).Storage(t).Arg2.Operand
                 End If
-                GetOperands EvalTree(B).Storage(t), EvalTree(B), BaseIndex
-                BottomLevelEval EvalTree(B).Storage(t)
+                GetOperands EvalTree(b).Storage(t), EvalTree(b), BaseIndex
+                BottomLevelEval EvalTree(b).Storage(t)
                 If P_GALLOPING_MODE Then
-                    EvalTree(B).Storage(t).ConstantToken = (PrevOP1 = EvalTree(B).Storage(t).Arg1.Operand And _
-                                                            PrevOP2 = EvalTree(B).Storage(t).Arg2.Operand)
+                    EvalTree(b).Storage(t).ConstantToken = (PrevOP1 = EvalTree(b).Storage(t).Arg1.Operand And _
+                                                            PrevOP2 = EvalTree(b).Storage(t).Arg2.Operand)
                 End If
             End If
         Next t
-        If Not EvalTree(B).CompCluster Then
-            EvalTree(B).EvalResult = EvalTree(B).Storage(t - 1).EvalResult
+        If Not EvalTree(b).CompCluster Then
+            EvalTree(b).EvalResult = EvalTree(b).Storage(t - 1).EvalResult
         Else            'The ClusterTree contains a composite function args as expression
             Dim tmpResult() As String
-            ReDim tmpResult(0 To EvalTree(B).Index)
+            ReDim tmpResult(0 To EvalTree(b).index)
             '@--------------------------------------------------------------------
             ' Loop all sub-expression tokens results
-            For i = 0 To EvalTree(B).Index
-                tmpResult(i) = EvalTree(B).Storage(i).EvalResult
+            For i = 0 To EvalTree(b).index
+                tmpResult(i) = EvalTree(b).Storage(i).EvalResult
             Next i
-            If Not EvalTree(B).CompArrCluster Then   'Function Argument
-                EvalTree(B).EvalResult = Join$(tmpResult, P_SEPARATORCHAR)
+            If Not EvalTree(b).CompArrCluster Then   'Function Argument
+                EvalTree(b).EvalResult = Join$(tmpResult, P_SEPARATORCHAR)
             Else        'Array function Argument
-                EvalTree(B).EvalResult = JoinArrFunctArg(tmpResult, EvalTree(B).ClusterArrBounds(0), EvalTree(B).ClusterArrBounds(1))
+                EvalTree(b).EvalResult = JoinArrFunctArg(tmpResult, EvalTree(b).ClusterArrBounds(0), EvalTree(b).ClusterArrBounds(1))
             End If
         End If
-    Next B
-    Compute = EvalTree(B - 1).EvalResult
+    Next b
+    Compute = EvalTree(b - 1).EvalResult
     ComputedTree = True
 End Function
 
@@ -1313,12 +1313,12 @@ Private Function GetCBItemIdx(ByRef cbBuffer As ClusterBuffer, ByRef ItemName As
             Case Else
                 tmpItemName = ItemName
         End Select
-        If cbBuffer.Index > -1 Then
+        If cbBuffer.index > -1 Then
             i = 0
             Do
                 tmpResult = (cbBuffer.Storage(i).name = tmpItemName)
                 i = i + 1
-            Loop While i <= cbBuffer.Index And Not tmpResult
+            Loop While i <= cbBuffer.index And Not tmpResult
         End If
         If tmpResult Then
             GetCBItemIdx = i - 1
@@ -1330,7 +1330,7 @@ Private Function GetCBItemIdx(ByRef cbBuffer As ClusterBuffer, ByRef ItemName As
     End If
 End Function
 
-Private Function GetRParentPos(ByRef Expression As String, ByRef Index As Long) As Long
+Private Function GetRParentPos(ByRef Expression As String, ByRef index As Long) As Long
     Dim tmpCounter As Long
     Dim SearchIndex As Long
     Dim OpenedSum As Long
@@ -1348,7 +1348,7 @@ Private Function GetRParentPos(ByRef Expression As String, ByRef Index As Long) 
             End If
         End If
         SearchIndex = SearchIndex + 2
-    Loop While SearchIndex <= Index
+    Loop While SearchIndex <= index
     SearchIndex = 1
     tmpCounter = 0
     Do
@@ -1361,11 +1361,11 @@ Private Function GetRParentPos(ByRef Expression As String, ByRef Index As Long) 
             End If
         End If
         SearchIndex = SearchIndex + 2
-    Loop Until (tmpCounter = OpenedSum - 1) And (SearchIndex > Index)
+    Loop Until (tmpCounter = OpenedSum - 1) And (SearchIndex > index)
     GetRParentPos = SearchIndex - 2
 End Function
 
-Private Function GetEvalToken(ByRef Expression As String) As Token
+Private Function GetEvalToken(ByRef Expression As String) As token
     Dim TokenStart As Long
     Dim TokenEnd As Long
     Dim TokenDet As TokenInfo
@@ -1389,12 +1389,12 @@ Private Function GetEvalToken(ByRef Expression As String) As Token
         GetEvalToken.Logical = TokenDet.LogicalToken
         GetEvalToken.Arg1.NegationFlagOn = (InStrB(1, GetEvalToken.Arg1.DefString, op_neg) = 1) '~*
         GetEvalToken.Arg2.NegationFlagOn = (InStrB(1, GetEvalToken.Arg2.DefString, op_neg) = 1) '~*
-        GetEvalToken.Arg1.FuncName = GetFunctionName(GetEvalToken.Arg1.DefString)
+        GetEvalToken.Arg1.funcName = GetFunctionName(GetEvalToken.Arg1.DefString)
         GetEvalToken.Arg1.UDFFunctionIn = IsUDFFunction
-        GetEvalToken.Arg2.FuncName = GetFunctionName(GetEvalToken.Arg2.DefString)
+        GetEvalToken.Arg2.funcName = GetFunctionName(GetEvalToken.Arg2.DefString)
         GetEvalToken.Arg2.UDFFunctionIn = IsUDFFunction
-        GetEvalToken.Arg1.FunctionIn = (GetEvalToken.Arg1.FuncName <> vbNullString) Or GetEvalToken.Arg1.UDFFunctionIn
-        GetEvalToken.Arg2.FunctionIn = (GetEvalToken.Arg2.FuncName <> vbNullString) Or GetEvalToken.Arg2.UDFFunctionIn
+        GetEvalToken.Arg1.FunctionIn = (GetEvalToken.Arg1.funcName <> vbNullString) Or GetEvalToken.Arg1.UDFFunctionIn
+        GetEvalToken.Arg2.FunctionIn = (GetEvalToken.Arg2.funcName <> vbNullString) Or GetEvalToken.Arg2.UDFFunctionIn
         GetEvalToken.Arg1.LinkedIndex = GetIndex(GetEvalToken.Arg1.DefString)
         GetEvalToken.Arg2.LinkedIndex = GetIndex(GetEvalToken.Arg2.DefString)
         GetEvalToken.Arg1.LinkedVar = GetCBItemIdx(ExprVariables, GetEvalToken.Arg1.DefString)
@@ -1408,9 +1408,9 @@ Private Function GetEvalToken(ByRef Expression As String) As Token
         GetEvalToken.Logical = TokenDet.LogicalToken
         GetEvalToken.Arg1.NegationFlagOn = (InStrB(1, GetEvalToken.Arg1.DefString, op_neg) = 1) '~*
         GetEvalToken.DefString = Expression
-        GetEvalToken.Arg1.FuncName = GetFunctionName(GetEvalToken.Arg1.DefString)
+        GetEvalToken.Arg1.funcName = GetFunctionName(GetEvalToken.Arg1.DefString)
         GetEvalToken.Arg1.UDFFunctionIn = IsUDFFunction
-        GetEvalToken.Arg1.FunctionIn = (GetEvalToken.Arg1.FuncName <> vbNullString) Or GetEvalToken.Arg1.UDFFunctionIn
+        GetEvalToken.Arg1.FunctionIn = (GetEvalToken.Arg1.funcName <> vbNullString) Or GetEvalToken.Arg1.UDFFunctionIn
         GetEvalToken.Arg1.LinkedIndex = GetIndex(GetEvalToken.Arg1.DefString)
         GetEvalToken.Arg1.LinkedVar = GetCBItemIdx(ExprVariables, GetEvalToken.Arg1.DefString)
         GetEvalToken.Arg1.Implicit = (GetEvalToken.Arg1.LinkedIndex >= 0)
@@ -1439,7 +1439,7 @@ Private Function GetFunctionName(ByRef Expression As String) As String
         IsUDFFunction = False
     Else 'Check for UDFs
         Dim i As Long
-        For i = 0 To UserDefFunctions.Index
+        For i = 0 To UserDefFunctions.index
             tmpPos = InStrB(1, ExpCopy, UserDefFunctions.Storage(i).name)
             If tmpPos Then
                 GFNbool = ValidFuntionName(ExpCopy, UserDefFunctions.Storage(i).name, tmpPos)
@@ -1582,7 +1582,7 @@ Private Function GetLCOpInfo(ByRef Expression As String) As TokenInfo
         End If
 End Function
 
-Private Function GetLogicalNeg(ByRef aToken As Token) As Boolean()
+Private Function GetLogicalNeg(ByRef aToken As token) As Boolean()
     Dim tmpBoolArr(0 To 1) As Boolean
     
     If aToken.Arg1.NegationFlagOn Then
@@ -1614,7 +1614,7 @@ Private Function GetLParentPos(ByRef Expression As String, ByRef RelativePositio
     GetLParentPos = tmpResult
 End Function
 
-Private Sub GetOperand(ByRef CurToken As Token, ByRef CurArg As Argument, _
+Private Sub GetOperand(ByRef CurToken As token, ByRef CurArg As Argument, _
                         ByRef CurTree As ClusterTree, ByRef BaseIndex As Long)
                                     
     If CurArg.Implicit Then
@@ -1622,18 +1622,18 @@ Private Sub GetOperand(ByRef CurToken As Token, ByRef CurArg As Argument, _
             If CurArg.FactorialIn Then
                 If CurArg.LinkedIndex >= BaseIndex Then 'Data on current tree
                     CurArg.Operand = Factorial(EvalFunction(CurTree.Storage(CurArg.LinkedIndex - BaseIndex).EvalResult, _
-                                        CurArg.FuncName, CurArg.UDFFunctionIn))
+                                        CurArg.funcName, CurArg.UDFFunctionIn))
                 Else 'Data is main tree
                     CurArg.Operand = Factorial(EvalFunction(EvalTree(CurArg.LinkedIndex).EvalResult, _
-                                        CurArg.FuncName, CurArg.UDFFunctionIn))
+                                        CurArg.funcName, CurArg.UDFFunctionIn))
                 End If
             Else 'Eval
                 If CurArg.LinkedIndex >= BaseIndex Then
                     CurArg.Operand = EvalFunction(CurTree.Storage(CurArg.LinkedIndex - BaseIndex).EvalResult, _
-                                        CurArg.FuncName, CurArg.UDFFunctionIn)
+                                        CurArg.funcName, CurArg.UDFFunctionIn)
                 Else
                     CurArg.Operand = EvalFunction(EvalTree(CurArg.LinkedIndex).EvalResult, _
-                                        CurArg.FuncName, CurArg.UDFFunctionIn)
+                                        CurArg.funcName, CurArg.UDFFunctionIn)
                 End If
             End If
         Else    'Return data
@@ -1674,7 +1674,7 @@ Private Sub GetOperand(ByRef CurToken As Token, ByRef CurArg As Argument, _
     End If
 End Sub
 
-Private Sub GetOperands(ByRef CurToken As Token, ByRef CurTree As ClusterTree, _
+Private Sub GetOperands(ByRef CurToken As token, ByRef CurTree As ClusterTree, _
                                     ByRef BaseIndex As Long)
                                     
     '@--------------------------------------------------------------------
@@ -1763,14 +1763,14 @@ Private Function GetPowerSymbolPos(ByRef Expression As String) As Long
     tmpPos = GetOPeratorSymbolPos(Expression, op_power)
     Do While tmpPos
         tmpResult = tmpPos
-        tmpPos = GetOPeratorSymbolPos(Expression, op_power, tmpPos)
+        tmpPos = GetOPeratorSymbolPos(Expression, op_power, tmpPos + 2)
     Loop
     GetPowerSymbolPos = tmpResult
 End Function
 
 Private Sub GetRootedTree(ByRef SubExpression As String, ByRef tmpReplacement As String, _
                                     ByRef OperationIndex As Long, ByRef outBuffer As ClusterTree)
-    Dim vToken As Token
+    Dim vToken As token
     Dim switch As Boolean
     Dim tmpPos As Long
     Dim OperandInBundle As Boolean
@@ -2044,13 +2044,13 @@ End Function
 Private Sub InitBuffer(ByRef aBuffer As ClusterTree)
     aBuffer.Capacity = 128
     ReDim aBuffer.Storage(0 To aBuffer.Capacity - 1)
-    aBuffer.Index = -1
+    aBuffer.index = -1
 End Sub
 
 Private Sub InitCBbuffer(ByRef aBuffer As ClusterBuffer)
     aBuffer.Capacity = 128
     ReDim aBuffer.Storage(0 To aBuffer.Capacity - 1)
-    aBuffer.Index = -1
+    aBuffer.index = -1
 End Sub
 
 Private Sub InitializeErrHandler()
@@ -2539,8 +2539,8 @@ Private Function SerializeSubTree(ByRef Expression As String, ByRef SubExpressio
 End Function
 
 Private Sub ShrinkBuffer(ByRef aBuffer As ClusterTree)
-    If aBuffer.Index > -1 Then
-        aBuffer.Capacity = aBuffer.Index
+    If aBuffer.index > -1 Then
+        aBuffer.Capacity = aBuffer.index
         ReDim Preserve aBuffer.Storage(0 To aBuffer.Capacity)
     End If
 End Sub
@@ -2752,30 +2752,30 @@ Private Function ValidFuntionName(ByRef Expression As String, _
 End Function
 
 Private Function ValidTree() As Boolean
-    Dim B As Long
+    Dim b As Long
     Dim c As Long
     Dim t As Long
     Dim tmpResult As Boolean
     
-    B = LBound(EvalTree)
+    b = LBound(EvalTree)
     c = UBound(EvalTree)
     Do                        'Loop all subexpressions
         t = 0
         Do                    'Loop all tokens
-            tmpResult = CheckArgument(EvalTree(B).Storage(t).Arg1.DefString, _
-                        EvalTree(B).Storage(t).Arg1.FactorialIn)
+            tmpResult = CheckArgument(EvalTree(b).Storage(t).Arg1.DefString, _
+                        EvalTree(b).Storage(t).Arg1.FactorialIn)
             If tmpResult Then
-                If EvalTree(B).Storage(t).Arg2.DefString <> vbNullString Then
-                    tmpResult = CheckArgument(EvalTree(B).Storage(t).Arg2.DefString, _
-                                EvalTree(B).Storage(t).Arg2.FactorialIn)
+                If EvalTree(b).Storage(t).Arg2.DefString <> vbNullString Then
+                    tmpResult = CheckArgument(EvalTree(b).Storage(t).Arg2.DefString, _
+                                EvalTree(b).Storage(t).Arg2.FactorialIn)
                 Else
-                    tmpResult = (EvalTree(B).Storage(t).OperationToken = otNull) 'Check for invalid input like "**" "//" ...
+                    tmpResult = (EvalTree(b).Storage(t).OperationToken = otNull) 'Check for invalid input like "**" "//" ...
                 End If
             End If
             t = t + 1
-        Loop While t <= EvalTree(B).Index And tmpResult
-        B = B + 1
-    Loop While B <= c And tmpResult
+        Loop While t <= EvalTree(b).index And tmpResult
+        b = b + 1
+    Loop While b <= c And tmpResult
     If Not tmpResult Then
         BuildErrMessage errSyntaxError, "Misplaced operators have been found. Please check and try again."
     End If
@@ -2815,7 +2815,7 @@ Private Sub VariablesInit(ByRef Expression As String)
     
     InitCBbuffer ExprVariables
     ParseVariables Expression
-    For i = 0 To ExprVariables.Index
+    For i = 0 To ExprVariables.index
         tmpIdx = GetCBItemIdx(P_CONSTANTS, ExprVariables.Storage(i).name)
         If tmpIdx > -1 Then 'The variable is a defined constant
             ExprVariables.Storage(i).value = P_CONSTANTS.Storage(tmpIdx).value
