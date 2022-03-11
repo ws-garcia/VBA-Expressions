@@ -8,7 +8,7 @@ VBA Expressions is a powerful mathematical expressions evaluator for VBA strings
 * __Easy to use and integrate__.
 * __Basic math operators__: `+` `-` `*` `/` `\` `^` `!`
 * __Logical expressions__: `& (AND)` `| (OR)` `|| (XOR)`
-* __Binary relations__: `< <= <> >= = >`
+* __Binary relations__: `<`, `<=`, `<>`, `>=`, `=`, `>`, `$ (LIKE)`
 * __More than 20 built-in functions__: `Max`, `Min`, `Avg`, `Sin`, `Ceil`, `Floor`...
 * __Very flexible__: variables, constants and user-defined functions (UDFs) support.
 * __Implied multiplication for variables, constants and functions__: `5avg(2;abs(-3-7tan(5));9)` is valid expression; `5(2)` is not.
@@ -42,23 +42,23 @@ Variable      =     Alphabet [{Decimal}] [{(Digit | Alphabet)}]
 Alphabet      =     "A-Z" | "a-z"
 Decimal       =     "."
 Digit         =     "0-9"
-Operator      =     "+" | "-" | "*" | "/" | "\" | "^" | "%" | "!" | "<" | "<=" | "<>" | ">" | ">=" | "=" | "&" | "|" | "||"
+Operator      =     "+" | "-" | "*" | "/" | "\" | "^" | "%" | "!" | "<" | "<=" | "<>" | ">" | ">=" | "=" | "$" | "&" | "|" | "||"
 Function      =     "abs" | "sin" | "cos" | "min" |...|[UDF]
 ```
 
 ## Operators precedence
 VBA expressions uses the following precedence rules to evaluate mathematical expressions:
 
-1. `()`             Grouping: evaluates functions arguments as well.
-2. `! - +`          Unary operators: exponentiation is the only operation that violates this. Ex.: `-2 ^ 2 = -4 | (-2) ^ 2 = 4`.
-3. `^`              Exponentiation: Although Excel and Matlab evaluate nested exponentiations from left to right, Google, mathematicians and several modern programming languages, such as Perl, Python and Ruby, evaluate this operation from right to left. VBA expressions also evals in Python way: a^b^c = a^(b^c).
-4. `\* / % `        Multiplication, division, modulo: from left to right.
-5. `+ -`            Addition and subtraction: from left to right.
-6. `< <= <> >= = >` Binary relations.
-7. `~`              Logical negation.
-8. `&`              Logical AND.
-9. `||`             Logical XOR.
-10. `|`             Logical OR.
+1. `()`               Grouping: evaluates functions arguments as well.
+2. `! - +`            Unary operators: exponentiation is the only operation that violates this. Ex.: `-2 ^ 2 = -4 | (-2) ^ 2 = 4`.
+3. `^`                Exponentiation: Although Excel and Matlab evaluate nested exponentiations from left to right, Google, mathematicians and several modern programming languages, such as Perl, Python and Ruby, evaluate this operation from right to left. VBA expressions also evals in Python way: a^b^c = a^(b^c).
+4. `\* / % `          Multiplication, division, modulo: from left to right.
+5. `+ -`              Addition and subtraction: from left to right.
+6. `< <= <> >= = > $` Binary relations.
+7. `~`                Logical negation.
+8. `&`                Logical AND.
+9. `||`               Logical XOR.
+10. `|`               Logical OR.
 
 ## Variables
 Users can enter variables and set/assign their values for the calculations. Variable names must meet the following requirements:
@@ -169,6 +169,15 @@ Sub StringComp()
     With Evaluator
         .Create "Region = 'Central America'"            'Create a expression with `Region` as variable
         .Eval ("Region = 'Asia'")                       'Assign value to variable and then evaluate
+    End With
+End Sub
+Sub CompareUsingLikeOperator()
+    Dim Evaluator As VBAexpressions
+    Set Evaluator = New VBAexpressions
+    
+    With Evaluator
+        .Create "Region $ 'C?????? *a'"                     'Create using the LIKE operator ($) and with `Region` as variable
+        .Eval("Region = 'Central America'")                 'This will be evaluated to TRUE
     End With
 End Sub
 ```
