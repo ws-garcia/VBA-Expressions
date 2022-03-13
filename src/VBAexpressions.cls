@@ -1693,7 +1693,7 @@ Private Function IsSymbolInLiteralString(ByRef Expression As String, SymbolPos A
     
     tmpPos = InStrB(1, Expression, d_Apostrophe)
     If tmpPos Then
-        Do While tmpPos < SymbolPos
+        Do While tmpPos < SymbolPos And tmpPos > 0
             flagCounter = flagCounter + 1
             tmpPos = InStrB(tmpPos + 2, Expression, d_Apostrophe)
         Loop
