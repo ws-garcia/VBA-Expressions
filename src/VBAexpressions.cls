@@ -456,7 +456,7 @@ End Sub
 Private Sub AddVariable(ByRef variable As String, ByRef aKey As String)
     Dim VarIdx As Long
     
-    CastCase variable, aKey
+    aKey = CastCase(variable)
     VarIdx = GetCBItemIdx(ExprVariables, aKey)
     If VarIdx = -1 Then 'Ensure uniqueness
         AppendToCBbuffer ExprVariables, aKey
@@ -802,13 +802,13 @@ Private Function callback(ByRef sClassName As String) As Object
     Set callback = CallByName(New VBAcallBack, sClassName, VbGet)
 End Function
 
-Private Sub CastCase(ByRef Expression As String, ByRef outStr As String)
+Private Function CastCase(ByRef Expression As String) As String
     If Not NotIsPI(Expression) Then
-        outStr = LCase$(Expression)     'Case insensitive for PI
+        CastCase = LCase$(Expression)     'Case insensitive for PI
     Else
-        outStr = Expression
+        CastCase = Expression
     End If
-End Sub
+End Function
 
 Private Function CastOPtype(ByRef strOperand As String, ByRef Negate As Boolean) As Variant
     If IsLiteralString(strOperand) Then 'Literal strings like ['string']
@@ -1397,8 +1397,8 @@ Private Function GetEvalToken(ByRef Expression As String) As token
         GetEvalToken.Arg2.FunctionIn = (GetEvalToken.Arg2.funcName <> vbNullString) Or GetEvalToken.Arg2.UDFFunctionIn
         GetEvalToken.Arg1.LinkedIndex = GetIndex(GetEvalToken.Arg1.DefString)
         GetEvalToken.Arg2.LinkedIndex = GetIndex(GetEvalToken.Arg2.DefString)
-        GetEvalToken.Arg1.LinkedVar = GetCBItemIdx(ExprVariables, GetEvalToken.Arg1.DefString)
-        GetEvalToken.Arg2.LinkedVar = GetCBItemIdx(ExprVariables, GetEvalToken.Arg2.DefString)
+        GetEvalToken.Arg1.LinkedVar = GetCBItemIdx(ExprVariables, CastCase(GetEvalToken.Arg1.DefString))
+        GetEvalToken.Arg2.LinkedVar = GetCBItemIdx(ExprVariables, CastCase(GetEvalToken.Arg2.DefString))
         GetEvalToken.Arg1.Implicit = (GetEvalToken.Arg1.LinkedIndex >= 0)
         GetEvalToken.Arg2.Implicit = (GetEvalToken.Arg2.LinkedIndex >= 0)
         GetEvalToken.Arg1.FactorialIn = (InStrB(1, GetEvalToken.Arg1.DefString, op_Factorial) = LenB(GetEvalToken.Arg1.DefString) - 1)
@@ -1412,7 +1412,7 @@ Private Function GetEvalToken(ByRef Expression As String) As token
         GetEvalToken.Arg1.UDFFunctionIn = IsUDFFunction
         GetEvalToken.Arg1.FunctionIn = (GetEvalToken.Arg1.funcName <> vbNullString) Or GetEvalToken.Arg1.UDFFunctionIn
         GetEvalToken.Arg1.LinkedIndex = GetIndex(GetEvalToken.Arg1.DefString)
-        GetEvalToken.Arg1.LinkedVar = GetCBItemIdx(ExprVariables, GetEvalToken.Arg1.DefString)
+        GetEvalToken.Arg1.LinkedVar = GetCBItemIdx(ExprVariables, CastCase(GetEvalToken.Arg1.DefString))
         GetEvalToken.Arg1.Implicit = (GetEvalToken.Arg1.LinkedIndex >= 0)
         GetEvalToken.Arg1.FactorialIn = (InStrB(1, GetEvalToken.Arg1.DefString, op_Factorial) = LenB(GetEvalToken.Arg1.DefString) - 1)
     End If
