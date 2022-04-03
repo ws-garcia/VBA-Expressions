@@ -811,18 +811,22 @@ Private Function CastCase(ByRef Expression As String) As String
 End Function
 
 Private Function CastOPtype(ByRef strOperand As String, ByRef Negate As Boolean) As Variant
-    If IsLiteralString(strOperand) Then 'Literal strings like ['string']
-        CastOPtype = FormatLiteralString(strOperand)
-    Else
-        If AscW(strOperand) < 58 Then
-            CastOPtype = CDbl(strOperand)
+    If strOperand <> vbNullString Then
+        If IsLiteralString(strOperand) Then 'Literal strings like ['string']
+            CastOPtype = FormatLiteralString(strOperand)
         Else
-            If Not Negate Then
-                CastOPtype = -1 * CBool(strOperand)
+            If AscW(strOperand) < 58 Then
+                CastOPtype = CDbl(strOperand)
             Else
-                CastOPtype = -1 * (Not CBool(strOperand))
+                If Not Negate Then
+                    CastOPtype = -1 * CBool(strOperand)
+                Else
+                    CastOPtype = -1 * (Not CBool(strOperand))
+                End If
             End If
         End If
+    Else
+        CastOPtype = strOperand
     End If
 End Function
 
@@ -2144,12 +2148,9 @@ Private Function IsLikeSciNot(ByRef Chars As String) As Boolean
 End Function
 
 Private Function IsLiteralString(ByRef aString As String) As Boolean
-    Dim LenStr As Long
-    
-    LenStr = LenB(aString)
-    If LenStr Then
+    If aString <> vbNullString Then
         If AscW(aString) = 39 Then 'Apostrophe
-            IsLiteralString = (InStrB(3, aString, d_Apostrophe) = LenStr - 1)
+            IsLiteralString = (InStrB(3, aString, d_Apostrophe) = LenB(aString) - 1)
         Else
             IsLiteralString = False
         End If
