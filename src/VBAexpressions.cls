@@ -812,11 +812,13 @@ End Function
 
 Private Function CastOPtype(ByRef strOperand As String, ByRef Negate As Boolean) As Variant
     If strOperand <> vbNullString Then
-        If IsLiteralString(strOperand) Then 'Literal strings like ['string']
-            CastOPtype = FormatLiteralString(strOperand)
+        Dim OpAscw As Long
+        OpAscw = AscW(strOperand)
+        If OpAscw < 58 And OpAscw > 45 Then
+            CastOPtype = CDbl(strOperand)
         Else
-            If AscW(strOperand) < 58 Then
-                CastOPtype = CDbl(strOperand)
+            If IsLiteralString(strOperand) Then 'Literal strings like ['string']
+                CastOPtype = FormatLiteralString(strOperand)
             Else
                 If Not Negate Then
                     CastOPtype = -1 * CBool(strOperand)
@@ -2288,8 +2290,7 @@ Private Function NonZero(ParamArray values() As Variant) As Boolean
 End Function
 
 Private Function NotIsPI(ByRef VarName As String) As Boolean
-
-    NotIsPI = (LCase$(VarName) <> "pi")
+    NotIsPI = Not VarName Like "[Pp][Ii]"
 End Function
 
 Private Function OPsymbolInArgument(ByRef ArgDefStr As String, ByRef Pattrn As String) As Boolean
