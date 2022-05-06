@@ -51,7 +51,7 @@ Option Explicit
 ' Variable      =     Alphabet [{Decimal}] [{(Digit | Alphabet)}]
 ' Alphabet      =     "A-Z" | "a-z"
 ' Decimal       =     "."
-' Digit = "0-9"
+' Digit         =     "0-9"
 ' Operator      =     "+" | "-" | "*" | "/" | "\" | "^" | "%" | "!" | "<" | "<=" | "<>" | ">" | ">=" | "=" | "$" | "&" | "|" | "||"
 ' Function      =     "abs" | "sin" | "cos" | "min" |...|[UDF]
 '
@@ -297,7 +297,7 @@ Public Property Get Constants() As Collection
     
     Set Constants = New Collection
     For i = 0 To P_CONSTANTS.index
-        Constants.add P_CONSTANTS.Storage(i).value, P_CONSTANTS.Storage(i).name
+        Constants.Add P_CONSTANTS.Storage(i).value, P_CONSTANTS.Storage(i).name
     Next i
 End Property
 
@@ -366,8 +366,8 @@ End Property
 ''' <summary>
 ''' Returns the math expression to be evaluated.
 ''' </summary>
-Public Property Get Expression() As String
-    Expression = P_EXPRESSION
+Public Property Get expression() As String
+    expression = P_EXPRESSION
 End Property
 
 ''' <summary>
@@ -436,12 +436,12 @@ End Property
 '#
 '///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ' METHODS:
-Private Function Absolute(Expression As String) As Double
-    Absolute = Abs(CDbl(Expression))
+Private Function Absolute(expression As String) As Double
+    Absolute = Abs(CDbl(expression))
 End Function
 
-Private Function aCeiling(ByRef Expression As String) As Double
-    aCeiling = Ceiling(CDbl(Expression))
+Private Function aCeiling(ByRef expression As String) As Double
+    aCeiling = Ceiling(CDbl(expression))
 End Function
 
 Public Sub AddConstant(AValue As String, aKey As String)
@@ -468,8 +468,8 @@ Private Sub AddVariable(ByRef variable As String, ByRef aKey As String)
     End If
 End Sub
 
-Private Function aFloor(ByRef Expression As String) As Double
-    aFloor = Floor(CDbl(Expression))
+Private Function aFloor(ByRef expression As String) As Double
+    aFloor = Floor(CDbl(expression))
 End Function
 
 Private Sub AppendToBuffer(ByRef aBuffer As ClusterTree, ByRef aToken As token)
@@ -500,10 +500,10 @@ BufferAppend_errHandler:
     aBuffer.Storage(aBuffer.index).value = ItemValue
 End Sub
 
-Private Function ApplyLawOfSigns(ByRef Expression As String) As String
+Private Function ApplyLawOfSigns(ByRef expression As String) As String
     Dim tmpResult As String
     
-    tmpResult = Expression
+    tmpResult = expression
     Do While tmpResult Like "*[+-][+-]*"
         SignSubstitution tmpResult, "+-", op_minus
         SignSubstitution tmpResult, "-+", op_minus
@@ -513,10 +513,10 @@ Private Function ApplyLawOfSigns(ByRef Expression As String) As String
     ApplyLawOfSigns = tmpResult
 End Function
 
-Private Function ArcCos(ByRef Expression As String) As Double
+Private Function ArcCos(ByRef expression As String) As Double
     Dim tmpEval As Double
         
-    tmpEval = CDbl(Expression)
+    tmpEval = CDbl(expression)
     tmpEval = Atn(-tmpEval / Sqr(-tmpEval * tmpEval + 1)) + 2 * Atn(1)
     If P_DEGREES Then
         tmpEval = tmpEval * 180 / PI
@@ -524,10 +524,10 @@ Private Function ArcCos(ByRef Expression As String) As Double
     ArcCos = tmpEval
 End Function
 
-Private Function ArcSin(ByRef Expression As String) As Double
+Private Function ArcSin(ByRef expression As String) As Double
     Dim tmpEval As Double
     
-    tmpEval = CDbl(Expression)
+    tmpEval = CDbl(expression)
     tmpEval = Atn(tmpEval / Sqr(-tmpEval * tmpEval + 1))
     If P_DEGREES Then
         tmpEval = tmpEval * 180 / PI
@@ -535,10 +535,10 @@ Private Function ArcSin(ByRef Expression As String) As Double
     ArcSin = tmpEval
 End Function
 
-Private Function ArcTan(ByRef Expression As String) As Double
+Private Function ArcTan(ByRef expression As String) As Double
     Dim tmpEval As Double
 
-    tmpEval = CDbl(Expression)
+    tmpEval = CDbl(expression)
     tmpEval = Atn(tmpEval)
     If P_DEGREES Then
         tmpEval = tmpEval * 180 / PI
@@ -683,13 +683,13 @@ Private Function Array1DFrom2DArr(ByRef InputArray() As String) As String()
     Next i
     Array1DFrom2DArr = tmpData
 End Function
-Private Function average(ByRef Expression As String) As Double
+Private Function average(ByRef expression As String) As Double
     Dim g As Long
     Dim tmpData() As String
     Dim tmpEval As Double
 
     tmpEval = 0
-    tmpData() = Split(Expression, P_SEPARATORCHAR)
+    tmpData() = Split(expression, P_SEPARATORCHAR)
     For g = LBound(tmpData) To UBound(tmpData)
         tmpEval = tmpEval + CDbl(tmpData(g))
     Next g
@@ -802,11 +802,11 @@ Private Function callback(ByRef sClassName As String) As Object
     Set callback = CallByName(New VBAcallBack, sClassName, VbGet)
 End Function
 
-Private Function CastCase(ByRef Expression As String) As String
-    If Not NotIsPI(Expression) Then
-        CastCase = LCase$(Expression)     'Case insensitive for PI
+Private Function CastCase(ByRef expression As String) As String
+    If Not NotIsPI(expression) Then
+        CastCase = LCase$(expression)     'Case insensitive for PI
     Else
-        CastCase = Expression
+        CastCase = expression
     End If
 End Function
 
@@ -814,19 +814,20 @@ Private Function CastOPtype(ByRef strOperand As String, ByRef Negate As Boolean)
     If strOperand <> vbNullString Then
         Dim OpAscw As Long
         OpAscw = AscW(strOperand)
-        If OpAscw < 58 And OpAscw > 45 Then
-            CastOPtype = CDbl(strOperand)
-        Else
-            If IsLiteralString(strOperand) Then 'Literal strings like ['string']
-                CastOPtype = FormatLiteralString(strOperand)
-            Else
-                If Not Negate Then
-                    CastOPtype = -1 * CBool(strOperand)
+        Select Case OpAscw
+            Case 48 To 57, 43, 45, 46
+                CastOPtype = CDbl(strOperand)
+            Case Else
+                If IsLiteralString(strOperand) Then 'Literal strings like ['string']
+                    CastOPtype = FormatLiteralString(strOperand)
                 Else
-                    CastOPtype = -1 * (Not CBool(strOperand))
+                    If Not Negate Then
+                        CastOPtype = -1 * CBool(strOperand)
+                    Else
+                        CastOPtype = -1 * (Not CBool(strOperand))
+                    End If
                 End If
-            End If
-        End If
+        End Select
     Else
         CastOPtype = strOperand
     End If
@@ -923,26 +924,26 @@ Private Function Compute() As String
     ComputedTree = True
 End Function
 
-Private Function Cosin(ByRef Expression As String) As Double
+Private Function Cosin(ByRef expression As String) As Double
     Dim tmpEval As Double
     
-    tmpEval = CDbl(Expression)
+    tmpEval = CDbl(expression)
     If P_DEGREES Then
         tmpEval = tmpEval * PI / 180
     End If
     Cosin = Cos(tmpEval)
 End Function
 
-Private Function CountParentheses(ByRef Expression As String, ByRef ParenthesisChar As String) As Long
+Private Function CountParentheses(ByRef expression As String, ByRef ParenthesisChar As String) As Long
     Dim tmpResult As Long
     Dim SearchIndex As Long
     Dim OpenedClosedP As Long
     
-    OpenedClosedP = InStrB(1, Expression, ParenthesisChar)
+    OpenedClosedP = InStrB(1, expression, ParenthesisChar)
     Do While OpenedClosedP
         tmpResult = tmpResult + 1
         SearchIndex = OpenedClosedP + 2
-        OpenedClosedP = InStrB(SearchIndex, Expression, ParenthesisChar)
+        OpenedClosedP = InStrB(SearchIndex, expression, ParenthesisChar)
     Loop
     CountParentheses = tmpResult
 End Function
@@ -1034,7 +1035,7 @@ Private Function EvalFunction(ByRef Argument As String, ByRef FunctionName As St
             Case "LN"
                 EvalFunction = LN(Argument)
             Case "Max"
-                EvalFunction = Max(Argument)
+                EvalFunction = max(Argument)
             Case "Min"
                 EvalFunction = Min(Argument)
             Case "Percent"
@@ -1057,14 +1058,14 @@ Private Function EvalFunction(ByRef Argument As String, ByRef FunctionName As St
     End If
 End Function
 
-Private Function EvalUDF(ByRef UDFname As String, ByRef Expression As String) As String
+Private Function EvalUDF(ByRef UDFname As String, ByRef expression As String) As String
     Dim args As Variant
     Dim tmpEval As String
     Dim UDFidx As Long
     
     UDFidx = GetCBItemIdx(UserDefFunctions, UDFname)
     If UDFidx > -1 Then     'Only declared functions are called
-        args = SplitArgs(Expression) 'Pass a string array to UDF functions
+        args = SplitArgs(expression) 'Pass a string array to UDF functions
         tmpEval = CallByName(callback(UserDefFunctions.Storage(UDFidx).value), UDFname, VbMethod, args)
         EvalUDF = tmpEval
     End If
@@ -1080,19 +1081,19 @@ Private Sub ExpandCBbuffer(ByRef aBuffer As ClusterBuffer)
     ReDim Preserve aBuffer.Storage(0 To aBuffer.Capacity - 1)
 End Sub
 
-Private Function ExpEuler(ByRef Expression As String) As Double
-    ExpEuler = Exp(CDbl(Expression))
+Private Function ExpEuler(ByRef expression As String) As Double
+    ExpEuler = Exp(CDbl(expression))
 End Function
 
-Private Function Factorial(ByRef Expression As String) As String
+Private Function Factorial(ByRef expression As String) As String
     Dim g As Long
     Dim tmpEval As Double
     Dim tmpElm As Double
     Dim Fsgn As Long
     
-    If InStrB(1, Expression, P_SEPARATORCHAR) = 0 And InStrB(1, Expression, ".") = 0 Then
+    If InStrB(1, expression, P_SEPARATORCHAR) = 0 And InStrB(1, expression, ".") = 0 Then
         tmpEval = 1
-        tmpElm = CDbl(Expression)
+        tmpElm = CDbl(expression)
         Fsgn = Sgn(tmpElm)
         For g = Abs(tmpElm) To 2 Step -1
             tmpEval = tmpEval * g
@@ -1172,7 +1173,7 @@ Const G_ As Double = 4.7421875  '607/128
     Expo = Expo + p
 End Sub
 
-Private Function GetArithOpInfo(ByRef Expression As String) As TokenInfo
+Private Function GetArithOpInfo(ByRef expression As String) As TokenInfo
     Dim PowerSymbolPos As Long
     Dim MultSymbolPos As Long
     Dim ModSymbolPos As Long
@@ -1184,16 +1185,16 @@ Private Function GetArithOpInfo(ByRef Expression As String) As TokenInfo
     Dim tmpStr As String
     Dim tmpTestChr As String
     
-    PowerSymbolPos = GetPowerSymbolPos(Expression)
+    PowerSymbolPos = GetPowerSymbolPos(expression)
     If PowerSymbolPos Then                              'Powers first
         GetArithOpInfo.Position = PowerSymbolPos
         GetArithOpInfo.OperationToken = otPower
         GetArithOpInfo.OperatorLen = LenB(op_power)
     Else
-        MultSymbolPos = GetOPeratorSymbolPos(Expression, op_mult)
-        DivSymbolPos = GetOPeratorSymbolPos(Expression, op_div)
-        IntDivSymbolPos = GetOPeratorSymbolPos(Expression, op_intDiv)
-        ModSymbolPos = GetOPeratorSymbolPos(Expression, op_mod)
+        MultSymbolPos = GetOPeratorSymbolPos(expression, op_mult)
+        DivSymbolPos = GetOPeratorSymbolPos(expression, op_div)
+        IntDivSymbolPos = GetOPeratorSymbolPos(expression, op_intDiv)
+        ModSymbolPos = GetOPeratorSymbolPos(expression, op_mod)
         If NonZero(MultSymbolPos, DivSymbolPos, ModSymbolPos, IntDivSymbolPos) Then
             GetArithOpInfo.Position = MinNonZero(MultSymbolPos, DivSymbolPos, ModSymbolPos, IntDivSymbolPos)    'Priority to the first operator
             Select Case GetArithOpInfo.Position
@@ -1211,14 +1212,14 @@ Private Function GetArithOpInfo(ByRef Expression As String) As TokenInfo
                     GetArithOpInfo.OperatorLen = LenB(op_mod)
             End Select
         Else                                               'Addition and subtraction
-            AddSymbolPos = GetOPeratorSymbolPos(Expression, op_plus)
+            AddSymbolPos = GetOPeratorSymbolPos(expression, op_plus)
             If AddSymbolPos = 1 Then                       'Unary symbol
-                AddSymbolPos = GetOPeratorSymbolPos(Expression, op_plus, AddSymbolPos + 2)
+                AddSymbolPos = GetOPeratorSymbolPos(expression, op_plus, AddSymbolPos + 2)
             End If
             If AddSymbolPos Then
                 tmpPos = AddSymbolPos - 2
                 Do While tmpPos >= 1 And AddSymbolPos > 0  'Skip symbol in functions like [{func+arg}]
-                    tmpTestChr = MidB$(Expression, tmpPos, 2)
+                    tmpTestChr = MidB$(expression, tmpPos, 2)
                     If IsLetter(tmpTestChr) Then
                         Do
                             tmpPos = tmpPos - 2
@@ -1230,14 +1231,14 @@ Private Function GetArithOpInfo(ByRef Expression As String) As TokenInfo
                                     Exit Do
                                 End If
                             End If
-                            tmpTestChr = MidB$(Expression, tmpPos, 2)
+                            tmpTestChr = MidB$(expression, tmpPos, 2)
                         Loop While IsLetter(tmpTestChr)
                         If tmpPos > 1 Then
                             tmpPos = tmpPos + 2
                         End If
-                        tmpStr = MidB$(Expression, tmpPos, AddSymbolPos - tmpPos)
+                        tmpStr = MidB$(expression, tmpPos, AddSymbolPos - tmpPos)
                         If GetFunctionName(tmpStr) <> vbNullString Or tmpStr = "E" Then
-                            AddSymbolPos = GetOPeratorSymbolPos(Expression, op_plus, AddSymbolPos + 2)
+                            AddSymbolPos = GetOPeratorSymbolPos(expression, op_plus, AddSymbolPos + 2)
                         Else
                             Exit Do
                         End If
@@ -1246,14 +1247,14 @@ Private Function GetArithOpInfo(ByRef Expression As String) As TokenInfo
                     End If
                 Loop
             End If
-            SubtSymbolPos = GetOPeratorSymbolPos(Expression, op_minus)
+            SubtSymbolPos = GetOPeratorSymbolPos(expression, op_minus)
             If SubtSymbolPos = 1 Then
-                SubtSymbolPos = GetOPeratorSymbolPos(Expression, op_minus, SubtSymbolPos + 2)
+                SubtSymbolPos = GetOPeratorSymbolPos(expression, op_minus, SubtSymbolPos + 2)
             End If
             If SubtSymbolPos Then
                 tmpPos = SubtSymbolPos - 2
                 Do While tmpPos >= 1 And SubtSymbolPos > 0 'Skip symbol in functions like [{func-arg}]
-                    tmpTestChr = MidB$(Expression, tmpPos, 2)
+                    tmpTestChr = MidB$(expression, tmpPos, 2)
                     If IsLetter(tmpTestChr) Then
                         Do
                             tmpPos = tmpPos - 2
@@ -1265,14 +1266,14 @@ Private Function GetArithOpInfo(ByRef Expression As String) As TokenInfo
                                     Exit Do
                                 End If
                             End If
-                            tmpTestChr = MidB$(Expression, tmpPos, 2)
+                            tmpTestChr = MidB$(expression, tmpPos, 2)
                         Loop While IsLetter(tmpTestChr)
                         If tmpPos > 1 Then
                             tmpPos = tmpPos + 2
                         End If
-                        tmpStr = MidB$(Expression, tmpPos, SubtSymbolPos - tmpPos)
+                        tmpStr = MidB$(expression, tmpPos, SubtSymbolPos - tmpPos)
                         If GetFunctionName(tmpStr) <> vbNullString Or tmpStr = "E" Then
-                            SubtSymbolPos = GetOPeratorSymbolPos(Expression, op_minus, SubtSymbolPos + 2)
+                            SubtSymbolPos = GetOPeratorSymbolPos(expression, op_minus, SubtSymbolPos + 2)
                         Else
                             Exit Do
                         End If
@@ -1336,7 +1337,7 @@ Private Function GetCBItemIdx(ByRef cbBuffer As ClusterBuffer, ByRef ItemName As
     End If
 End Function
 
-Private Function GetRParentPos(ByRef Expression As String, ByRef index As Long) As Long
+Private Function GetRParentPos(ByRef expression As String, ByRef index As Long) As Long
     Dim tmpCounter As Long
     Dim SearchIndex As Long
     Dim OpenedSum As Long
@@ -1345,7 +1346,7 @@ Private Function GetRParentPos(ByRef Expression As String, ByRef index As Long) 
     SearchIndex = 1
     OpenedSum = 0
     Do
-        tmpChr = MidB$(Expression, SearchIndex, 2)
+        tmpChr = MidB$(expression, SearchIndex, 2)
         If tmpChr = d_lParenthesis Then
             OpenedSum = OpenedSum + 1
         Else
@@ -1358,7 +1359,7 @@ Private Function GetRParentPos(ByRef Expression As String, ByRef index As Long) 
     SearchIndex = 1
     tmpCounter = 0
     Do
-        tmpChr = MidB$(Expression, SearchIndex, 2)
+        tmpChr = MidB$(expression, SearchIndex, 2)
         If tmpChr = d_lParenthesis Then
             tmpCounter = tmpCounter + 1
         Else
@@ -1371,23 +1372,23 @@ Private Function GetRParentPos(ByRef Expression As String, ByRef index As Long) 
     GetRParentPos = SearchIndex - 2
 End Function
 
-Private Function GetEvalToken(ByRef Expression As String) As token
+Private Function GetEvalToken(ByRef expression As String) As token
     Dim TokenStart As Long
     Dim TokenEnd As Long
     Dim TokenDet As TokenInfo
     Dim tmpArgs() As String
     
-    TokenDet = GetTokenInfo(Expression)
+    TokenDet = GetTokenInfo(expression)
     If TokenDet.Position > 2 Then
         '@--------------------------------------------------------------------
         ' Find token start
-        GetTokenStart Expression, TokenDet.Position, TokenStart
+        GetTokenStart expression, TokenDet.Position, TokenStart
         '@--------------------------------------------------------------------
         ' Find token end
-        GetTokenEnd Expression, TokenDet.Position, TokenDet.OperatorLen, TokenEnd
+        GetTokenEnd expression, TokenDet.Position, TokenDet.OperatorLen, TokenEnd
         '@--------------------------------------------------------------------
         ' Fill token data
-        GetEvalToken.DefString = MidB$(Expression, TokenStart, TokenEnd - TokenStart + 2)
+        GetEvalToken.DefString = MidB$(expression, TokenStart, TokenEnd - TokenStart + 2)
         GetEvalToken.OperationToken = TokenDet.OperationToken
         SplitToken GetEvalToken.DefString, tmpArgs, GetEvalToken.OperationToken
         GetEvalToken.Arg1.DefString = tmpArgs(LBound(tmpArgs))
@@ -1410,10 +1411,10 @@ Private Function GetEvalToken(ByRef Expression As String) As token
         GetEvalToken.Arg1.FactorialIn = (InStrB(1, GetEvalToken.Arg1.DefString, op_Factorial) = LenB(GetEvalToken.Arg1.DefString) - 1)
         GetEvalToken.Arg2.FactorialIn = (InStrB(1, GetEvalToken.Arg2.DefString, op_Factorial) = LenB(GetEvalToken.Arg2.DefString) - 1)
     Else            'Retun values
-        GetEvalToken.Arg1.DefString = Expression
+        GetEvalToken.Arg1.DefString = expression
         GetEvalToken.Logical = TokenDet.LogicalToken
         GetEvalToken.Arg1.NegationFlagOn = (InStrB(1, GetEvalToken.Arg1.DefString, op_neg) = 1) '~*
-        GetEvalToken.DefString = Expression
+        GetEvalToken.DefString = expression
         GetEvalToken.Arg1.funcName = GetFunctionName(GetEvalToken.Arg1.DefString)
         GetEvalToken.Arg1.UDFFunctionIn = IsUDFFunction
         GetEvalToken.Arg1.FunctionIn = (GetEvalToken.Arg1.funcName <> vbNullString) Or GetEvalToken.Arg1.UDFFunctionIn
@@ -1424,13 +1425,13 @@ Private Function GetEvalToken(ByRef Expression As String) As token
     End If
 End Function
 
-Private Function GetFunctionName(ByRef Expression As String) As String
+Private Function GetFunctionName(ByRef expression As String) As String
     Dim EFjCounter As Long
     Dim GFNbool As Boolean
     Dim ExpCopy As String
     Dim tmpPos As Long
     
-    ExpCopy = LCase$(Expression)
+    ExpCopy = LCase$(expression)
     For EFjCounter = LBound(FunctionsId) To UBound(FunctionsId)
         tmpPos = InStrB(1, ExpCopy, FunctionsId(EFjCounter))
         If tmpPos Then
@@ -1480,7 +1481,7 @@ Private Function GetIndex(ByRef SubstStr As String) As Long
     End If
 End Function
 
-Private Function GetLCOpInfo(ByRef Expression As String) As TokenInfo
+Private Function GetLCOpInfo(ByRef expression As String) As TokenInfo
     Dim NotEqualSymbolPos As Long
     Dim GreatterOrEqualSymbolPos As Long
     Dim LessOrEqualSymbolPos As Long
@@ -1496,33 +1497,33 @@ Private Function GetLCOpInfo(ByRef Expression As String) As TokenInfo
     '@--------------------------------------------------------------------
     ' Comparisons first
     Do 'Discard false positives
-        EqualSymbolPos = GetOPeratorSymbolPos(Expression, op_equal, EqualSymbolPos + 1)
+        EqualSymbolPos = GetOPeratorSymbolPos(expression, op_equal, EqualSymbolPos + 1)
         If EqualSymbolPos > 2 Then
-            testChar = MidB$(Expression, EqualSymbolPos - 2, 2)
+            testChar = MidB$(expression, EqualSymbolPos - 2, 2)
         Else
             testChar = vbNullString
         End If
     Loop While EqualSymbolPos > 0 And testChar Like "[<>]"
-    NotEqualSymbolPos = GetOPeratorSymbolPos(Expression, op_inequality)
+    NotEqualSymbolPos = GetOPeratorSymbolPos(expression, op_inequality)
     Do
-        GreatterThanSymbolPos = GetOPeratorSymbolPos(Expression, op_gt, GreatterThanSymbolPos + 1)
+        GreatterThanSymbolPos = GetOPeratorSymbolPos(expression, op_gt, GreatterThanSymbolPos + 1)
         If GreatterThanSymbolPos Then
-            testChar = MidB$(Expression, GreatterThanSymbolPos + 2, 2)
+            testChar = MidB$(expression, GreatterThanSymbolPos + 2, 2)
         Else
             testChar = vbNullString
         End If
     Loop While GreatterThanSymbolPos > 0 And testChar = op_equal
     Do
-        LessThanSymbolPos = GetOPeratorSymbolPos(Expression, op_lt, LessThanSymbolPos + 1)
+        LessThanSymbolPos = GetOPeratorSymbolPos(expression, op_lt, LessThanSymbolPos + 1)
         If LessThanSymbolPos Then
-            testChar = MidB$(Expression, LessThanSymbolPos + 2, 2)
+            testChar = MidB$(expression, LessThanSymbolPos + 2, 2)
         Else
             testChar = vbNullString
         End If
     Loop While LessThanSymbolPos > 0 And testChar = op_equal
-    GreatterOrEqualSymbolPos = GetOPeratorSymbolPos(Expression, op_gtequal)
-    LessOrEqualSymbolPos = GetOPeratorSymbolPos(Expression, op_ltequal)
-    LikeSymbolPos = InStrB(LessThanSymbolPos + 1, Expression, op_like)
+    GreatterOrEqualSymbolPos = GetOPeratorSymbolPos(expression, op_gtequal)
+    LessOrEqualSymbolPos = GetOPeratorSymbolPos(expression, op_ltequal)
+    LikeSymbolPos = InStrB(LessThanSymbolPos + 1, expression, op_like)
     If NonZero(EqualSymbolPos, NotEqualSymbolPos, GreatterThanSymbolPos, _
                 LessThanSymbolPos, GreatterOrEqualSymbolPos, LessOrEqualSymbolPos, LikeSymbolPos) Then
         GetLCOpInfo.Position = MinNonZero(EqualSymbolPos, NotEqualSymbolPos, GreatterThanSymbolPos, _
@@ -1556,22 +1557,22 @@ Private Function GetLCOpInfo(ByRef Expression As String) As TokenInfo
         Else
             '@--------------------------------------------------------------------
             ' Check the expression giving higher precedence to AND, XOR
-            LogANDSymbolPos = GetOPeratorSymbolPos(Expression, op_and, LogANDSymbolPos + 1)
+            LogANDSymbolPos = GetOPeratorSymbolPos(expression, op_and, LogANDSymbolPos + 1)
             If NonZero(LogANDSymbolPos) Then
                 GetLCOpInfo.Position = LogANDSymbolPos
                 GetLCOpInfo.OperationToken = otLogicalAND
                 GetLCOpInfo.OperatorLen = LenB(op_and)
             Else
-                LogXORSymbolPos = GetOPeratorSymbolPos(Expression, op_xor, LogXORSymbolPos + 1)
+                LogXORSymbolPos = GetOPeratorSymbolPos(expression, op_xor, LogXORSymbolPos + 1)
                 If NonZero(LogXORSymbolPos) Then
                     GetLCOpInfo.Position = LogXORSymbolPos
                     GetLCOpInfo.OperationToken = otLogicalXOR
                     GetLCOpInfo.OperatorLen = LenB(op_xor)
                 Else
                     Do 'Discard false positives: "||"
-                        LogORSymbolPos = GetOPeratorSymbolPos(Expression, op_or, LogORSymbolPos + 1)
+                        LogORSymbolPos = GetOPeratorSymbolPos(expression, op_or, LogORSymbolPos + 1)
                         If LogORSymbolPos Then
-                            testChar = MidB$(Expression, LogORSymbolPos + 2, 2)
+                            testChar = MidB$(expression, LogORSymbolPos + 2, 2)
                         Else
                             testChar = vbNullString
                         End If
@@ -1604,18 +1605,18 @@ Private Function GetLogicalNeg(ByRef aToken As token) As Boolean()
     GetLogicalNeg = tmpBoolArr
 End Function
 
-Private Function GetLParentPos(ByRef Expression As String, ByRef RelativePosition As Long) As Long
+Private Function GetLParentPos(ByRef expression As String, ByRef RelativePosition As Long) As Long
     Dim tmpCounter As Long
     Dim SearchIndex As Long
     Dim OpenedP As Long
     Dim tmpResult As Long
     
-    OpenedP = InStrB(1, Expression, d_lParenthesis)
+    OpenedP = InStrB(1, expression, d_lParenthesis)
     Do While tmpCounter < RelativePosition
         tmpCounter = tmpCounter + 1
         SearchIndex = OpenedP + 2
         tmpResult = OpenedP
-        OpenedP = InStrB(SearchIndex, Expression, d_lParenthesis)
+        OpenedP = InStrB(SearchIndex, expression, d_lParenthesis)
     Loop
     GetLParentPos = tmpResult
 End Function
@@ -1693,29 +1694,29 @@ Private Sub GetOperands(ByRef CurToken As token, ByRef CurTree As ClusterTree, _
     End If
 End Sub
 
-Private Function IsSymbolInLiteralString(ByRef Expression As String, SymbolPos As Long) As Boolean
+Private Function IsSymbolInLiteralString(ByRef expression As String, SymbolPos As Long) As Boolean
     Dim flagCounter As Long
     Dim tmpPos As Long
     
-    tmpPos = InStrB(1, Expression, d_Apostrophe)
+    tmpPos = InStrB(1, expression, d_Apostrophe)
     If tmpPos Then
         Do While tmpPos < SymbolPos And tmpPos > 0
             flagCounter = flagCounter + 1
-            tmpPos = InStrB(tmpPos + 2, Expression, d_Apostrophe)
+            tmpPos = InStrB(tmpPos + 2, expression, d_Apostrophe)
         Loop
     End If
     IsSymbolInLiteralString = flagCounter And 1
 End Function
-Private Function GetOPeratorSymbolPos(ByRef Expression As String, _
+Private Function GetOPeratorSymbolPos(ByRef expression As String, _
                                     ByRef OperatorSymbol As String, _
                                     Optional StartPosition As Long = 1) As Long
     Dim tmpResult As Long
     Dim LStrOpenPos As Long
     Dim LStrClosePos As Long
     
-    tmpResult = InStrB(StartPosition, Expression, OperatorSymbol)
-    Do While IsSymbolInLiteralString(Expression, tmpResult)
-        tmpResult = InStrB(tmpResult + LenB(OperatorSymbol), Expression, OperatorSymbol)
+    tmpResult = InStrB(StartPosition, expression, OperatorSymbol)
+    Do While IsSymbolInLiteralString(expression, tmpResult)
+        tmpResult = InStrB(tmpResult + LenB(OperatorSymbol), expression, OperatorSymbol)
     Loop
     GetOPeratorSymbolPos = tmpResult
 End Function
@@ -1762,14 +1763,14 @@ Private Function GetOpSymbol(ByRef OPtoken As OperatorToken) As String
     End Select
 End Function
 
-Private Function GetPowerSymbolPos(ByRef Expression As String) As Long
+Private Function GetPowerSymbolPos(ByRef expression As String) As Long
     Dim tmpPos As Long
     Dim tmpResult As Long
 
-    tmpPos = GetOPeratorSymbolPos(Expression, op_power)
+    tmpPos = GetOPeratorSymbolPos(expression, op_power)
     Do While tmpPos
         tmpResult = tmpPos
-        tmpPos = GetOPeratorSymbolPos(Expression, op_power, tmpPos + 2)
+        tmpPos = GetOPeratorSymbolPos(expression, op_power, tmpPos + 2)
     Loop
     GetPowerSymbolPos = tmpResult
 End Function
@@ -1822,12 +1823,12 @@ End Function
 ''' and arithmetic operators.
 ''' </summary>
 ''' <param name="Expression">The expression to parse.</param>
-Private Function GetSubTreeData(ByRef Expression As String) As String()
+Private Function GetSubTreeData(ByRef expression As String) As String()
     Dim opCount As Long
     Dim CPcount As Long
     
-    opCount = CountParentheses(Expression, d_lParenthesis)
-    CPcount = CountParentheses(Expression, d_rParenthesis)
+    opCount = CountParentheses(expression, d_lParenthesis)
+    CPcount = CountParentheses(expression, d_rParenthesis)
     If opCount <> CPcount Then
         Exit Function
     End If
@@ -1847,39 +1848,39 @@ Private Function GetSubTreeData(ByRef Expression As String) As String()
         tgClosedP = 1
         Uspace = LBound(PSerial)
         Do
-            bMark = GetLParentPos(Expression, tgOpenP) + 2
-            eMark = GetRParentPos(Expression, bMark - 2)
-            tmpTK = MidB$(Expression, bMark, eMark - bMark)
+            bMark = GetLParentPos(expression, tgOpenP) + 2
+            eMark = GetRParentPos(expression, bMark - 2)
+            tmpTK = MidB$(expression, bMark, eMark - bMark)
             If UnicToken(PSerial, tmpTK) Then
                 PSerial(Uspace) = tmpTK
                 Uspace = Uspace + 1
             End If
             tgOpenP = tgOpenP - 1
         Loop While tgOpenP > 0
-        Dim CurIdx As Long
+        Dim curIdx As Long
         Dim fpIdx As Long
         ReDim Preserve PSerial(LBound(PSerial) To Uspace - 1)
         FSerial() = PSerial
-        For CurIdx = UBound(PSerial) To LBound(PSerial) Step -1
+        For curIdx = UBound(PSerial) To LBound(PSerial) Step -1
             For fpIdx = LBound(PSerial) To UBound(PSerial)
-                If fpIdx <> CurIdx Then
-                    If InStrB(1, FSerial(fpIdx), PSerial(CurIdx)) Then
-                        tmpKey = GetSubstStr(CurIdx)
+                If fpIdx <> curIdx Then
+                    If InStrB(1, FSerial(fpIdx), PSerial(curIdx)) Then
+                        tmpKey = GetSubstStr(curIdx)
                         FSerial(fpIdx) = Replace(FSerial(fpIdx), _
-                                                    d_lParenthesis & PSerial(CurIdx) & d_rParenthesis, _
+                                                    d_lParenthesis & PSerial(curIdx) & d_rParenthesis, _
                                                     tmpKey)
                     End If
                 End If
             Next fpIdx
-        Next CurIdx
+        Next curIdx
     Else
         ReDim FSerial(0 To 0)
-        FSerial(0) = Expression
+        FSerial(0) = expression
     End If
     GetSubTreeData = FSerial
 End Function
 
-Private Sub GetTokenEnd(ByRef Expression As String, ByRef startIndex As Long, ByRef OPlen As Long, ByRef outLng As Long)
+Private Sub GetTokenEnd(ByRef expression As String, ByRef startIndex As Long, ByRef OPlen As Long, ByRef outLng As Long)
     Dim curChar As String
     Dim lenExpr As Long
     Dim tmpPos As Long
@@ -1889,15 +1890,15 @@ Private Sub GetTokenEnd(ByRef Expression As String, ByRef startIndex As Long, By
     Dim cFlag As Boolean
     Dim OperandInBundle As Boolean
     
-    lenExpr = LenB(Expression)
+    lenExpr = LenB(expression)
     outLng = startIndex + OPlen
-    curChar = MidB$(Expression, outLng, 2)
+    curChar = MidB$(expression, outLng, 2)
     '@--------------------------------------------------------------------
     ' Skip literal strings
     If curChar = d_Apostrophe Then
         Do
             outLng = outLng + 2
-            curChar = MidB$(Expression, outLng, 2)
+            curChar = MidB$(expression, outLng, 2)
         Loop While curChar <> d_Apostrophe And outLng < lenExpr
         If outLng >= lenExpr Then Exit Sub
     End If
@@ -1907,23 +1908,23 @@ Private Sub GetTokenEnd(ByRef Expression As String, ByRef startIndex As Long, By
             Do
                 varLen = varLen + 2
                 outLng = outLng + 2
-                curChar = MidB$(Expression, outLng, 2)
+                curChar = MidB$(expression, outLng, 2)
             Loop While IsAlphaNumeric(curChar) And tmpPos < lenExpr
-            tmpVar = MidB$(Expression, tmpPos, varLen)
+            tmpVar = MidB$(expression, tmpPos, varLen)
             functionFlag = (GetFunctionName(tmpVar) <> vbNullString)
             If functionFlag Then   'Ignore [+-] symbols for functions
                 outLng = outLng + 2
-                curChar = MidB$(Expression, outLng, 2)
+                curChar = MidB$(expression, outLng, 2)
                 If IsPlusOrMinus(curChar) Then
                     outLng = outLng + 2
-                    curChar = MidB$(Expression, outLng, 2)
+                    curChar = MidB$(expression, outLng, 2)
                 End If
             Else
                 If LenB(tmpVar) = 2 Then  'Ignore [+-] symbols for sci not symbol "E"
                     If AscW(tmpVar) = 69 Then
                         If IsPlusOrMinus(curChar) Then
                             outLng = outLng + 2
-                            curChar = MidB$(Expression, outLng, 2)
+                            curChar = MidB$(expression, outLng, 2)
                         End If
                     End If
                 End If
@@ -1936,7 +1937,7 @@ Private Sub GetTokenEnd(ByRef Expression As String, ByRef startIndex As Long, By
         cFlag = (tmpPos <> outLng)
         If Not cFlag Then           'Conditional check of the next symbol
             outLng = outLng + 2
-            curChar = MidB$(Expression, outLng, 2)
+            curChar = MidB$(expression, outLng, 2)
         End If
         OperandInBundle = (InStrB(1, op_AllItems, curChar))
     Loop While Not OperandInBundle And outLng < lenExpr
@@ -1947,20 +1948,20 @@ Private Sub GetTokenEnd(ByRef Expression As String, ByRef startIndex As Long, By
     End If
 End Sub
 
-Private Function GetTokenInfo(ByRef Expression As String) As TokenInfo
+Private Function GetTokenInfo(ByRef expression As String) As TokenInfo
     Dim tmpResult As TokenInfo
             
-    tmpResult = GetArithOpInfo(Expression)
+    tmpResult = GetArithOpInfo(expression)
     If tmpResult.Position = -1 Then 'Missing arithmetic opetarators.
-        If Expression Like "*[=<>&|$]*" Then 'Try with logical operators.
-            tmpResult = GetLCOpInfo(Expression)
+        If expression Like "*[=<>&|$]*" Then 'Try with logical operators.
+            tmpResult = GetLCOpInfo(expression)
             tmpResult.LogicalToken = True
         Else
             tmpResult.Position = -1
-            If Expression Like "*[Tt][Rr][Uu][Ee]" Then
+            If expression Like "*[Tt][Rr][Uu][Ee]" Then
                 tmpResult.LogicalToken = True
             Else
-                If Expression Like "*[Ff][Aa][Ll][Ss][Ee]" Then
+                If expression Like "*[Ff][Aa][Ll][Ss][Ee]" Then
                     tmpResult.LogicalToken = True
                 End If
             End If
@@ -1969,33 +1970,33 @@ Private Function GetTokenInfo(ByRef Expression As String) As TokenInfo
     GetTokenInfo = tmpResult
 End Function
 
-Private Sub GetTokenStart(ByRef Expression As String, ByRef startIndex As Long, ByRef outLng As Long)
+Private Sub GetTokenStart(ByRef expression As String, ByRef startIndex As Long, ByRef outLng As Long)
     Dim curChar As String
     
     outLng = startIndex - 2
-    curChar = MidB$(Expression, outLng, 2)
+    curChar = MidB$(expression, outLng, 2)
     '@--------------------------------------------------------------------
     ' Skip literal strings
     If curChar = d_Apostrophe Then
         Do
             outLng = outLng - 2
-            curChar = MidB$(Expression, outLng, 2)
+            curChar = MidB$(expression, outLng, 2)
         Loop While curChar <> d_Apostrophe And outLng > 1
         If outLng = 1 Then Exit Sub
     End If
     Do While (InStrB(1, op_AllItems, curChar) = 0) And outLng > 1
         outLng = outLng - 2
-        curChar = MidB$(Expression, outLng, 2)
+        curChar = MidB$(expression, outLng, 2)
         If AscW(curChar) = 46 Then  'Dot "."
             outLng = outLng - 2
             If outLng > 0 Then
-                curChar = MidB$(Expression, outLng, 2)
+                curChar = MidB$(expression, outLng, 2)
             End If
         Else
             If outLng >= 3 Then
-                If AscW(MidB$(Expression, outLng - 2, 2)) = 69 Then 'Ignore Sci notation "E"
+                If AscW(MidB$(expression, outLng - 2, 2)) = 69 Then 'Ignore Sci notation "E"
                     outLng = outLng - 4
-                    curChar = MidB$(Expression, outLng, 2)
+                    curChar = MidB$(expression, outLng, 2)
                 End If
             End If
         End If
@@ -2006,7 +2007,7 @@ Private Sub GetTokenStart(ByRef Expression As String, ByRef startIndex As Long, 
         Select Case AscW(curChar)
             Case 45, 126
                 Dim PrevChar As String
-                PrevChar = MidB$(Expression, outLng - 2, 2)
+                PrevChar = MidB$(expression, outLng - 2, 2)
                 If InStrB(1, op_AllNotUnaryItems, PrevChar) Then
                     outLng = outLng - 2
                 Else
@@ -2022,12 +2023,12 @@ Private Sub GetTokenStart(ByRef Expression As String, ByRef startIndex As Long, 
     End If
 End Sub
 
-Private Function GoBackToOpSymbol(ByRef Expression As String, ByRef VarStartPos As Long) As Long
+Private Function GoBackToOpSymbol(ByRef expression As String, ByRef VarStartPos As Long) As Long
     Dim tmpResult As Long
     
     tmpResult = VarStartPos - 2
     Do While tmpResult >= 1
-        If ImplicitMultFlag(MidB$(Expression, tmpResult, 2)) Then
+        If ImplicitMultFlag(MidB$(expression, tmpResult, 2)) Then
             tmpResult = tmpResult - 2
         Else
             Exit Do
@@ -2097,10 +2098,10 @@ Private Function IsAlphaNumeric(ByRef Char As String) As Boolean
     End If
 End Function
 
-Private Function IsBoolean(ByRef Expression As String) As Boolean
-    IsBoolean = (Expression = "true")
+Private Function IsBoolean(ByRef expression As String) As Boolean
+    IsBoolean = (expression = "true")
     If Not IsBoolean Then
-        IsBoolean = (Expression = "false")
+        IsBoolean = (expression = "false")
     End If
 End Function
 
@@ -2192,32 +2193,32 @@ Private Function JoinArrFunctArg(ByRef DecompArray() As String, ByRef MaxRowInde
     JoinArrFunctArg = d_lCurly & tmpResult & d_rCurly
 End Function
 
-Private Function LgN(ByRef Expression As String) As Double
+Private Function LgN(ByRef expression As String) As Double
     Dim tmpData() As String
     Dim tmpEval As Double
     
     tmpEval = 0
-    tmpData() = Split(Expression, P_SEPARATORCHAR)
+    tmpData() = Split(expression, P_SEPARATORCHAR)
     tmpEval = Log(CDbl(tmpData(LBound(tmpData)))) _
                 / Log(CDbl(tmpData(UBound(tmpData))))    'Log(x)/Log(N)
     LgN = tmpEval
 End Function
 
-Private Function LN(ByRef Expression As String) As Double
-    LN = Log(CDbl(Expression))
+Private Function LN(ByRef expression As String) As Double
+    LN = Log(CDbl(expression))
 End Function
 
-Private Function Logarithm(ByRef Expression As String) As Double
-    Logarithm = Log(CDbl(Expression)) / Log(10)
+Private Function Logarithm(ByRef expression As String) As Double
+    Logarithm = Log(CDbl(expression)) / Log(10)
 End Function
 
-Private Function Max(ByRef Expression As String) As Double
+Private Function max(ByRef expression As String) As Double
     Dim g As Long
     Dim tmpData() As String
     Dim tmpEval As Double
     Dim compEval As Double
 
-    tmpData() = Split(Expression, P_SEPARATORCHAR)
+    tmpData() = Split(expression, P_SEPARATORCHAR)
     tmpEval = CDbl(tmpData(LBound(tmpData)))
     For g = LBound(tmpData) + 1 To UBound(tmpData)
         compEval = CDbl(tmpData(g))
@@ -2225,16 +2226,16 @@ Private Function Max(ByRef Expression As String) As Double
             tmpEval = compEval
         End If
     Next g
-    Max = tmpEval
+    max = tmpEval
 End Function
 
-Private Function Min(ByRef Expression As String) As Double
+Private Function Min(ByRef expression As String) As Double
     Dim g As Long
     Dim tmpData() As String
     Dim tmpEval As Double
     Dim compEval As Double
     
-    tmpData() = Split(Expression, P_SEPARATORCHAR)
+    tmpData() = Split(expression, P_SEPARATORCHAR)
     tmpEval = CDbl(tmpData(LBound(tmpData)))
     For g = LBound(tmpData) + 1 To UBound(tmpData)
         compEval = CDbl(tmpData(g))
@@ -2312,7 +2313,7 @@ End Function
 ''' computed data is ready for traverse and evaluate.
 ''' </summary>
 ''' <param name="Expression">The expression to parse.</param>
-Private Sub Parse(ByRef Expression As String)
+Private Sub Parse(ByRef expression As String)
     Dim lambdaText As String
     Dim meLB As Long
     Dim meUB As Long
@@ -2324,8 +2325,8 @@ Private Sub Parse(ByRef Expression As String)
     
     On Error GoTo Parse_errHandler
     InitializeErrHandler
-    LbrCount = CountParentheses(Expression, d_lParenthesis)
-    RbrCount = CountParentheses(Expression, d_rParenthesis)
+    LbrCount = CountParentheses(expression, d_lParenthesis)
+    RbrCount = CountParentheses(expression, d_rParenthesis)
     If LbrCount <> RbrCount Then
         If LbrCount > RbrCount Then
             BuildErrMessage errUnbalancedBrackets, "At least one right parenthesis [)] is missing."
@@ -2335,8 +2336,8 @@ Private Sub Parse(ByRef Expression As String)
         Exit Sub
     End If
     err.Clear
-    SubTreeData() = GetSubTreeData(Expression)
-    lambdaText = SerializeSubTree(Expression, SubTreeData)
+    SubTreeData() = GetSubTreeData(expression)
+    lambdaText = SerializeSubTree(expression, SubTreeData)
     meLB = LBound(SubTreeData)
     meUB = UBound(SubTreeData)
     SimpleExpr = (meUB - meLB = 0 And lambdaText = SubTreeData(meUB))
@@ -2373,7 +2374,7 @@ End Sub
 ''' Parses variables in an expression and resolves implicit multiplications.
 ''' </summary>
 ''' <param name="Expression">The expression to parse.</param>
-Private Sub ParseVariables(ByRef Expression As String)
+Private Sub ParseVariables(ByRef expression As String)
     Dim curPos As Long
     Dim lenExpr As Long
     Dim varInitPos As Long
@@ -2385,9 +2386,9 @@ Private Sub ParseVariables(ByRef Expression As String)
     Dim charsBefore As String
     
     curPos = 1
-    lenExpr = LenB(Expression)
+    lenExpr = LenB(expression)
     Do
-        tmpChr = MidB$(Expression, curPos, 2)
+        tmpChr = MidB$(expression, curPos, 2)
         varLen = 0
         If IsLetter(tmpChr) Or tmpChr = d_Apostrophe Then
             varInitPos = curPos
@@ -2395,10 +2396,10 @@ Private Sub ParseVariables(ByRef Expression As String)
                 Do
                     varLen = varLen + 2
                     curPos = curPos + 2
-                    tmpChr = MidB$(Expression, curPos, 2)
+                    tmpChr = MidB$(expression, curPos, 2)
                 Loop While IsExtAlphaNumeric(tmpChr) And curPos < lenExpr
             Else
-                curPos = InStrB(varInitPos + 2, Expression, d_Apostrophe)
+                curPos = InStrB(varInitPos + 2, expression, d_Apostrophe)
                 varLen = curPos - varInitPos + 2
             End If
             If varInitPos > 2 Then
@@ -2406,8 +2407,8 @@ Private Sub ParseVariables(ByRef Expression As String)
             Else
                 tmpPos = varInitPos
             End If
-            If Not IsDigit(MidB$(Expression, tmpPos, 2)) Then  'Variables start with a letter
-                tmpVar = MidB$(Expression, varInitPos, varLen)
+            If Not IsDigit(MidB$(expression, tmpPos, 2)) Then  'Variables start with a letter
+                tmpVar = MidB$(expression, varInitPos, varLen)
                 If Not ReservedToken(tmpVar) Then
                     If GetFunctionName(LCase$(tmpVar)) = vbNullString Then
                         If Not IsLiteralString(tmpVar) Then 'Exclude literal strings
@@ -2416,20 +2417,20 @@ Private Sub ParseVariables(ByRef Expression As String)
                     End If
                 End If
             Else
-                tmpVar = MidB$(Expression, varInitPos, varLen)
+                tmpVar = MidB$(expression, varInitPos, varLen)
                 If Not ReservedToken(tmpVar) Then
-                    tmpPos = GoBackToOpSymbol(Expression, varInitPos) + 1
-                    charsBefore = MidB$(Expression, tmpPos + 1, varInitPos - (tmpPos + 1)) 'Chars before variable
+                    tmpPos = GoBackToOpSymbol(expression, varInitPos) + 1
+                    charsBefore = MidB$(expression, tmpPos + 1, varInitPos - (tmpPos + 1)) 'Chars before variable
                     If IsNumeric(charsBefore) Then 'implied multiplication found
                         If GetFunctionName(LCase$(tmpVar)) = vbNullString Then
                             If Not IsLiteralString(tmpVar) Then
                                 AddVariable tmpVar, ConstantKey
                             End If
                         End If
-                        Expression = MidB$(Expression, 1, varInitPos - LenB(charsBefore) - 1) & _
+                        expression = MidB$(expression, 1, varInitPos - LenB(charsBefore) - 1) & _
                                         charsBefore & op_mult & tmpVar & _
-                                        MidB$(Expression, varInitPos + LenB(tmpVar))
-                        lenExpr = LenB(Expression)
+                                        MidB$(expression, varInitPos + LenB(tmpVar))
+                        lenExpr = LenB(expression)
                     End If
                 End If
             End If
@@ -2447,15 +2448,15 @@ Private Function PatternToCheckOn(ByRef ArgDefStr As String) As String
     End Select
 End Function
 
-Private Function Percent(ByRef Expression As String) As Double
-    Percent = CDbl(Expression) / 100
+Private Function Percent(ByRef expression As String) As Double
+    Percent = CDbl(expression) / 100
 End Function
 
-Private Function Power(ByRef Expression As String) As Double
+Private Function Power(ByRef expression As String) As Double
     Dim tmpData() As String
     Dim tmpEval As Double
     
-    tmpData() = Split(Expression, P_SEPARATORCHAR)
+    tmpData() = Split(expression, P_SEPARATORCHAR)
     tmpEval = CDbl(tmpData(LBound(tmpData))) ^ _
                     CDbl(tmpData(LBound(tmpData) + 1))
     Power = tmpEval
@@ -2482,17 +2483,17 @@ Private Function ReconstructLiteralStrings(InputExpr As String, StoredExp As Str
         tmpResult = MidB$(tmpResult, 1, curPosStored - 1) _
                     & MidB$(InputExpr, curPosInput, closingMarkInput - curPosInput + 2) _
                     & MidB$(tmpResult, closingMarkStored + 2)
-        lastPosStored = closingMarkStored + 2
+        lastPosStored = InStrB(closingMarkStored, tmpResult, d_Apostrophe)
         lastPosInput = closingMarkInput + 2
         curPosInput = InStrB(lastPosInput, InputExpr, d_Apostrophe)
     Loop
     ReconstructLiteralStrings = tmpResult
 End Function
 
-Private Function RemoveDupNegation(ByRef Expression As String) As String
+Private Function RemoveDupNegation(ByRef expression As String) As String
     Dim tmpResult As String
     
-    tmpResult = Expression
+    tmpResult = expression
     Do While tmpResult Like "*~~*"
         tmpResult = Replace(tmpResult, "~~", vbNullString)
     Loop
@@ -2523,13 +2524,13 @@ End Function
 ''' </summary>
 ''' <param name="Expression">The target expression of the lambda operation.</param>
 ''' <param name="SubExpressionsData">A set of expressions to derive the lambda string.</param>
-Private Function SerializeSubTree(ByRef Expression As String, ByRef SubExpressionsData() As String) As String
+Private Function SerializeSubTree(ByRef expression As String, ByRef SubExpressionsData() As String) As String
     Dim glUb As Long
     Dim glCounter As Long
     Dim tmpResult As String
     Dim tmpKey As String
     
-    tmpResult = Expression
+    tmpResult = expression
     glUb = UBound(SubExpressionsData)
     For glCounter = LBound(SubExpressionsData) To glUb
         If InStrB(1, tmpResult, SubExpressionsData(glCounter)) Then
@@ -2547,20 +2548,20 @@ Private Sub ShrinkBuffer(ByRef aBuffer As ClusterTree)
     End If
 End Sub
 
-Private Function Sign(ByRef Expression As String) As Double
-    Sign = (Sgn(CDbl(Expression)))
+Private Function Sign(ByRef expression As String) As Double
+    Sign = (Sgn(CDbl(expression)))
 End Function
 
-Private Sub SignSubstitution(ByRef Expression As String, FindStr As String, Replacement As String)
-    If InStrB(1, Expression, FindStr) Then
-        Expression = Replace(Expression, FindStr, Replacement)
+Private Sub SignSubstitution(ByRef expression As String, FindStr As String, Replacement As String)
+    If InStrB(1, expression, FindStr) Then
+        expression = Replace(expression, FindStr, Replacement)
     End If
 End Sub
 
-Private Function Sine(ByRef Expression As String) As Double
+Private Function Sine(ByRef expression As String) As Double
     Dim tmpEval As Double
     
-    tmpEval = CDbl(Expression)
+    tmpEval = CDbl(expression)
     If P_DEGREES Then
         tmpEval = tmpEval * PI / 180
     End If
@@ -2629,7 +2630,7 @@ Private Function SplitArgs(ByRef args As String) As String()
     SplitArgs = Split(tmpResult, "?")
 End Function
 
-Private Sub SplitToken(ByRef Expression As String, ByRef oArray() As String, ByRef OPtoken As OperatorToken)
+Private Sub SplitToken(ByRef expression As String, ByRef oArray() As String, ByRef OPtoken As OperatorToken)
     Dim opSymbol As String
     Dim tmpPos As Long
     Dim Position As Long
@@ -2637,30 +2638,30 @@ Private Sub SplitToken(ByRef Expression As String, ByRef oArray() As String, ByR
     
     opSymbol = GetOpSymbol(OPtoken)
     If OPtoken = OperatorToken.otSum Or OPtoken = OperatorToken.otDiff Then
-        tmpPos = InStrB(1, Expression, opSymbol)
+        tmpPos = InStrB(1, expression, opSymbol)
         Do While tmpPos
             Position = tmpPos
-            tmpPos = InStrB(tmpPos + 2, Expression, opSymbol)
+            tmpPos = InStrB(tmpPos + 2, expression, opSymbol)
         Loop
         If tmpPos = 1 Then          'unary expression
             oArray(0) = "0"
         Else
-            oArray(0) = MidB$(Expression, 1, Position - 1)
+            oArray(0) = MidB$(expression, 1, Position - 1)
         End If
-        oArray(1) = MidB$(Expression, Position + 2)
+        oArray(1) = MidB$(expression, Position + 2)
     Else
-        oArray() = Split(Expression, opSymbol)
+        oArray() = Split(expression, opSymbol)
     End If
 End Sub
 
-Private Function SquareRoot(ByRef Expression As String) As Double
-    SquareRoot = Sqr(CDbl(Expression))
+Private Function SquareRoot(ByRef expression As String) As Double
+    SquareRoot = Sqr(CDbl(expression))
 End Function
 
-Private Function Tangent(ByRef Expression As String) As Double
+Private Function Tangent(ByRef expression As String) As Double
     Dim tmpEval As Double
 
-    tmpEval = CDbl(Expression)
+    tmpEval = CDbl(expression)
     If P_DEGREES Then
         tmpEval = tmpEval * PI / 180
     End If
@@ -2681,11 +2682,11 @@ Private Sub StoreUDF(ByRef targetBuffer As ClusterBuffer, _
     End If
 End Sub
 
-Private Function tGamma(ByRef Expression As String) As Double
-    tGamma = Gamma(CDbl(Expression))
+Private Function tGamma(ByRef expression As String) As Double
+    tGamma = Gamma(CDbl(expression))
 End Function
 
-Private Sub TokenizeSubExpr(ByRef Expression As String, ByRef SubExpressionsData() As String, ByRef outBuffer As ClusterTree)
+Private Sub TokenizeSubExpr(ByRef expression As String, ByRef SubExpressionsData() As String, ByRef outBuffer As ClusterTree)
     Dim tmpReplacement As String
     Dim ExpCopy As String
     Dim tmpArgs() As String
@@ -2695,7 +2696,7 @@ Private Sub TokenizeSubExpr(ByRef Expression As String, ByRef SubExpressionsData
     
     tmpIndex = UBound(SubExpressionsData) + 1
     OperationIndex = tmpIndex
-    ExpCopy = Expression
+    ExpCopy = expression
     tmpReplacement = GetSubstStr(OperationIndex)
     If Not ExpCopy Like "*{{*}}*" Then
         Select Case InStrB(1, ExpCopy, P_SEPARATORCHAR)
@@ -2738,18 +2739,18 @@ Private Function UnicToken(ByRef Source() As String, ByRef value As String) As B
     UnicToken = Not tmpResult
 End Function
 
-Private Function ValidFuntionName(ByRef Expression As String, _
+Private Function ValidFuntionName(ByRef expression As String, _
                                     ByRef FuntionName As String, _
                                     StartPos As Long) As Boolean
     Dim cLeft As Boolean
     Dim cRight As Boolean
     
     If StartPos > 1 Then
-        cLeft = Not IsLetter(MidB$(Expression, StartPos - 2, 2))
+        cLeft = Not IsLetter(MidB$(expression, StartPos - 2, 2))
     Else
         cLeft = True
     End If
-    cRight = Not IsLetter(MidB$(Expression, StartPos + LenB(FuntionName), 2))
+    cRight = Not IsLetter(MidB$(expression, StartPos + LenB(FuntionName), 2))
     ValidFuntionName = cLeft And cRight
 End Function
 
@@ -2811,12 +2812,12 @@ Private Sub VariableAssignment(ByRef vString As String)
     Next avIcounter
 End Sub
 
-Private Sub VariablesInit(ByRef Expression As String)
+Private Sub VariablesInit(ByRef expression As String)
     Dim i As Long
     Dim tmpIdx As Long
     
     InitCBbuffer ExprVariables
-    ParseVariables Expression
+    ParseVariables expression
     For i = 0 To ExprVariables.index
         tmpIdx = GetCBItemIdx(P_CONSTANTS, ExprVariables.Storage(i).name)
         If tmpIdx > -1 Then 'The variable is a defined constant
