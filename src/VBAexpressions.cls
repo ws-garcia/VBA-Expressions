@@ -275,10 +275,10 @@ Private Sub Class_Initialize()
     '@--------------------------------------------------------------------
     ' Populate building UDFs
     Dim UDFnames() As Variant
-    UDFnames() = Array("GCD", "DET")
-    DeclareUDF UDFnames, "UserDefFunctions"                 'Declare the Greatest Common Divisor and matrix Determinant functions
-                                                            'defined in the UDfunctions class module. This need
-                                                            'an instance in the VBAcallBack class module.
+    UDFnames() = Array("GCD", "DET", "Concat")
+    DeclareUDF UDFnames, "UserDefFunctions"                 'Declare the Greatest Common Divisor, matrix Determinant and
+                                                            'the string concatenation functions defined in the UDfunctions
+                                                            'class module. This needan instance in the VBAcallBack class module.
     '@--------------------------------------------------------------------
     ' Initialize error messages
     InitializeErrHandler
@@ -1955,7 +1955,7 @@ Private Function GetTokenInfo(ByRef expression As String) As TokenInfo
     If tmpResult.Position = -1 Then 'Missing arithmetic opetarators.
         If expression Like "*[=<>&|$]*" Then 'Try with logical operators.
             tmpResult = GetLCOpInfo(expression)
-            tmpResult.LogicalToken = True
+            tmpResult.LogicalToken = Not expression Like "'*[=<>&|$]*'"
         Else
             tmpResult.Position = -1
             If expression Like "*[Tt][Rr][Uu][Ee]" Then
