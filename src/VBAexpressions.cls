@@ -259,7 +259,6 @@ Private Sub Class_Initialize()
     PI = 4 * Atn(1)
     e = Exp(1)
     P_SEPARATORCHAR = ";"
-    P_GALLOPING_MODE = True
     FunctionsId() = Split(BuildinFunctIDList, ";")
     FunctionsName() = Split(BuildinFunctNameList, ";")
     InitCBbuffer P_CONSTANTS
