@@ -2,7 +2,7 @@
 [![GitHub](https://img.shields.io/github/license/ws-garcia/VBA-Expressions?style=plastic)](https://github.com/ws-garcia/VBA-Expressions/blob/master/LICENSE) [![GitHub release (latest by date)](https://img.shields.io/github/v/release/ws-garcia/VBA-Expressions?style=plastic)](https://github.com/ws-garcia/VBA-Expressions/releases/latest)
 
 ## Introductory words
-VBA Expressions is a powerful mathematical expressions evaluator for VBA strings. The `VBAexpressions.cls` class serves as an intermediary between user interfaces and the main VBA/custom functions exposed through it. The main development goal of the class is to integrate it with [CSV Interface](https://github.com/ws-garcia/VBA-CSV-interface), with as minimal programming effort as possible, and to allow users to perform complex queries from CSV files using built-in and custom functions.
+VBA Expressions is a powerful string expressions evaluator for VBA, focused on mathematical ones. The `VBAexpressions.cls` class serves as an intermediary between user interfaces and the main VBA/custom functions exposed through it. The main development goal of the class is to integrate it with [CSV Interface](https://github.com/ws-garcia/VBA-CSV-interface), with as minimal programming effort as possible, and to allow users to perform complex queries from CSV files using built-in and custom functions.
 
 ## Advantages
 * __Easy to use and integrate__.
