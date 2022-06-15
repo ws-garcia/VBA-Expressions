@@ -8,7 +8,7 @@ VBA Expressions is a powerful string expressions evaluator for VBA, focused on m
 * __Easy to use and integrate__.
 * __Basic math operators__: `+` `-` `*` `/` `\` `^` `!`
 * __Logical expressions__: `&` (AND) `|` (OR) `||` (XOR)
-* __Binary relations__: `<`, `<=`, `<>`, `>=`, `=`, `>`, `$ (LIKE)`
+* __Binary relations__: `<`, `<=`, `<>`, `>=`, `=`, `>`, `$` (LIKE)
 * __More than 20 built-in functions__: `Max`, `Min`, `Avg`, `Sin`, `Ceil`, `Floor`...
 * __Very flexible__: variables, constants and user-defined functions (UDFs) support.
 * __Implied multiplication for variables, constants and functions__: `5avg(2;abs(-3-7tan(5));9)` is valid expression; `5(2)` is not.
