@@ -2118,7 +2118,7 @@ End Function
 Private Function IsExtAlphaNumeric(ByRef Char As String) As Boolean
     If LenB(Char) Then
         Select Case AscW(Char)
-            Case 46, 48 To 57, 65 To 90, 97 To 122
+            Case 46, 48 To 57, 65 To 90, 95, 97 To 122
                 IsExtAlphaNumeric = True
             Case Else
                 IsExtAlphaNumeric = False
