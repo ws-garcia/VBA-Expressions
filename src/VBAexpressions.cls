@@ -1685,11 +1685,11 @@ Private Sub GetOperands(ByRef CurToken As token, ByRef CurTree As ClusterTree, _
                                     
     '@--------------------------------------------------------------------
     ' Get the first operand
-    GetOperand CurToken, CurToken.Arg1, CurTree, BaseIndex
+    GetOperand CurToken.Arg1, CurTree, BaseIndex
     '@--------------------------------------------------------------------
     ' Get the second operand if required
     If Not CurToken.OperationToken = otNull Then
-        GetOperand CurToken, CurToken.Arg2, CurTree, BaseIndex
+        GetOperand CurToken.Arg2, CurTree, BaseIndex
     End If
 End Sub
 
