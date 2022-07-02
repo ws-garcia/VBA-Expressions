@@ -1620,8 +1620,9 @@ Private Function GetLParentPos(ByRef expression As String, ByRef RelativePositio
     GetLParentPos = tmpResult
 End Function
 
-Private Sub GetOperand(ByRef CurToken As token, ByRef CurArg As Argument, _
-                        ByRef CurTree As ClusterTree, ByRef BaseIndex As Long)
+Private Sub GetOperand(ByRef CurArg As Argument, _
+                        ByRef CurTree As ClusterTree, _
+                        ByRef BaseIndex As Long)
                                     
     If CurArg.Implicit Then
         If CurArg.FunctionIn Then 'Implicit function
