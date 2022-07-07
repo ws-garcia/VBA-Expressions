@@ -181,7 +181,8 @@ Sub CompareUsingLikeOperator()
     End With
 End Sub
 ```
-
+## Tested 
+[![Rubberduck](https://user-images.githubusercontent.com/5751684/48656196-a507af80-e9ef-11e8-9c09-1ce3c619c019.png)](https://github.com/rubberduck-vba/Rubberduck/) 
 ## Licence
 
 Copyright (C) 2022  [W. García](https://github.com/ws-garcia/).
