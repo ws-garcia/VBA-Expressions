@@ -92,7 +92,7 @@ Sub AddingNewFunctions()
 End Sub
 ```
 ## Working with arrays
-VBA expressions can evaluate matrix functions whose arguments are given as arrays/vectors, using a syntax like [Java](https://www.w3schools.com/java/java_arrays.asp). The following expression will calculate the determinant (`DET`) of a matrix composed of 3 vectors with 3 elements each:
+VBA expressions can evaluate matrix functions whose arguments are given as arrays/vectors, using a syntax like [Java](https://www.w3schools.com/java/java_arrays_multi.asp). The following expression will calculate the determinant (`DET`) of a matrix composed of 3 vectors with 3 elements each:
 
 `DET({{(sin(atn(1)*2)); 0; 0}; {0; 2; 0}; {0; 0; 3}})`
 
