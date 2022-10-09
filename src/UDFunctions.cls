@@ -6,7 +6,7 @@ Attribute VB_Name = "UDFunctions"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
-Attribute VB_Exposed = False
+Attribute VB_Exposed = True
 Option Explicit
 '#
 '////////////////////////////////////////////////////////////////////////////////////////////
@@ -17,13 +17,12 @@ Option Explicit
 '#
 ' GENERAL INFO:
 ' Class module developed to provide samples of user defined functions (UDF).
-
 Private Const Apostrophe As String = "'"
+
 Public Function GCD(ByRef aValues As Variant) As Long 'Expected an array
     Dim t As Long
     Dim u As Long
     Dim v As Long
-    Dim args(0 To 1) As Variant
     Static RecursionLevel As Long
     
     RecursionLevel = RecursionLevel + 1
@@ -62,11 +61,13 @@ Private Function minor(a() As Double, x As Integer, y As Integer) As Double()
 End Function
 
 'Adapted from: https://rosettacode.org/wiki/Determinant_and_permanent#VBA
-Public Function DET(StrArray As Variant) As Double 'Expected an one element string array
+Public Function DET(strArray As Variant) As Double 'Expected an one element string array
     Dim a() As Double
     Dim ArrayHelper As New VBAexpressions
     
-    a() = StringTodblArray(ArrayHelper.ArrayFromString(CStr(StrArray(LBound(StrArray)))))
+    With ArrayHelper
+        a() = .StringTodblArray(.ArrayFromString(CStr(strArray(LBound(strArray)))))
+    End With
     DET = DET_(a)
 End Function
 
@@ -88,24 +89,7 @@ Private Function DET_(a() As Double) As Double
 err:
     DET_ = a(1)
 End Function
-'Gets an array from a string like "{{1;2;3};{4;5;6};{7;8;9}}"
-Private Function StringTodblArray(ByRef StringArray() As String) As Double()
-    Dim i As Long, LB As Long, UB As Long
-    Dim j As Long, LB2 As Long, UB2 As Long
-    Dim tmpResult() As Double
-    
-    LB = LBound(StringArray)
-    UB = UBound(StringArray)
-    LB2 = LBound(StringArray, 2)
-    UB2 = UBound(StringArray, 2)
-    ReDim tmpResult(LB To UB, LB2 To UB2)
-    For i = LB To UB
-        For j = LB2 To UB2
-            tmpResult(i, j) = CDbl(StringArray(i, j))
-        Next j
-    Next i
-    StringTodblArray = tmpResult
-End Function
+
 ''' <summary>
 ''' List is expected to be an array. The last element will be used as
 ''' the concatenation string.
@@ -122,9 +106,15 @@ Public Function Concat(List As Variant) As String
     joinString = MidB$(List(endIdx), 3, LenB(List(endIdx)) - 4)
     tmpResult = MidB$(List(startIdx), 3, LenB(List(startIdx)) - 4)
     For i = startIdx + 1 To endIdx - 1
+        If AscW(List(i)) = 39 Then  ' [']
             tmpResult = tmpResult & _
             joinString & _
             MidB$(List(i), 3, LenB(List(i)) - 4)
+        Else
+            tmpResult = tmpResult & _
+            joinString & _
+            List(i)
+        End If
     Next i
     Concat = Apostrophe & tmpResult & Apostrophe
 End Function
