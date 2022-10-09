@@ -65,7 +65,9 @@ Public Function DET(strArray As Variant) As Double 'Expected an one element stri
     Dim a() As Double
     Dim ArrayHelper As New VBAexpressions
     
-    a() = StringTodblArray(ArrayHelper.ArrayFromString(CStr(strArray(LBound(strArray)))))
+    With ArrayHelper
+        a() = .StringTodblArray(.ArrayFromString(CStr(strArray(LBound(strArray)))))
+    End With
     DET = DET_(a)
 End Function
 
@@ -87,24 +89,7 @@ Private Function DET_(a() As Double) As Double
 err:
     DET_ = a(1)
 End Function
-'Gets an array from a string like "{{1;2;3};{4;5;6};{7;8;9}}"
-Private Function StringTodblArray(ByRef StringArray() As String) As Double()
-    Dim i As Long, LB As Long, UB As Long
-    Dim j As Long, LB2 As Long, UB2 As Long
-    Dim tmpResult() As Double
-    
-    LB = LBound(StringArray)
-    UB = UBound(StringArray)
-    LB2 = LBound(StringArray, 2)
-    UB2 = UBound(StringArray, 2)
-    ReDim tmpResult(LB To UB, LB2 To UB2)
-    For i = LB To UB
-        For j = LB2 To UB2
-            tmpResult(i, j) = CDbl(StringArray(i, j))
-        Next j
-    Next i
-    StringTodblArray = tmpResult
-End Function
+
 ''' <summary>
 ''' List is expected to be an array. The last element will be used as
 ''' the concatenation string.
