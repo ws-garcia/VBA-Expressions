@@ -145,6 +145,7 @@ Private Const d_rCurly As String = "}"
 Private Const d_lParenthesis As String = "("
 Private Const d_rParenthesis As String = ")"
 Private Const d_Apostrophe As String = "'"
+Private Const d_Space As String = " "
 Private Const e_ValueError As String = "#VALUE!"
 '#
 '///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -270,13 +271,13 @@ Private Sub Class_Initialize()
     BuildinFunctIDList = "abs;floor;asin;acos;asc;atn;avg;ceil;chr;cos;choose;date;dateadd;datediff" & _
                             ";datepart;dateserial;datevalue;day;ddb;exp;format;fv;gamma;hour;iff;ipmt" & _
                             ";irr;lcase;left;len;log;lgn;ln;max;mid;min;minute;mirr;month;monthname;now" & _
-                            ";nper;npv;percent;pmt;ppmt;pow;pv;rate;replace;right;sgn;sin;sln;sqr;switch;syd;tan;timeserial;timevalue" & _
-                            ";trim;ucase;weekday;weekdayname;year"
+                            ";nper;npv;percent;pmt;ppmt;pow;pv;rate;replace;right;sgn;sin;sln;solve;sqr;switch" & _
+                            ";syd;tan;timeserial;timevalue;trim;ucase;weekday;weekdayname;year"
     BuildinFunctNameList = "Absolute;aFloor;ArcSin;ArcCos;ASCII;ArcTan;Average;aCeiling;ASCIIchr;Cosin" & _
                             ";aChoose;aDate;aDateAdd;aDateDiff;aDatePart;aDateSerial;aDateValue;aDay;aDDB" & _
                             ";ExpEuler;aFormat;aFV;Gamma;aHour;aIff;aIPMT;aIRR;LowerCase;aLeft;aLen;Logarithm" & _
                             ";LgN;LN;Max;Middle;Min;aMinute;aMIRR;aMonth;aMonthName;aNow;aNPER;aNPV;Percent;aPMT;aPPMT;Power;aPV" & _
-                            ";aRATE;aReplace;aRight;Sign;Sine;aSLN;SquareRoot;aSwitch;aSYD;Tangent;aTimeSerial;aTimeValue" & _
+                            ";aRATE;aReplace;aRight;Sign;Sine;aSLN;SolveLinearSystem;SquareRoot;aSwitch;aSYD;Tangent;aTimeSerial;aTimeValue" & _
                             ";aTrim;aUcase;aWweekDay;aWeekDayName;aYear"
     FunctionsId() = Split(BuildinFunctIDList, ";")
     FunctionsName() = Split(BuildinFunctNameList, ";")
@@ -561,7 +562,7 @@ Public Function ArrayFromString(ByRef strArray As String) As String()
     Dim VectorStartPos As Long
     Dim OpenCBrackets As Long
     
-    StrCopy = ReconstructLiteralStrings(strArray, Join$(Split(strArray, " "), vbNullString))
+    StrCopy = ReconstructLiteralStrings(strArray, Join$(Split(strArray, d_Space), vbNullString))
     StrLen = LenB(StrCopy) - 4
     If MidB$(StrCopy, StrLen + 1, 4) <> "}}" Then 'Missed "}" from input
         Exit Function
@@ -737,10 +738,8 @@ Private Sub BottomLevelEval(ByRef aToken As token)
                 If aToken.Logical Then
                     If aToken.Arg1.NegationFlagOn Then
                         If AscW(aToken.Arg1.Operand) <> 126 Then '"~"
-                            'aToken.EvalResult = Not CBool(CastOPtype(aToken.Arg1.Operand, aToken.Arg1.NegationFlagOn))
                             aToken.EvalResult = CBool(CastOPtype(aToken.Arg1.Operand, aToken.Arg1.NegationFlagOn))
                         Else
-                            'aToken.EvalResult = Not CBool(MidB$(CastOPtype(aToken.Arg1.Operand, aToken.Arg1.NegationFlagOn), 3))
                             aToken.EvalResult = CBool(MidB$(CastOPtype(aToken.Arg1.Operand, aToken.Arg1.NegationFlagOn), 3))
                         End If
                     Else
@@ -1322,6 +1321,8 @@ Private Function EvalFunction(ByRef Argument As String, ByRef FunctionName As St
                 EvalFunction = Sign(Argument)
             Case "Sine"
                 EvalFunction = Sine(Argument)
+            Case "SolveLinearSystem"
+                EvalFunction = Solve(Argument)
             Case "aSLN"
                 EvalFunction = SLN_(Argument)
             Case "SquareRoot"
@@ -1463,7 +1464,7 @@ End Function
 Private Function FormatEntry(expression As String) As String
     FormatEntry = Replace(Replace(Replace(RemoveDupNegation(ApplyLawOfSigns _
                         (ReconstructLiteralStrings(CStr(expression), _
-                        Join$(Split(expression, " "), vbNullString)))), "()", "('')"), "{{", "({{"), "}}", "}})")
+                        Join$(Split(expression, d_Space), vbNullString)))), "()", "('')"), "{{", "({{"), "}}", "}})")
 End Function
 
 Private Function ToLiteralString(ByRef aString As String) As String
@@ -3935,6 +3936,105 @@ Private Function SplitArrBranch(ByRef Argument As String, ByRef outArr() As Stri
     SplitArrBranch = tmpResult
 End Function
 
+''' <summary>
+''' Solves the linear system AX = B using Over Relaxation (SOR)
+''' iteration. The function requires that the <expression> argument be composed
+''' of the following:
+'''                     1-) An array in text form containing the coefficients of all equations.
+'''                     2-) An one dimentional array containing the name of each variable
+'''                         (the first name will be applied to the first column of coefficients,
+'''                         the second name to the second column and so on).
+'''                     3-) An one dimentional array containing the right-hand side of each equation,
+'''                         (the first name will be applied to the first column of coefficients,
+'''                         the second name to the second column and so on).
+'''                     4-) A True or False parameter to decide when to include the variable names
+'''                         in the result set.
+''' The program will iterate until the solution is approximated to 9
+''' significant digits or until 500 iterations are completed, whichever comes first.
+''' </summary>
+Private Function Solve(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    Dim tolerance As Double
+    
+    tmpData() = SplitArgs(expression)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 3, 4
+            Dim cArray() As Double
+            Dim eqCount As Long
+            Dim iCounter As Long
+            Dim includeNames As Boolean
+            Dim mLB As Long
+            Dim mUB As Long
+            Dim nArray() As String
+            Dim rArray() As Double
+            Dim tmpElement As String
+            Dim xArray() As Double
+            
+            tolerance = 0.0000000001
+            cArray() = StringTodblArray(ArrayFromString(tmpData(LB)))
+            rArray() = StringTodblArray(ArrayFromString(tmpData(LB + 2)))
+            mLB = LBound(cArray)
+            mUB = UBound(cArray)
+            
+            ReDim xArray(mLB To mUB)
+            eqCount = mUB - mLB + 1
+            SORiteration eqCount, cArray, rArray, xArray, 500, tolerance, 1
+            If argsCount = 4 Then
+                nArray() = ArrayFromString(tmpData(LB + 1))
+                includeNames = CBool(tmpData(UB))
+            End If
+            For iCounter = mLB To mUB
+                If iCounter > mLB Then
+                    tmpEval = tmpEval & P_SEPARATORCHAR & d_Space
+                End If
+                If includeNames Then
+                    tmpElement = FormatLiteralString(nArray(iCounter)) _
+                                & d_Space & op_equal & d_Space _
+                                & Round(xArray(iCounter), Len(CStr(1 / tolerance)) - 1)
+                Else
+                    tmpElement = Round(xArray(iCounter), Len(CStr(1 / tolerance)) - 1)
+                End If
+                tmpEval = tmpEval & tmpElement
+            Next iCounter
+            If Not includeNames Then
+                tmpEval = d_lCurly & d_lCurly & tmpEval & d_rCurly & d_rCurly
+            End If
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    Solve = tmpEval
+End Function
+Private Sub SORiteration(n As Long, ByRef a() As Double, ByRef b() As Double, _
+                         ByRef x() As Double, iter As Long, tol As Double, omega As Double)
+''' Hoffman, J. D. (2001). Numerical methods for engineers and scientists (2nd ed., rev.expanded). Marcel Dekker.
+    Dim it As Long
+    Dim i As Long, j As Long
+    Dim dxmax As Double
+    Dim residual As Double
+    Dim colLB As Long, rowLB As Long
+    
+    colLB = LBound(a, 2)
+    rowLB = LBound(a)
+    For it = 1 To iter
+        dxmax = 0
+        For i = 1 To n
+            residual = b(i + rowLB - 1)
+            For j = 1 To n
+                residual = residual - a(i + rowLB - 1, j + colLB - 1) * x(j + rowLB - 1)
+            Next j
+            If Abs(residual) > dxmax Then dxmax = Abs(residual)
+            x(i + rowLB - 1) = x(i + rowLB - 1) + omega * residual / a(i + rowLB - 1, i + colLB - 1)
+        Next i
+        If dxmax < tol Then Exit For
+    Next it
+End Sub
+
 Private Function SplitArgs(ByRef args As String) As String()
     Dim tmpPos As Long
     Dim ArrStartIdx As Long
@@ -3999,6 +4099,34 @@ End Sub
 
 Private Function SquareRoot(ByRef expression As String) As Double
     SquareRoot = Sqr(CDbl(expression))
+End Function
+
+Public Function StringTodblArray(ByRef StringArray() As String) As Double()
+    Dim i As Long, LB As Long, UB As Long
+    Dim j As Long, LB2 As Long, UB2 As Long
+    Dim tmpResult() As Double
+    Dim IsVector As Boolean
+    
+    LB = LBound(StringArray)
+    UB = UBound(StringArray)
+    IsVector = Not Is2Darray(StringArray)
+    If Not IsVector Then
+        LB2 = LBound(StringArray, 2)
+        UB2 = UBound(StringArray, 2)
+        ReDim tmpResult(LB To UB, LB2 To UB2)
+    Else
+        ReDim tmpResult(LB To UB)
+    End If
+    For i = LB To UB
+        If IsVector Then
+            tmpResult(i) = CDbl(StringArray(i))
+        Else
+            For j = LB2 To UB2
+                tmpResult(i, j) = CDbl(StringArray(i, j))
+            Next j
+        End If
+    Next i
+    StringTodblArray = tmpResult
 End Function
 
 Private Function Switch_(ByRef expression As String) As String
@@ -4246,7 +4374,7 @@ Private Sub VariableAssignment(ByRef vString As String)
     Dim varIdx As Long
     Dim UB As Long
     
-    tmpAssignment() = Split(ReconstructLiteralStrings(vString, Join$(Split(vString, " "), vbNullString)), P_SEPARATORCHAR)
+    tmpAssignment() = Split(ReconstructLiteralStrings(vString, Join$(Split(vString, d_Space), vbNullString)), P_SEPARATORCHAR)
     For avIcounter = LBound(tmpAssignment) To UBound(tmpAssignment)
         tmpValues() = Split(tmpAssignment(avIcounter), "=")
         UB = UBound(tmpValues)
