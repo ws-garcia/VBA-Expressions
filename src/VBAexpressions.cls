@@ -540,7 +540,7 @@ Private Function ArcTan(ByRef expression As String) As Double
 End Function
 
 ''' <summary>
-''' Turns a like Java array string ({{*};{*}}) into a 2D VBA array with n rows and m columns.
+''' Turns a like Java array string ({{*};{*}}) into a 1D  or 2D VBA array with n rows and m columns.
 ''' </summary>
 ''' <param name="StrArray">The string definition used to create the array.</param>
 ''' <param name="OutStrArray">The array to return in.</param>
@@ -551,6 +551,7 @@ Public Function ArrayFromString(ByRef strArray As String) As String()
     Dim i As Long, j As Long
     Dim NumCols As Long
     Dim NumRows As Long
+    Dim OneDarr As Boolean
     Dim OutStrArray() As String
     Dim StrCopy As String
     Dim StrLen As Long
@@ -607,10 +608,19 @@ Public Function ArrayFromString(ByRef strArray As String) As String()
     Loop While i <= StrLen
     NumRows = aIndex
     NumCols = UBound(tmpStr(aIndex))
-    ReDim OutStrArray(0 To NumRows, 0 To NumCols)
+    OneDarr = (NumRows = 0)
+    If OneDarr Then
+        ReDim OutStrArray(0 To NumCols)
+    Else '2D array
+        ReDim OutStrArray(0 To NumRows, 0 To NumCols)
+    End If
     For i = 0 To NumRows
         For j = 0 To NumCols
-            OutStrArray(i, j) = tmpStr(i)(j)
+            If OneDarr Then
+                OutStrArray(j) = tmpStr(i)(j)
+            Else
+                OutStrArray(i, j) = tmpStr(i)(j)
+            End If
         Next j
     Next i
     ArrayFromString = OutStrArray
@@ -2815,11 +2825,11 @@ Private Function DefineIRRfunction(ByRef strArray() As String) As String
     Dim tmpElement As String
     Dim tmpResult As String
     
-    arrLB = LBound(strArray, 2)
-    tmpResult = strArray(0, arrLB)
-    For idx = arrLB + 1 To UBound(strArray, 2) 'Copy to double array
+    arrLB = LBound(strArray)
+    tmpResult = strArray(arrLB)
+    For idx = arrLB + 1 To UBound(strArray)
         tmpResult = tmpResult & op_plus & _
-                    "(" & FormatLiteralString(strArray(0, idx), True) _
+                    "(" & FormatLiteralString(strArray(idx), True) _
                     & op_div & "(1+iRate)" & op_power & idx - arrLB & ")"
     Next idx
     DefineIRRfunction = tmpResult
@@ -3008,21 +3018,25 @@ Private Function JoinArrFunctArg(ByRef DecompArray() As String, ByRef MaxRowInde
     Dim tmpResult As String
     Dim i As Long, j As Long
     
-    For i = 0 To MaxRowIndex
-        For j = 0 To MaxColIndex
-            If j = 0 Then
-                tmpResult = tmpResult & d_lCurly & DecompArray(j + (i * (MaxColIndex + 1)))
-            Else
-                tmpResult = tmpResult & P_SEPARATORCHAR & DecompArray(j + (i * (MaxColIndex + 1)))
+    If MaxColIndex > -1 Then
+        For i = 0 To MaxRowIndex
+            For j = 0 To MaxColIndex
+                If j = 0 Then
+                    tmpResult = tmpResult & d_lCurly & DecompArray(j + (i * (MaxColIndex + 1)))
+                Else
+                    tmpResult = tmpResult & P_SEPARATORCHAR & DecompArray(j + (i * (MaxColIndex + 1)))
+                End If
+                If j = MaxColIndex Then
+                    tmpResult = tmpResult & d_rCurly
+                End If
+            Next j
+            If i < MaxRowIndex Then
+                tmpResult = tmpResult & P_SEPARATORCHAR
             End If
-            If j = MaxColIndex Then
-                tmpResult = tmpResult & d_rCurly
-            End If
-        Next j
-        If i < MaxRowIndex Then
-            tmpResult = tmpResult & P_SEPARATORCHAR
-        End If
-    Next i
+        Next i
+    Else
+        tmpResult = d_lCurly & Join$(DecompArray, P_SEPARATORCHAR) & d_rCurly
+    End If
     JoinArrFunctArg = d_lCurly & tmpResult & d_rCurly
 End Function
 
@@ -3213,9 +3227,9 @@ Private Function MIRR_(ByRef expression As String) As String
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
     strArray() = ArrayFromString(tmpData(LB)) 'Get array of data
-    ReDim dblArray(LBound(strArray, 2) To UBound(strArray, 2))
-    For idx = LBound(strArray, 2) To UBound(strArray, 2) 'Copy to double array
-        dblArray(idx) = CDbl(FormatLiteralString(strArray(0, idx), True))
+    ReDim dblArray(LBound(strArray) To UBound(strArray))
+    For idx = LBound(strArray) To UBound(strArray) 'Copy to double array
+        dblArray(idx) = CDbl(FormatLiteralString(strArray(idx), True))
     Next idx
     Select Case argsCount
         Case 3
@@ -3345,8 +3359,8 @@ Private Function NPV_(ByRef expression As String) As String
             strArray() = ArrayFromString(tmpData(UB)) 'Get array of data
             iRate = CDbl(tmpData(LB))
             pCounter = 1
-            For cLooper = LBound(strArray, 2) To UBound(strArray, 2)
-                tmpEval = tmpEval + CDbl(strArray(0, cLooper)) / ((1 + iRate) ^ pCounter)
+            For cLooper = LBound(strArray) To UBound(strArray)
+                tmpEval = tmpEval + CDbl(strArray(cLooper)) / ((1 + iRate) ^ pCounter)
                 pCounter = pCounter + 1
             Next cLooper
         Case Else
@@ -3905,9 +3919,15 @@ Private Function SplitArrBranch(ByRef Argument As String, ByRef outArr() As Stri
     
     tmpArr() = ArrayFromString(Argument)
     If InitializedArray(tmpArr) Then 'Transform success
-        outArr = Array1DFrom2DArr(tmpArr)
-        tmpResult(0) = UBound(tmpArr)   'Rows in the array
-        tmpResult(1) = UBound(tmpArr, 2)  'Columns in each row
+        If Is2Darray(tmpArr) Then
+            outArr = Array1DFrom2DArr(tmpArr)
+            tmpResult(0) = UBound(tmpArr)   'Rows in the array
+            tmpResult(1) = UBound(tmpArr, 2)  'Columns in each row
+        Else
+            outArr = tmpArr
+            tmpResult(0) = UBound(tmpArr)
+            tmpResult(1) = -1
+        End If
     Else
         tmpResult(0) = -1   'Return error values
         tmpResult(1) = -1
