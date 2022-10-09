@@ -2,15 +2,17 @@
 [![GitHub](https://img.shields.io/github/license/ws-garcia/VBA-Expressions?style=plastic)](https://github.com/ws-garcia/VBA-Expressions/blob/master/LICENSE) [![GitHub release (latest by date)](https://img.shields.io/github/v/release/ws-garcia/VBA-Expressions?style=plastic)](https://github.com/ws-garcia/VBA-Expressions/releases/latest)
 
 ## Introductory words
-VBA Expressions is a powerful string expressions evaluator for VBA, focused on mathematical ones. The `VBAexpressions.cls` class serves as an intermediary between user interfaces and the main VBA/custom functions exposed through it. The main development goal of the class is to integrate it with [CSV Interface](https://github.com/ws-garcia/VBA-CSV-interface), with as minimal programming effort as possible, and to allow users to perform complex queries from CSV files using built-in and custom functions.
+VBA Expressions is a powerful string expression evaluator for VBA, which puts more than 60 mathematical, financial, date-time, logic and text manipulation functions at the user's fingertips. The `VBAexpressions.cls` class mediates almost all VBA functions as well as custom functions exposed through it. 
+
+Although the main development goal of the class was the integration with [CSV Interface](https://github.com/ws-garcia/VBA-CSV-interface), VBA Expressions has evolved to become a support tool for students and teachers of science, accounting and engineering; this due to the added capability to solve systems of equations and non-linear equations in one variable.
 
 ## Advantages
 * __Easy to use and integrate__.
 * __Basic math operators__: `+` `-` `*` `/` `\` `^` `!`
 * __Logical expressions__: `&` (AND), `|` (OR), `||` (XOR)
 * __Binary relations__: `<`, `<=`, `<>`, `>=`, `=`, `>`, `$` (LIKE)
-* __More than 20 built-in functions__: `Max`, `Min`, `Avg`, `Sin`, `Ceil`, `Floor`...
-* __Very flexible__: variables, constants and user-defined functions (UDFs) support.
+* __More than 60 built-in functions__: `Max`, `Sin`, `IRR`, `Switch`, `Iff`, `DateDiff`, `Solve`, `fZero`, `Format`...
+* __Very flexible and powerful__: variables, constants and user-defined functions (UDFs) support.
 * __Implied multiplication for variables, constants and functions__: `5avg(2;abs(-3-7tan(5));9)` is valid expression; `5(2)` is not.
 * __Evaluation of arrays of expressions given as text strings, as in Java__: curly brackets must be used to define arrays`{{...};{...}}`
 * __Floating point notation input support__: `-5E-5`, `(1.434E3+1000)*2/3.235E-5` are valid inputs.
@@ -92,19 +94,11 @@ Sub AddingNewFunctions()
 End Sub
 ```
 ## Working with arrays
-VBA expressions can evaluate matrix functions whose arguments are given as arrays/vectors, using a syntax like [Java](https://www.w3schools.com/java/java_arrays.asp). The following expression will calculate the determinant (`DET`) of a matrix composed of 3 vectors with 3 elements each:
+VBA expressions can evaluate matrix functions whose arguments are given as arrays/vectors, using a syntax like [Java](https://www.w3schools.com/java/java_arrays.asp). The following expression will calculate, and format to percentage, the internal rate of return (`IRR`) of a cash flow described using a one dimensional array with 5 entries:
 
-`DET({{(sin(atn(1)*2)); 0; 0}; {0; 2; 0}; {0; 0; 3}})`
+`FORMAT(IRR({{-70000;12000;15000;18000;21000}});'Percent')`
 
-If the user needs to evaluate a function that accepts more than one argument, including more than one array, all arrays arguments must be passed surrounded by parentheses "({...})". For example, a function call that emulates the SQL IN statement using an array argument and a reference value can be written as follows.
-
-`IN_(({{(sin(atn(1)*2)); 2; 3; 4; 5}});1)`
-
-The above will pass this array of strings to the `IN_` function:
-
-`[{{1;2;3;4;5}}] [1]`
-
-However, matrix functions need to take care of creating arrays from a string, the ArrayFromString method can be used for this purpose.
+However, user-defined array functions need to take care of creating arrays from a string, the `ArrayFromString` method can be used for this purpose.
 
 As an illustration, the `UDFunctions.cls` module has an implementation of the `DET` function with an example of using the array handle function. In addition, the `GCD` function is implemented as a demo.
 
@@ -143,8 +137,8 @@ Sub EarlyVariableAssignment()
         If .ReadyToEval Then
             Debug.Print "Variables: "; .CurrentVariables
             .VarValue("Pi.e") = 1
-            .VarValue("Pie.1") = 2
-            .VarValue("Pie") = 3
+            .ImplicitVarValue("Pie.1") = "2*Pi.e"
+            .ImplicitVarValue("Pie") = "Pie.1/3"
             .Eval
             Debug.Print .Expression; " = "; .Result; _
                         "; for: "; .CurrentVarValues
@@ -162,22 +156,22 @@ Sub TrigFunctions()
         End If
     End With
 End Sub
-Sub StringComp()
+Sub StringFunctions()
     Dim Evaluator As VBAexpressions
     Set Evaluator = New VBAexpressions
     
     With Evaluator
-        .Create "Region = 'Central America'"            'Create a expression with `Region` as variable
-        .Eval ("Region = 'Asia'")                       'Assign value to variable and then evaluate
+        .Create "CONCAT(CHOOSE(1;x;'2nd';'3th';'4th';'5th');'Element';'selected';'/')"
+        .Eval ("x='1st'")
     End With
 End Sub
-Sub CompareUsingLikeOperator()
+Sub LogicalFunctions()
     Dim Evaluator As VBAexpressions
     Set Evaluator = New VBAexpressions
     
     With Evaluator
-        .Create "Region $ 'C?????? *a'"                     'Create using the LIKE operator ($) and with `Region` as variable
-        .Eval("Region = 'Central America'")                 'This will be evaluated to TRUE
+        .Create "IFF(x > y & x > 0; x; y)"                   
+        .Eval("x=70;y=15")                 'This will be evaluated to 70
     End With
 End Sub
 ```
