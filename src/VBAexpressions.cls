@@ -269,13 +269,13 @@ Private Sub Class_Initialize()
     P_GALLOPING_MODE = False
     P_FORMATRESULT = False
     BuildinFunctIDList = "abs;floor;asin;acos;asc;atn;avg;ceil;chr;cos;choose;date;dateadd;datediff" & _
-                            ";datepart;dateserial;datevalue;day;ddb;exp;format;fv;gamma;hour;iff;ipmt" & _
+                            ";datepart;dateserial;datevalue;day;ddb;exp;format;fv;fzero;gamma;hour;iff;ipmt" & _
                             ";irr;lcase;left;len;log;lgn;ln;max;mid;min;minute;mirr;month;monthname;now" & _
                             ";nper;npv;percent;pmt;ppmt;pow;pv;rate;replace;right;sgn;sin;sln;solve;sqr;switch" & _
                             ";syd;tan;timeserial;timevalue;trim;ucase;weekday;weekdayname;year"
     BuildinFunctNameList = "Absolute;aFloor;ArcSin;ArcCos;ASCII;ArcTan;Average;aCeiling;ASCIIchr;Cosin" & _
                             ";aChoose;aDate;aDateAdd;aDateDiff;aDatePart;aDateSerial;aDateValue;aDay;aDDB" & _
-                            ";ExpEuler;aFormat;aFV;Gamma;aHour;aIff;aIPMT;aIRR;LowerCase;aLeft;aLen;Logarithm" & _
+                            ";ExpEuler;aFormat;aFV;FunctionZero;Gamma;aHour;aIff;aIPMT;aIRR;LowerCase;aLeft;aLen;Logarithm" & _
                             ";LgN;LN;Max;Middle;Min;aMinute;aMIRR;aMonth;aMonthName;aNow;aNPER;aNPV;Percent;aPMT;aPPMT;Power;aPV" & _
                             ";aRATE;aReplace;aRight;Sign;Sine;aSLN;SolveLinearSystem;SquareRoot;aSwitch;aSYD;Tangent;aTimeSerial;aTimeValue" & _
                             ";aTrim;aUcase;aWweekDay;aWeekDayName;aYear"
@@ -1259,6 +1259,8 @@ Private Function EvalFunction(ByRef Argument As String, ByRef FunctionName As St
                 EvalFunction = Format_(Argument)
             Case "aFV"
                 EvalFunction = FV_(Argument)
+            Case "FunctionZero"
+                EvalFunction = Zero(Argument)
             Case "Gamma"
                 EvalFunction = tGamma(Argument)
             Case "aHour"
@@ -3974,9 +3976,11 @@ Private Function Solve(ByRef expression As String) As String
             Dim nArray() As String
             Dim rArray() As Double
             Dim tmpElement As String
+            Dim significantDigits As Long
             Dim xArray() As Double
             
             tolerance = 0.0000000001
+            significantDigits = Len(CStr(1 / tolerance)) - 1
             cArray() = StringTodblArray(ArrayFromString(tmpData(LB)))
             rArray() = StringTodblArray(ArrayFromString(tmpData(LB + 2)))
             mLB = LBound(cArray)
@@ -3996,9 +4000,9 @@ Private Function Solve(ByRef expression As String) As String
                 If includeNames Then
                     tmpElement = FormatLiteralString(nArray(iCounter)) _
                                 & d_Space & op_equal & d_Space _
-                                & Round(xArray(iCounter), Len(CStr(1 / tolerance)) - 1)
+                                & Round(xArray(iCounter), significantDigits)
                 Else
-                    tmpElement = Round(xArray(iCounter), Len(CStr(1 / tolerance)) - 1)
+                    tmpElement = Round(xArray(iCounter), significantDigits)
                 End If
                 tmpEval = tmpEval & tmpElement
             Next iCounter
@@ -4473,3 +4477,32 @@ Private Function Year_(ByRef expression As String) As String
     End Select
     Year_ = tmpEval
 End Function
+
+Private Function Zero(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = Split(expression, P_SEPARATORCHAR)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 3
+            tmpEval = fZeroMBM( _
+                            FormatLiteralString(tmpData(LB), True) _
+                            , CDbl(FormatLiteralString(tmpData(LB + 1), True)) _
+                            , CDbl(FormatLiteralString(tmpData(UB), True)))
+        Case 4
+            tmpEval = fZeroMBM( _
+                            FormatLiteralString(tmpData(LB), True) _
+                            , CDbl(FormatLiteralString(tmpData(LB + 1), True)) _
+                            , CDbl(FormatLiteralString(tmpData(LB + 2), True)), _
+                            CBool(FormatLiteralString(tmpData(UB), True)))
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    Zero = tmpEval
+End Function
+
