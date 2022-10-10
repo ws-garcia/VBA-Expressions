@@ -4074,7 +4074,9 @@ Private Function SplitArgs(ByRef args As String) As String()
         VectorOpenFlag = (InStrB(tmpPos, args, d_lCurly) = tmpPos)
         If VectorOpenFlag Then 'Currrent argument is an array
             i = tmpPos
+            OpenCBrackets = 1
             Do While VectorOpenFlag And i <= LenArgsStr
+                i = i + 2
                 curChar = MidB$(args, i, 2)
                 If curChar = d_lCurly Then
                     OpenCBrackets = OpenCBrackets + 1
@@ -4084,11 +4086,10 @@ Private Function SplitArgs(ByRef args As String) As String()
                     End If
                 End If
                 VectorOpenFlag = Not (curChar = d_rCurly) Or OpenCBrackets
-                i = i + 2
             Loop
             SargStart = tmpPos
-            SargEnd = i
-            tmpPos = i + 2
+            SargEnd = i + 2
+            tmpPos = i + 4
         Else
             SargStart = tmpPos
             SargEnd = InStrB(tmpPos, args, P_SEPARATORCHAR)
