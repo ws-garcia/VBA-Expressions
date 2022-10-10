@@ -174,6 +174,92 @@ Sub LogicalFunctions()
         .Eval("x=70;y=15")                 'This will be evaluated to 70
     End With
 End Sub
+Sub SolveSystemOfLinearEquations()
+    Dim Evaluator As VBAexpressions
+    
+    Set Evaluator = New VBAexpressions
+    With Evaluator
+        'Create an array of vectors a, b, c, d and	e
+        .Create "SOLVE(ARRAY(a;b;c;d;e);{{'x1';'x2';'x3';'x4';'x5'}};{{100;100;100;100;100}};True)"
+		  
+        'Define coeficient vectors
+        .VarValue("a") = "{4;-1;0;1;0}"
+        .VarValue("b") = "{-1;4;-1;0;1}"
+        .VarValue("c") = "{0;-1;4;-1;0}"
+        .VarValue("d") = "{1;0;-1;4;-1}"
+        .VarValue("e") = "{0;1;0;-1;4}"
+		  .Eval										'Evaluates to [x1 = 25; x2 = 35.7142857143; x3 = 42.8571428571; x4 = 35.7142857143; x5 = 25]
+    End With
+End Sub
+
+'@------------------------------------------------------
+' Here a list of the new functions and its results
+'***********************************ADVANCED MATH FUNCTIONS***************************************************************
+''' FZERO('2x^2+x-12';-2;3) : x = 2.21221445045296       (find a zero for the given function in the interval -2<=x<=3)
+'***********************************FINANTIAL FUNCTIONS***************************************************************
+''' FORMAT(SYD(10000;5000;5;2);'Currency') = '$1,333.33'
+''' FORMAT(SLN(10000;0;5);'Currency') = '$2,000.00'
+''' FORMAT(RATE(2*12; -250; 5000; 0; 1);'Percent') = '1.66%'
+''' FORMAT(RATE(2*12; -250; 5000; 0; 1);'Percent') = '1.66%'
+''' FORMAT(PV(0.075/12; 2*12; 250; 0; 0);'Currency') = '($5,555.61)'
+''' FORMAT(PPMT(0.06/52; 20; 4*52; 8000; 0; 0);'Currency') = '($34.81)'
+''' FORMAT(PMT(0.075/12; 2*12; 5000; 0; 1);'Currency') = '($223.60)'
+''' FORMAT(NPV(0.1;{{-10000;3000;4200;6800}});'Currency') = '$1,188.44'
+''' FORMAT(NPER(0.0525/1; -200; 1500);'0.00') = '9.78'
+''' FORMAT(MIRR({{-7500;3000;5000;1200;4000}};0.05;0.08);'Percent') = '18.74%'
+'''
+''' Microsoft example. VBA Expressions use a custom solver to compute IRR
+''' FORMAT(IRR({{-70000;12000;15000;18000;21000}});'Percent') = '-2.12%'
+''' FORMAT(IRR({{-70000;12000;15000;18000;21000;26000}});'Percent') = '8.66%'
+''' FORMAT(IRR({{-70000;12000;15000}};true);'Percent') = '-44.35%'					'Find a solution with negative values for IRR
+'''
+''' FORMAT(IPMT(0.0525/1; 4; 10*1; 6500);'Currency') = '($256.50)'
+''' FORMAT(FV(0.0525/1; 10*1; -100; -6500; 0);'Currency') = '$12,115.19'
+''' FORMAT(DDB(10000; 5000; 5; 2);'Currency') = '$1,000.00'
+'***********************************DATE AND TIME FUNCTIONS***************************************************************
+''' YEAR(NOW()) = 2022
+''' WEEKDAYNAME(1;true;2) = 'lun.'
+''' WEEKDAY(NOW()) = 2
+''' TIMEVALUE(NOW()) = '7:53:00 a. m.'
+''' TIMESERIAL(x;y;z) = '6:45:50 a. m.' for x = 7; y = -15; z = 50
+''' MONTH(NOW()) = 10
+''' MONTHNAME(x;y) = 'marzo' for x = 3; y = false
+''' MONTH(x) = 10 for x = '10/10/2022 7:53:10 a. m.'
+''' MINUTE(x) = 53 for x = '10/10/2022 7:53:12 a. m.'
+''' HOUR(x) = 7 for x = '10/10/2022 7:53:15 a. m.'
+''' DAY(DATE()) = 10
+''' DATEVALUE(DATE()) = '10/10/2022'
+''' DATESERIAL(2022;x+2;3y) = '21/12/2022' for x = 10; y = 7
+''' DATEPART(x;DATE()) = 2022 for x = 'yyyy'
+''' DATEPART(x;DATE()) = 10 for x = 'm'
+''' DATEPART(x;DATE()) = 10 for x = 'd'
+''' DATEPART(x;DATE()) = 4 for x = 'q'
+''' DATEDIFF(x;DATE();DATEADD(x;y;DATE())) = 3 for x = 'yyyy'; y = 3
+''' DATEDIFF(x;DATE();DATEADD(x;y;DATE())) = 2 for x = 'q'; y = 2
+''' DATEDIFF(x;DATE();DATEADD(x;y;DATE())) = 5 for x = 'm'; y = 5
+''' DATEDIFF(x;DATE();DATEADD(x;y;DATE())) = 10 for x = 'd'; y = 10
+''' DATEADD(x;y;DATE()) = 10/10/2025 for x = 'yyyy'; y = 3
+''' DATEADD(x;y;DATE()) = 10/4/2023 for x = 'q'; y = 2
+''' DATEADD(x;y;DATE()) = 10/3/2023 for x = 'm'; y = 5
+''' DATEADD(x;y;DATE()) = 20/10/2022 for x = 'd'; y = 10
+''' DATE() = '10/10/2022'
+'***********************************STRING FUNCTIONS***************************************************************
+''' UCASE(x) = ' THIS STRING ' for x = ' This String '
+''' TRIM(x) = 'Capi tal' for x = '  Capi tal '
+''' RIGHT(2x+20-5+x;2) = '90' for x = 25
+''' RIGHT(2x+20-5+x;2) = '09' for x = 98
+''' REPLACE(x;'a';'A';1;2) = 'CApitAl' for x = 'Capital'
+''' MID(x;4;3) = 'ion' for x = 'Region'
+''' LEN(x) = 6 for x = 'Region'
+''' LEFT(2x+20-5+x;2) = '90' for x = 25
+''' LEFT(2x+20-5+x;2) = '30' for x = 98
+''' LCASE(x) = 'this string' for x = 'This String'
+''' LCASE(x) = '98' for x = 98
+''' FORMAT(x;'Percent') = '98.10%' for x = 0.981
+''' CHR(x) = ';' for x = 59
+''' ASC(x) = 82 for x = 'Region'
+''' SWITCH(x='Asia';1;x='Africa';2;x='Oceania';3) = 1 for x = 'Asia'
+'@------------------------------------------------------
 ```
 ## Tested 
 [![Rubberduck](https://user-images.githubusercontent.com/5751684/48656196-a507af80-e9ef-11e8-9c09-1ce3c619c019.png)](https://github.com/rubberduck-vba/Rubberduck/) 
