@@ -268,12 +268,12 @@ Private Sub Class_Initialize()
     P_SEPARATORCHAR = ";"
     P_GALLOPING_MODE = False
     P_FORMATRESULT = False
-    BuildinFunctIDList = "abs;floor;asin;acos;asc;atn;avg;ceil;chr;cos;choose;date;dateadd;datediff" & _
+    BuildinFunctIDList = "abs;floor;asin;acos;asc;atn;array;avg;ceil;chr;cos;choose;date;dateadd;datediff" & _
                             ";datepart;dateserial;datevalue;day;ddb;exp;format;fv;fzero;gamma;hour;iff;ipmt" & _
                             ";irr;lcase;left;len;log;lgn;ln;max;mid;min;minute;mirr;month;monthname;now" & _
                             ";nper;npv;percent;pmt;ppmt;pow;pv;rate;replace;right;sgn;sin;sln;solve;sqr;switch" & _
                             ";syd;tan;timeserial;timevalue;trim;ucase;weekday;weekdayname;year"
-    BuildinFunctNameList = "Absolute;aFloor;ArcSin;ArcCos;ASCII;ArcTan;Average;aCeiling;ASCIIchr;Cosin" & _
+    BuildinFunctNameList = "Absolute;aFloor;ArcSin;ArcCos;ASCII;ArcTan;strArray;Average;aCeiling;ASCIIchr;Cosin" & _
                             ";aChoose;aDate;aDateAdd;aDateDiff;aDatePart;aDateSerial;aDateValue;aDay;aDDB" & _
                             ";ExpEuler;aFormat;aFV;FunctionZero;Gamma;aHour;aIff;aIPMT;aIRR;LowerCase;aLeft;aLen;Logarithm" & _
                             ";LgN;LN;Max;Middle;Min;aMinute;aMIRR;aMonth;aMonthName;aNow;aNPER;aNPV;Percent;aPMT;aPPMT;Power;aPV" & _
@@ -540,6 +540,22 @@ Private Function ArcTan(ByRef expression As String) As Double
     ArcTan = tmpEval
 End Function
 
+Private Function Array_(expression As String) As String
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    Dim iCounter As Long
+    
+    tmpData() = SplitArgs(expression)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    tmpEval = tmpData(iCounter)
+    For iCounter = LB + 1 To UB
+        tmpEval = tmpEval & P_SEPARATORCHAR & tmpData(iCounter)
+    Next iCounter
+    Array_ = d_lCurly & tmpEval & d_rCurly
+End Function
+
 ''' <summary>
 ''' Turns a like Java array string ({{*};{*}}) into a 1D  or 2D VBA array with n rows and m columns.
 ''' </summary>
@@ -574,14 +590,14 @@ Public Function ArrayFromString(ByRef strArray As String) As String()
     ReDim tmpStr(0 To arrCapacity - 1)
     Do
         curChar = MidB$(StrCopy, i, 2)
-        Do While Not curChar = "{"
+        Do While Not curChar = d_lCurly
             i = i + 2
             If i > StrLen Then
                 Exit Do
             End If
             curChar = MidB$(StrCopy, i, 2)
         Loop
-        VectorOpenFlag = (curChar = "{")
+        VectorOpenFlag = (curChar = d_lCurly)
         If VectorOpenFlag Then
             VectorStartPos = i + 2
             OpenCBrackets = OpenCBrackets + 1
@@ -589,14 +605,14 @@ Public Function ArrayFromString(ByRef strArray As String) As String()
         Do While VectorOpenFlag
             i = i + 2
             curChar = MidB$(StrCopy, i, 2)
-            If curChar = "{" Then
+            If curChar = d_lCurly Then
                 OpenCBrackets = OpenCBrackets + 1
             Else
-                If curChar = "}" Then
+                If curChar = d_rCurly Then
                     OpenCBrackets = OpenCBrackets - 1
                 End If
             End If
-            VectorOpenFlag = Not (curChar = "}") Or OpenCBrackets
+            VectorOpenFlag = Not (curChar = d_rCurly) Or OpenCBrackets
         Loop
         VectorEndPos = i
         i = i + 2
@@ -650,19 +666,19 @@ Public Function ArrayToString(ByRef InputArray As Variant) As String
         For i = LB To UB
             For j = LB2 To UB2
                 If j = LB2 Then
-                    tmpData = tmpData & "{" & GetArrItm(InputArray, MultiDimArr, i, j)
+                    tmpData = tmpData & d_lCurly & GetArrItm(InputArray, MultiDimArr, i, j)
                 Else
                     tmpData = tmpData & P_SEPARATORCHAR & GetArrItm(InputArray, MultiDimArr, i, j)
                 End If
                 If j = UB2 Then
-                    tmpData = tmpData & "}"
+                    tmpData = tmpData & d_rCurly
                 End If
             Next j
             If i < UB Then
                 tmpData = tmpData & P_SEPARATORCHAR
             End If
         Next i
-        ArrayToString = "{" & tmpData & "}"
+        ArrayToString = d_lCurly & tmpData & d_rCurly
     End If
 End Function
 
@@ -1223,6 +1239,8 @@ Private Function EvalFunction(ByRef Argument As String, ByRef FunctionName As St
                 EvalFunction = ArcCos(Argument)
             Case "ArcTan"
                 EvalFunction = ArcTan(Argument)
+            Case "strArray"
+                EvalFunction = Array_(Argument)
             Case "ASCII"
                 EvalFunction = Asc_(Argument)
             Case "Average"
@@ -4041,25 +4059,36 @@ End Sub
 
 Private Function SplitArgs(ByRef args As String) As String()
     Dim tmpPos As Long
-    Dim ArrStartIdx As Long
-    Dim ArrEndIdx As Long
+    Dim curChar As String
     Dim SargStart As Long
     Dim SargEnd As Long
     Dim tmpResult As String
     Dim LenArgsStr As Long
+    Dim VectorOpenFlag As Boolean
+    Dim OpenCBrackets As Long
+    Dim i As Long
     
     tmpPos = 1
     LenArgsStr = LenB(args)
     Do
-        ArrStartIdx = InStrB(tmpPos, args, "{{")
-        If ArrStartIdx = tmpPos Then 'Currrent argument is an array
-            ArrEndIdx = InStrB(ArrStartIdx, args, "}}")
-            tmpPos = ArrEndIdx + 6
-            If tmpResult <> vbNullString Then
-                tmpResult = tmpResult & "?" & MidB$(args, ArrStartIdx, ArrEndIdx - ArrStartIdx + 4)
-            Else
-                tmpResult = MidB$(args, ArrStartIdx, ArrEndIdx - ArrStartIdx + 4)
-            End If
+        VectorOpenFlag = (InStrB(tmpPos, args, d_lCurly) = tmpPos)
+        If VectorOpenFlag Then 'Currrent argument is an array
+            i = tmpPos
+            Do While VectorOpenFlag And i <= LenArgsStr
+                curChar = MidB$(args, i, 2)
+                If curChar = d_lCurly Then
+                    OpenCBrackets = OpenCBrackets + 1
+                Else
+                    If curChar = d_rCurly Then
+                        OpenCBrackets = OpenCBrackets - 1
+                    End If
+                End If
+                VectorOpenFlag = Not (curChar = d_rCurly) Or OpenCBrackets
+                i = i + 2
+            Loop
+            SargStart = tmpPos
+            SargEnd = i
+            tmpPos = i + 2
         Else
             SargStart = tmpPos
             SargEnd = InStrB(tmpPos, args, P_SEPARATORCHAR)
@@ -4067,11 +4096,11 @@ Private Function SplitArgs(ByRef args As String) As String()
                 SargEnd = LenArgsStr + 1
             End If
             tmpPos = SargEnd + 2
-            If tmpResult <> vbNullString Then
-                tmpResult = tmpResult & "?" & MidB$(args, SargStart, SargEnd - SargStart)
-            Else
-                tmpResult = MidB$(args, SargStart, SargEnd - SargStart)
-            End If
+        End If
+        If tmpResult <> vbNullString Then
+            tmpResult = tmpResult & "?" & MidB$(args, SargStart, SargEnd - SargStart)
+        Else
+            tmpResult = MidB$(args, SargStart, SargEnd - SargStart)
         End If
     Loop While tmpPos < LenArgsStr
     SplitArgs = Split(tmpResult, "?")
