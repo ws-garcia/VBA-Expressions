@@ -200,7 +200,6 @@ End Sub
 ''' FORMAT(SYD(10000;5000;5;2);'Currency') = '$1,333.33'
 ''' FORMAT(SLN(10000;0;5);'Currency') = '$2,000.00'
 ''' FORMAT(RATE(2*12; -250; 5000; 0; 1);'Percent') = '1.66%'
-''' FORMAT(RATE(2*12; -250; 5000; 0; 1);'Percent') = '1.66%'
 ''' FORMAT(PV(0.075/12; 2*12; 250; 0; 0);'Currency') = '($5,555.61)'
 ''' FORMAT(PPMT(0.06/52; 20; 4*52; 8000; 0; 0);'Currency') = '($34.81)'
 ''' FORMAT(PMT(0.075/12; 2*12; 5000; 0; 1);'Currency') = '($223.60)'
