@@ -147,6 +147,7 @@ Private Const d_rParenthesis As String = ")"
 Private Const d_Apostrophe As String = "'"
 Private Const d_Space As String = " "
 Private Const e_ValueError As String = "#VALUE!"
+Private Const TINY As Double = 1E-20
 '#
 '///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ' VARIABLES:
@@ -270,13 +271,13 @@ Private Sub Class_Initialize()
     P_FORMATRESULT = False
     BuildinFunctIDList = "abs;floor;asin;acos;asc;atn;array;avg;ceil;chr;cos;choose;date;dateadd;datediff" & _
                             ";datepart;dateserial;datevalue;day;ddb;exp;format;fv;fzero;gamma;hour;iff;inverse;ipmt" & _
-                            ";irr;lcase;left;len;log;lgn;ln;lusolve;max;mid;min;minute;mirr;month;monthname;now" & _
+                            ";irr;lcase;left;len;log;lgn;ln;lusolve;max;mid;min;minute;mirr;mmult;month;monthname;now" & _
                             ";nper;npv;percent;pmt;ppmt;pow;pv;rate;replace;right;sgn;sin;sln;solve;sqr;switch" & _
                             ";syd;tan;timeserial;timevalue;trim;ucase;weekday;weekdayname;year"
     BuildinFunctNameList = "Absolute;aFloor;ArcSin;ArcCos;ASCII;ArcTan;strArray;Average;aCeiling;ASCIIchr;Cosin" & _
                             ";aChoose;aDate;aDateAdd;aDateDiff;aDatePart;aDateSerial;aDateValue;aDay;aDDB" & _
                             ";ExpEuler;aFormat;aFV;FunctionZero;Gamma;aHour;aIff;InverseMatrix;aIPMT;aIRR;LowerCase;aLeft;aLen;Logarithm" & _
-                            ";LgN;LN;LUSolveLinearSystem;Max;Middle;Min;aMinute;aMIRR;aMonth;aMonthName;aNow;aNPER;aNPV;Percent;aPMT;aPPMT;Power;aPV" & _
+                            ";LgN;LN;LUSolveLinearSystem;Max;Middle;Min;aMinute;aMIRR;MatrixMult;aMonth;aMonthName;aNow;aNPER;aNPV;Percent;aPMT;aPPMT;Power;aPV" & _
                             ";aRATE;aReplace;aRight;Sign;Sine;aSLN;SolveLinearSystem;SquareRoot;aSwitch;aSYD;Tangent;aTimeSerial;aTimeValue" & _
                             ";aTrim;aUcase;aWweekDay;aWeekDayName;aYear"
     FunctionsId() = Split(BuildinFunctIDList, ";")
@@ -1163,43 +1164,6 @@ Public Sub DeclareUDF(ByRef UDFname As Variant, Optional ByRef UDFlib As String 
     End If
 End Sub
 
-Private Sub Decompose(ByRef a() As Double, n As Long, tol As Double, _
-                        ByRef o() As Long, ByRef s() As Double, er As Long, _
-                        rLB As Long, cLB As Long)
-    Dim i As Long, j As Long
-    Dim LB As Long
-    Dim k As Long
-    Dim factor As Double
-    
-    For i = 1 To n
-        o(i - 1) = i
-        s(i - 1) = Abs(a(i + rLB - 1, cLB))
-        For j = 2 To n
-            If Abs(a(i + rLB - 1, j + cLB - 1)) > s(i - 1) Then
-                s(i - 1) = Abs(a(i + rLB - 1, j + cLB - 1))
-            End If
-        Next j
-    Next i
-    For k = 1 To n - 1
-        Pivot a, o, s, n, k, rLB, cLB
-        If Abs(a(o(k - 1) + rLB - 1, k + cLB - 1)) < tol Then
-            er = -1
-            Exit For
-        End If
-        For i = k + 1 To n
-            factor = a(o(i - 1) + rLB - 1, k + cLB - 1) / a(o(k - 1) + rLB - 1, k + cLB - 1)
-            a(o(i - 1) + rLB - 1, k + cLB - 1) = factor
-            For j = k + 1 To n
-                a(o(i - 1) + rLB - 1, j + cLB - 1) = a(o(i - 1) + rLB - 1, j + cLB - 1) - _
-                                                    factor * a(o(k - 1) + rLB - 1, j + cLB - 1)
-            Next j
-        Next i
-    Next k
-    If Abs(a(o(k - 1) + rLB - 1, k + cLB - 1) / s(o(k - 1) - 1)) < tol Then
-        er = -1
-    End If
-End Sub
-
 Private Function DDB_(ByRef expression As String) As String
     Dim argsCount As Long
     Dim tmpData() As String
@@ -1352,6 +1316,8 @@ Private Function EvalFunction(ByRef Argument As String, ByRef FunctionName As St
                 EvalFunction = Minute_(Argument)
             Case "aMIRR"
                 EvalFunction = MIRR_(Argument)
+            Case "MatrixMult"
+                EvalFunction = MMult(Argument)
             Case "aMonthName"
                 EvalFunction = MonthName_(Argument)
             Case "aMonth"
@@ -1772,7 +1738,6 @@ Private Function fZeroMRF(ByRef aFunction As String, ByVal a As Double, _
     Dim fEvalHelper As VBAexpressions
     Dim i As Long
     Dim k As Double, ck As Double
-    Dim segmentLen As Double
     Dim tmpVar() As String
     Dim toleranceFlag As Boolean
     Dim varCounter As Long
@@ -2884,7 +2849,6 @@ End Function
 Private Function DefineIRRfunction(ByRef strArray() As String) As String
     Dim arrLB As Long
     Dim idx As Long
-    Dim tmpElement As String
     Dim tmpResult As String
     
     arrLB = LBound(strArray)
@@ -2901,8 +2865,6 @@ Private Function IRR_(ByRef expression As String) As String
     Dim tmpData() As String
     Dim tmpEval As String
     Dim LB As Long, UB As Long
-    Dim idx As Long
-    Dim arrEndPos As Long
     Dim strArray() As String
     
     tmpData() = SplitArgs(expression)
@@ -2979,55 +2941,38 @@ err_handler:
     InitializedArray = False
 End Function
 
-Private Function Inverse(ByRef a() As Double) As Double()
-''' Chapra, S. C., & Canale, R. P. (2015). Numerical methods for engineers (Seventh edition). McGraw-Hill Education.
-    On Error GoTo Inverse_errHandler
-    Dim er As Long
-    Dim o() As Long
-    Dim s() As Double
+Private Function Inverse(ByRef a() As Double, ByRef indx() As Long, _
+                        ByRef d As Double) As Double()
+'@----------------------------------------------------------------------------------------
+' Numerical recipes in C: the art of scientific computing / William H. Press [et al.]
+' - 2nd ed. (p.48)
+'-----------------------------------------------------------------------------------------
+    Dim y() As Double
+    Dim col() As Double
+    Dim i As Long
+    Dim j As Long
+    Dim aUB As Long
+    Dim aLB As Long
     Dim n As Long
-    Dim rLB As Long
-    Dim cLB As Long
-    Dim x() As Double
-    Dim b() As Double
-    Dim tol As Double
-    Dim i As Long, j As Long
-    Dim dblArr() As Double
-    Dim ai() As Double
     
-    rLB = LBound(a)
-    cLB = LBound(a, 2)
-    tol = 0.0000000001
-    n = UBound(a) - rLB + 1
-    ReDim x(rLB To rLB + n - 1)
-    ReDim b(rLB To rLB + n - 1)
-    ReDim o(0 To n - 1)
-    ReDim s(0 To n - 1)
-    ReDim ai(rLB To rLB + n - 1, cLB To cLB + n - 1)
-    er = 0
-    Decompose a, n, tol, o, s, er, rLB, cLB
-    If er <> -1 Then
+    aUB = UBound(a)
+    aLB = LBound(a)
+    n = aUB - aLB + 1
+    ReDim y(1 To n, 1 To n)
+    ReDim col(1 To n)
+    LUdecomp a, indx, d
+    For j = 1 To n
         For i = 1 To n
-            For j = 1 To n
-                If i = j Then
-                    b(o(j - 1) + rLB - 1) = 1
-                Else
-                    b(o(j - 1) + rLB - 1) = 0
-                End If
-            Next j
-            Substitute a, o, n, b, x, rLB, cLB
-            For j = 1 To n
-                ai(j + rLB - 1, i + cLB - 1) = x(j + rLB - 1)
-            Next j
-            ReDim x(rLB To rLB + n - 1)
+            col(i) = 0
         Next i
-        Inverse = ai
-    Else
-        Inverse = dblArr
-    End If
-    Exit Function
-Inverse_errHandler:
-    Inverse = dblArr
+        col(j) = 1
+        LUbkSub a, indx, col
+        For i = 1 To n
+            If Abs(col(i)) = 0 Then col(i) = 0      'Avoid VBA -0 value
+            y(i, j) = col(i)
+        Next i
+    Next j
+    Inverse = y
 End Function
 
 Private Function InverseMatrix(ByRef expression As String) As String
@@ -3042,12 +2987,12 @@ Private Function InverseMatrix(ByRef expression As String) As String
     argsCount = UB - LB + 1
     Select Case argsCount
         Case 1
-            Dim cArray() As Double
-            Dim iCounter As Long
-            Dim nArray() As String
+            Dim aArray() As Double
+            Dim pivotingIdx() As Long
+            Dim d As Double             'Interchages parity
             
-            cArray() = StringTodblArray(ArrayFromString(tmpData(LB)))
-            tmpEval = ArrayToString(Inverse(cArray))
+            aArray() = StringTodblArray(ArrayFromString(tmpData(LB)))
+            tmpEval = ArrayToString(Inverse(aArray, pivotingIdx, d))
         Case Else
             tmpEval = e_ValueError
     End Select
@@ -3237,41 +3182,165 @@ Private Function Logarithm(ByRef expression As String) As Double
     Logarithm = Log(CDbl(expression)) / Log(10)
 End Function
 
-Private Sub LUdecomp(ByRef a() As Double, ByRef b() As Double, _
-                             tol As Double, ByRef x() As Double)
-''' Chapra, S. C., & Canale, R. P. (2015). Numerical methods for engineers (Seventh edition). McGraw-Hill Education.
-    On Error GoTo LUdecomp_errHandler
-    Dim er As Long
-    Dim o() As Long
-    Dim s() As Double
+''' <summary>
+''' Solves the set of n linear equations A.X = B. Here
+''' a[1,...,n][1,...,n] is input, not as the matrix A but
+''' rather as its LU decomposition, determined by the routine
+''' LUdecomp. indx[1,...,n] is input as the permutation vector
+''' returned from LUdecomp. b[1,...,n] is input as the right-hand
+''' side vector B, and returns with the solution vector X
+''' </summary>
+Private Sub LUbkSub(ByRef a() As Double, ByRef indx() As Long, ByRef b() As Double)
+'@----------------------------------------------------------------------------------------
+' Numerical recipes in C: the art of scientific computing / William H. Press [et al.]
+' - 2nd ed. (p.47)
+'-----------------------------------------------------------------------------------------
+    Dim i As Long
+    Dim ii As Long
+    Dim ip As Long
+    Dim j As Long
     Dim n As Long
-    Dim rLB As Long
-    Dim cLB As Long
-    Dim dblArr() As Double
+    Dim sum As Double
+    Dim aLB As Long
+    Dim aUB As Long
+    Dim bLB As Long
     
-    rLB = LBound(a)
-    cLB = LBound(a, 2)
-    n = UBound(a) - rLB + 1
-    ReDim o(0 To n - 1)
-    ReDim s(0 To n - 1)
-    er = 0
-    Decompose a, n, tol, o, s, er, rLB, cLB
-    If er <> -1 Then
-        Substitute a, o, n, b, x, rLB, cLB
-    Else
-        x = dblArr
-    End If
-    Exit Sub
-LUdecomp_errHandler:
-    x = dblArr
+    aUB = UBound(a)
+    aLB = LBound(a)
+    bLB = LBound(b)
+    n = aUB - aLB + 1
+    ii = 0
+    For i = 1 To n
+        ip = indx(i)
+        sum = b(ip + bLB - 1)
+        b(ip + bLB - 1) = b(i + bLB - 1)
+        If ii Then
+            For j = ii To i - 1
+                sum = sum - a(i + aLB - 1, j + aLB - 1) * b(j + bLB - 1)
+            Next j
+        ElseIf sum Then
+            ii = i
+        End If
+        b(i + bLB - 1) = sum
+    Next i
+    For i = n To 1 Step -1
+        sum = b(i + bLB - 1)
+        For j = i + 1 To n
+            sum = sum - a(i + aLB - 1, j + aLB - 1) * b(j + bLB - 1)
+        Next j
+        b(i + bLB - 1) = sum / a(i + aLB - 1, i + aLB - 1)
+    Next i
 End Sub
 
+''' <summary>
+''' Given a matrix a[1,...,n][1,...,n], this routine replaces
+''' it by the LU decomposition of a rowwise permutation of
+''' itself. a is input. a is output, indx[1,...,n] is
+''' an output vector that records the rows permutation effected
+''' by the partial pivoting; d is output +-1 depending whether
+''' the number of row interchanges was even or odd, respectively.
+''' This routine is used in combination with LUbkSub to solve
+''' linear equations or invert matrix.
+''' </summary>
+Private Sub LUdecomp(ByRef a() As Double, ByRef indx() As Long, _
+                        ByRef d As Double)
+'@----------------------------------------------------------------------------------------
+' Numerical recipes in C: the art of scientific computing / William H. Press [et al.]
+' - 2nd ed. (p.46-47)
+'-----------------------------------------------------------------------------------------
+    Dim n As Long
+    Dim i As Long
+    Dim imax As Long
+    Dim j As Long
+    Dim k As Long
+    Dim big As Double
+    Dim dum As Double
+    Dim sum As Double
+    Dim temp As Double
+    Dim vv() As Double         'vv stores the implicit scaling of each row
+    Dim aLB As Long
+    Dim aUB As Long
+    
+    aUB = UBound(a)
+    aLB = LBound(a)
+    n = aUB - aLB + 1
+    ReDim vv(1 To n)
+    ReDim indx(1 To n)
+    d = 1                       'No row interchanges yet
+    For i = 1 To n              'Loop rows to get the implicit scaling information
+        big = 0
+        For j = 1 To n
+            temp = Abs(a(i + aLB - 1, j + aLB - 1))
+            If temp > big Then big = temp
+        Next j
+        If big = 0 Then         'a is a singular matrix
+            Exit Sub
+        End If
+        'No nonzero largest element
+        vv(i) = 1 / big          'Save the scaling
+    Next i
+    For j = 1 To n               'Loop over columns of Crout's method
+        For i = 1 To j - 1
+            sum = a(i + aLB - 1, j + aLB - 1)
+            For k = 1 To i - 1
+                sum = sum - a(i + aLB - 1, k + aLB - 1) * a(k + aLB - 1, j + aLB - 1)
+            Next k
+            a(i + aLB - 1, j + aLB - 1) = sum
+        Next i
+        big = 0                  'Initialize for search the largest pivot element
+        For i = j To n
+            sum = a(i + aLB - 1, j + aLB - 1)
+            For k = 1 To j - 1
+                sum = sum - a(i + aLB - 1, k + aLB - 1) * a(k + aLB - 1, j + aLB - 1)
+            Next k
+            a(i + aLB - 1, j + aLB - 1) = sum
+            dum = vv(i) * Abs(sum)
+            If dum >= big Then
+                big = dum
+                imax = i
+            End If
+        Next i
+        If j <> imax Then         'Need rows interchange?
+            For k = 1 To n
+                dum = a(imax + aLB - 1, k + aLB - 1)
+                a(imax + aLB - 1, k + aLB - 1) = a(j + aLB - 1, k + aLB - 1)
+                a(j + aLB - 1, k + aLB - 1) = dum
+            Next k
+            d = -1 * d           'Change parity
+            vv(imax) = vv(j)     'Change scale factor
+        End If
+        indx(j) = imax
+        If a(j + aLB - 1, j + aLB - 1) = 0 Then    'Avoid division by zero in singular matrix
+            a(j + aLB - 1, j + aLB - 1) = TINY
+        End If
+        If j <> n Then           'Divide by the pivot element
+            dum = 1 / a(j + aLB - 1, j + aLB - 1)
+            For i = j + 1 To n
+                a(i + aLB - 1, j + aLB - 1) = a(i + aLB - 1, j + aLB - 1) * dum
+            Next i
+        End If
+    Next j
+    Erase vv
+End Sub
+
+''' <summary>
+''' Solves the linear system AX = B using LU decomposition. The function
+''' requires that the <expression> argument be composed of the following:
+'''                     1-) An array in text form containing the coefficients of all equations.
+'''                     2-) An one dimentional array containing the name of each variable
+'''                         (the first name will be applied to the first column of coefficients,
+'''                         the second name to the second column and so on).
+'''                     3-) An one dimentional array containing the right-hand side of each equation,
+'''                         (the first name will be applied to the first column of coefficients,
+'''                         the second name to the second column and so on).
+'''                     4-) A True or False parameter to decide when to include the variable names
+'''                         in the result set.
+''' </summary>
 Private Function LUsolve(ByRef expression As String) As String
     Dim argsCount As Long
     Dim tmpData() As String
     Dim tmpEval As String
     Dim LB As Long, UB As Long
-    Dim tolerance As Double
     
     tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
@@ -3279,28 +3348,28 @@ Private Function LUsolve(ByRef expression As String) As String
     argsCount = UB - LB + 1
     Select Case argsCount
         Case 3, 4
-            Dim cArray() As Double
+            Dim aArray() As Double
             Dim eqCount As Long
             Dim iCounter As Long
             Dim includeNames As Boolean
             Dim mLB As Long
             Dim mUB As Long
-            Dim nArray() As String
-            Dim rArray() As Double
+            Dim xArray() As String
+            Dim bArray() As Double
+            Dim pivotingIdx() As Long
+            Dim d As Double             'Interchages parity
             Dim tmpElement As String
-            Dim xArray() As Double
             
-            tolerance = 0.0000000001
-            cArray() = StringTodblArray(ArrayFromString(tmpData(LB)))
-            rArray() = StringTodblArray(ArrayFromString(tmpData(LB + 2)))
-            mLB = LBound(cArray)
-            mUB = UBound(cArray)
+            aArray() = StringTodblArray(ArrayFromString(tmpData(LB)))
+            bArray() = StringTodblArray(ArrayFromString(tmpData(LB + 2)))
+            mLB = LBound(aArray)
+            mUB = UBound(aArray)
             
-            ReDim xArray(mLB To mUB)
             eqCount = mUB - mLB + 1
-            LUdecomp cArray, rArray, tolerance, xArray
+            LUdecomp aArray, pivotingIdx, d             'LU decomposition
+            LUbkSub aArray, pivotingIdx, bArray         'Back substitution, returning in bArray
             If argsCount = 4 Then
-                nArray() = ArrayFromString(tmpData(LB + 1))
+                xArray() = ArrayFromString(tmpData(LB + 1))
                 includeNames = CBool(tmpData(UB))
             End If
             For iCounter = mLB To mUB
@@ -3308,11 +3377,11 @@ Private Function LUsolve(ByRef expression As String) As String
                     tmpEval = tmpEval & P_SEPARATORCHAR & d_Space
                 End If
                 If includeNames Then
-                    tmpElement = FormatLiteralString(nArray(iCounter)) _
+                    tmpElement = FormatLiteralString(xArray(iCounter)) _
                                 & d_Space & op_equal & d_Space _
-                                & xArray(iCounter)
+                                & bArray(iCounter)
                 Else
-                    tmpElement = xArray(iCounter)
+                    tmpElement = bArray(iCounter)
                 End If
                 tmpEval = tmpEval & tmpElement
             Next iCounter
@@ -3442,7 +3511,6 @@ Private Function MIRR_(ByRef expression As String) As String
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     Dim idx As Long
-    Dim arrEndPos As Long
     Dim strArray() As String
     Dim dblArray() As Double
     
@@ -3464,6 +3532,85 @@ Private Function MIRR_(ByRef expression As String) As String
             tmpEval = e_ValueError
     End Select
     MIRR_ = tmpEval
+End Function
+
+''' <summary>
+''' Multiplies 2 matrices A and B when A has multiple
+''' rows and columns. Matrix B can be a column vector.
+''' </summary>
+Private Function MMult(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = SplitArgs(expression)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 2
+            tmpEval = ArrayToString(MMult_( _
+                                StringTodblArray(ArrayFromString(tmpData(LB))), _
+                                StringTodblArray(ArrayFromString(tmpData(UB)))) _
+                                )
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    MMult = tmpEval
+End Function
+
+Private Function MMult_(ByRef a() As Double, ByRef b() As Double) As Double()
+    Dim c() As Double
+    Dim LBa As Long
+    Dim LBa2 As Long
+    Dim LBb As Long
+    Dim LBb2 As Long
+    Dim UBb As Long
+    Dim m As Long
+    Dim n As Long
+    Dim l As Long
+    Dim IsVectorb As Boolean
+    Dim i As Long
+    Dim j As Long
+    Dim k As Long
+    Dim sum As Double
+    
+    LBa = LBound(a)
+    LBa2 = LBound(a, 2)
+    LBb = LBound(b)
+    UBb = UBound(b)
+    n = UBound(a) - LBa + 1
+    m = UBound(a, 2) - LBa2 + 1
+    If UBb - LBb + 1 <> m Then Exit Function    'Required columns from a equal to rows of b
+    IsVectorb = Not Is2Darray(b)
+    If Not IsVectorb Then
+        LBb2 = LBound(b, 2)
+        l = UBound(b, 2) - LBb2 + 1
+        ReDim c(LBa To n + LBa - 1, LBb2 To l + LBb2 - 1)
+    Else
+        ReDim c(LBa To n + LBa - 1, LBb To LBb)
+    End If
+    For i = 1 To n
+        If Not IsVectorb Then
+            For j = 1 To l
+                sum = 0
+                For k = 1 To m
+                    sum = sum + a(i + LBa - 1, k + LBa2 - 1) * b(k + LBb - 1, j + LBb2 - 1)
+                Next k
+                c(i + LBa - 1, j + LBb2 - 1) = sum
+            Next j
+        Else
+            For j = 1 To 1 'One column vector
+                sum = 0
+                For k = 1 To m
+                    sum = sum + a(i + LBa - 1, k + LBa2 - 1) * b(k + LBb - 1)
+                Next k
+                c(i + LBa - 1, j + LBb - 1) = sum
+            Next j
+        End If
+    Next i
+    MMult_ = c
 End Function
 
 Private Function Month_(ByRef expression As String) As String
@@ -3829,27 +3976,6 @@ Private Function PPMT_(ByRef expression As String) As String
     End Select
     PPMT_ = tmpEval
 End Function
-
-Private Sub Pivot(ByRef a() As Double, ByRef o() As Long, ByRef s() As Double, _
-                    n As Long, k As Long, rLB As Long, cLB As Long)
-    Dim p As Long
-    Dim big As Double
-    Dim ii As Long
-    Dim dummy As Double
-    
-    p = k
-    big = Abs(a(o(k - 1) + rLB - 1, k + cLB - 1) / s(o(k - 1) - 1))
-    For ii = k + 1 To n
-        dummy = Abs(a(o(ii - 1) + rLB - 1, k + cLB - 1) / s(o(ii - 1) - 1))
-        If dummy > big Then
-            big = dummy
-            p = ii
-        End If
-    Next ii
-    dummy = o(p - 1)
-    o(p - 1) = o(k - 1)
-    o(k - 1) = dummy
-End Sub
 
 Private Function Power(ByRef expression As String) As Double
     Dim tmpData() As String
@@ -4387,29 +4513,6 @@ Public Function StringTodblArray(ByRef StringArray() As String) As Double()
     StringTodblArray = tmpResult
 End Function
 
-Private Sub Substitute(ByRef a() As Double, ByRef o() As Long, n As Long, _
-                        ByRef b() As Double, ByRef x() As Double, _
-                        rLB As Long, cLB As Long)
-    Dim i As Long, j As Long
-    Dim sum As Double
-    
-    For i = 2 To n
-        sum = b(o(i - 1) + rLB - 1)
-        For j = 1 To i - 1
-            sum = sum - a(o(i - 1) + rLB - 1, j + cLB - 1) * b(o(j - 1) + rLB - 1)
-        Next j
-        b(o(i - 1) + rLB - 1) = sum
-    Next i
-    x(n + rLB - 1) = b(o(n - 1) + rLB - 1) / a(o(n - 1) + rLB - 1, n + cLB - 1)
-    For i = n - 1 To 1 Step -1
-        sum = 0
-        For j = i + 1 To n
-            sum = sum + a(o(i - 1) + rLB - 1, j + cLB - 1) * x(j + rLB - 1)
-        Next j
-        x(i + rLB - 1) = (b(o(i - 1) + rLB - 1) - sum) / a(o(i - 1) + rLB - 1, i + cLB - 1)
-    Next i
-End Sub
-
 Private Function Switch_(ByRef expression As String) As String
     Dim argsCount As Long
     Dim idx As Long
@@ -4652,7 +4755,6 @@ Private Sub VariableAssignment(ByRef vString As String)
     Dim tmpAssignment() As String
     Dim tmpValues() As String
     Dim avIcounter As Long
-    Dim varIdx As Long
     Dim UB As Long
     
     tmpAssignment() = Split(ReconstructLiteralStrings(vString, Join$(Split(vString, d_Space), vbNullString)), P_SEPARATORCHAR)
@@ -4668,9 +4770,6 @@ Private Sub VariableAssignment(ByRef vString As String)
 End Sub
 
 Private Sub VariablesInit(ByRef expression As String)
-    Dim i As Long
-    Dim tmpIdx As Long
-    
     P_SCOPE.VariablesInit
     ParseVariables expression
     P_SCOPE.FillPredefinedVars
