@@ -46,49 +46,6 @@ Public Function GCD(ByRef aValues As Variant) As Long 'Expected an array
         RecursionLevel = RecursionLevel - 1
     End If
 End Function
-Private Function minor(a() As Double, x As Integer, y As Integer) As Double()
-    Dim l As Long: l = UBound(a) - 1
-    Dim i As Long, j As Long
-    Dim Result() As Double
-    
-    If l > 0 Then ReDim Result(1 To l, 1 To l)
-    For i = 1 To l
-        For j = 1 To l
-            Result(i, j) = a(i - (i >= x), j - (j >= y))
-        Next j
-    Next i
-    minor = Result
-End Function
-
-'Adapted from: https://rosettacode.org/wiki/Determinant_and_permanent#VBA
-Public Function DET(strArray As Variant) As Double 'Expected an one element string array
-    Dim a() As Double
-    Dim ArrayHelper As New VBAexpressions
-    
-    With ArrayHelper
-        a() = .StringTodblArray(.ArrayFromString(CStr(strArray(LBound(strArray)))))
-    End With
-    DET = DET_(a)
-End Function
-
-Private Function DET_(a() As Double) As Double
-    If UBound(a) = 1 Then
-        On Error GoTo err
-        DET_ = a(1, 1)
-        Exit Function
-    End If
-    Dim sgn_ As Integer: sgn_ = 1
-    Dim Res As Integer: Res = 0
-    Dim i As Integer
-    For i = 1 To UBound(a)
-        Res = Res + sgn_ * a(1, i) * DET_(minor(a, 1, i))
-        sgn_ = sgn_ * -1
-    Next i
-    DET_ = Res
-    Exit Function
-err:
-    DET_ = a(1)
-End Function
 
 ''' <summary>
 ''' List is expected to be an array. The last element will be used as

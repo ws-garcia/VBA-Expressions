@@ -270,14 +270,14 @@ Private Sub Class_Initialize()
     P_GALLOPING_MODE = False
     P_FORMATRESULT = False
     BuildinFunctIDList = "abs;floor;asin;acos;asc;atn;array;avg;ceil;chr;cos;choose;date;dateadd;datediff" & _
-                            ";datepart;dateserial;datevalue;day;ddb;exp;format;fv;fzero;gamma;hour;iff;inverse;ipmt" & _
-                            ";irr;lcase;left;len;log;lgn;ln;lusolve;max;mid;min;minute;mirr;mmult;month;monthname;now" & _
+                            ";datepart;dateserial;datevalue;day;ddb;det;exp;format;fv;fzero;gamma;hour;iff;inverse;ipmt" & _
+                            ";irr;lcase;left;len;log;lgn;ln;ludecomp;lusolve;max;mid;min;minute;mirr;mmult;month;monthname;now" & _
                             ";nper;npv;percent;pmt;ppmt;pow;pv;rate;replace;right;sgn;sin;sln;solve;sqr;switch" & _
                             ";syd;tan;timeserial;timevalue;trim;ucase;weekday;weekdayname;year"
     BuildinFunctNameList = "Absolute;aFloor;ArcSin;ArcCos;ASCII;ArcTan;strArray;Average;aCeiling;ASCIIchr;Cosin" & _
-                            ";aChoose;aDate;aDateAdd;aDateDiff;aDatePart;aDateSerial;aDateValue;aDay;aDDB" & _
+                            ";aChoose;aDate;aDateAdd;aDateDiff;aDatePart;aDateSerial;aDateValue;aDay;aDDB;MatrixDeterminant" & _
                             ";ExpEuler;aFormat;aFV;FunctionZero;Gamma;aHour;aIff;InverseMatrix;aIPMT;aIRR;LowerCase;aLeft;aLen;Logarithm" & _
-                            ";LgN;LN;LUSolveLinearSystem;Max;Middle;Min;aMinute;aMIRR;MatrixMult;aMonth;aMonthName;aNow;aNPER;aNPV;Percent;aPMT;aPPMT;Power;aPV" & _
+                            ";LgN;LN;LUdecomposition;LUSolveLinearSystem;Max;Middle;Min;aMinute;aMIRR;MatrixMult;aMonth;aMonthName;aNow;aNPER;aNPV;Percent;aPMT;aPPMT;Power;aPV" & _
                             ";aRATE;aReplace;aRight;Sign;Sine;aSLN;SolveLinearSystem;SquareRoot;aSwitch;aSYD;Tangent;aTimeSerial;aTimeValue" & _
                             ";aTrim;aUcase;aWweekDay;aWeekDayName;aYear"
     FunctionsId() = Split(BuildinFunctIDList, ";")
@@ -291,10 +291,10 @@ Private Sub Class_Initialize()
     '@--------------------------------------------------------------------
     ' Populate building UDFs
     Dim UDFnames() As Variant
-    UDFnames() = Array("GCD", "DET", "Concat")
-    DeclareUDF UDFnames, "UserDefFunctions"                 'Declare the Greatest Common Divisor, matrix Determinant and
-                                                            'the string concatenation functions defined in the UDfunctions
-                                                            'class module. This needan instance in the VBAcallBack class module.
+    UDFnames() = Array("GCD", "Concat")
+    DeclareUDF UDFnames, "UserDefFunctions"                 ' Declare the Greatest Common Divisor and the string concatenation
+                                                            ' functions defined in the UDfunctions class module.
+                                                            ' This need an instance in the VBAcallBack class module.
     '@--------------------------------------------------------------------
     ' Initialize error messages
     InitializeErrHandler
@@ -1270,6 +1270,8 @@ Private Function EvalFunction(ByRef Argument As String, ByRef FunctionName As St
                 EvalFunction = Day_(Argument)
             Case "aDDB"
                 EvalFunction = DDB_(Argument)
+            Case "MatrixDeterminant"
+                EvalFunction = Determinant(Argument)
             Case "ExpEuler"
                 EvalFunction = ExpEuler(Argument)
             Case "aFloor"
@@ -1302,6 +1304,8 @@ Private Function EvalFunction(ByRef Argument As String, ByRef FunctionName As St
                 EvalFunction = Logarithm(Argument)
             Case "LgN"
                 EvalFunction = LgN(Argument)
+            Case "LUdecomposition"
+                EvalFunction = LUdecomposition(Argument)
             Case "LUSolveLinearSystem"
                 EvalFunction = LUsolve(Argument)
             Case "LN"
@@ -2860,6 +2864,39 @@ Private Function DefineIRRfunction(ByRef strArray() As String) As String
     Next idx
     DefineIRRfunction = tmpResult
 End Function
+
+''' <summary>
+''' Returns the determinant for the given matrix
+''' </summary>
+Private Function Determinant(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = SplitArgs(expression)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 1
+            Dim aArray() As Double
+            Dim pivotingIdx() As Long
+            Dim d As Double             'Interchages parity
+            Dim i As Long
+            
+            aArray() = StringTodblArray(ArrayFromString(tmpData(LB)))
+            LUdecomp aArray(), pivotingIdx, d
+            For i = LBound(aArray) To UBound(aArray)
+                d = d * aArray(i, i)
+            Next i
+            tmpEval = d
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    Determinant = tmpEval
+End Function
+
 Private Function IRR_(ByRef expression As String) As String
     Dim argsCount As Long
     Dim tmpData() As String
@@ -2907,8 +2944,10 @@ Public Property Let ImplicitVarValue(aVarName As String, aVarValue As String)
         Set exprHelper = New VBAexpressions
         With exprHelper
             .Create aVarValue
-            Set .EvalScope = .EvalScope.CopyScope(P_SCOPE)
-            P_SCOPE.VarValue(aVarName) = .Eval
+            If .ErrorType = errNone Then
+                Set .EvalScope = .EvalScope.CopyScope(P_SCOPE)
+                P_SCOPE.VarValue(aVarName) = .Eval
+            End If
         End With
     End If
 End Property
@@ -3322,6 +3361,34 @@ Private Sub LUdecomp(ByRef a() As Double, ByRef indx() As Long, _
     Next j
     Erase vv
 End Sub
+
+''' <summary>
+''' Return the LU decomposition for the given matrix
+''' </summary>
+Private Function LUdecomposition(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = SplitArgs(expression)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 1
+            Dim aArray() As Double
+            Dim pivotingIdx() As Long
+            Dim d As Double             'Interchages parity
+            
+            aArray() = StringTodblArray(ArrayFromString(tmpData(LB)))
+            LUdecomp aArray(), pivotingIdx, d
+            tmpEval = ArrayToString(aArray)
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    LUdecomposition = tmpEval
+End Function
 
 ''' <summary>
 ''' Solves the linear system AX = B using LU decomposition. The function
