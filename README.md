@@ -28,7 +28,7 @@ The module can evaluate mathematical expressions such as:
 + `min(cos(sin(30))+2^2;1)`
 + \* `GCD(1280;240;100;30*cos(0);10*DET({{sin(atn(1)*2); 0; 0}; {0; 2; 0}; {0; 0; 3}}))`
 
-\*`GCD` and `DET` are user-defined functions (UDF).
+\*`GCD` is an user-defined function (UDF).
 
 Allowed expressions must follow the following grammar:
 
@@ -80,9 +80,9 @@ Sub AddingNewFunctions()
     Dim Result As String
     
     Set Evaluator = New VBAexpressions
-    UDFnames() = Array("GCD", "DET")
+    UDFnames() = Array("GCD")
     With Evaluator
-        .DeclareUDF UDFnames, "UserDefFunctions"                        'Declare the Greatest Common Divisor and Determinant functions
+        .DeclareUDF UDFnames, "UserDefFunctions"                        'Declare the Greatest Common Divisor function
                                                                         'defined in the UDfunctions class module. This need
                                                                         'an instance in the VBAcallBack class module.
         ' The determinant of a diagonal matrix. It is defined
@@ -99,8 +99,6 @@ VBA expressions can evaluate matrix functions whose arguments are given as array
 `FORMAT(IRR({{-70000;12000;15000;18000;21000}});'Percent')`
 
 However, user-defined array functions need to take care of creating arrays from a string, the `ArrayFromString` method can be used for this purpose.
-
-As an illustration, the `UDFunctions.cls` module has an implementation of the `DET` function with an example of using the array handle function. In addition, the `GCD` function is implemented as a demo.
 
 ## Using the code
 VBA Expressions is an easy-to-use library, this section shows some examples of how to use the most common properties and methods
