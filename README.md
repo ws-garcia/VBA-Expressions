@@ -13,7 +13,7 @@ Although the main development goal of the class was the integration with [CSV In
 * __Binary relations__: `<`, `<=`, `<>`, `>=`, `=`, `>`, `$` (LIKE)
 * __More than 60 built-in functions__: `Max`, `Sin`, `IRR`, `Switch`, `Iff`, `DateDiff`, `Solve`, `fZero`, `Format`...
 * __Very flexible and powerful__: variables, constants and user-defined functions (UDFs) support.
-* __Implied multiplication for variables, constants and functions__: `5avg(2;abs(-3-7tan(5));9)` is valid expression; `5(2)` is not.
+* __Implied multiplication for variables, constants and functions__: `5avg(2;abs(-3-7tan(5));9)`, `5(x)` and `x(2)(3)` are valid expressions.
 * __Evaluation of arrays of expressions given as text strings, as in Java__: curly brackets must be used to define arrays`{{...};{...}}`
 * __Floating point notation input support__: `-5E-5`, `(1.434E3+1000)*2/3.235E-5` are valid inputs.
 * __Free of external VBA dependencies__: does not use dll.
