@@ -166,6 +166,7 @@ Private P_DEGREES As Boolean
 Private P_ERRORDESC As String
 Private P_ERRTYPE As ExpressionErrors
 Private P_EXPRESSION As String
+Private P_FORCE_BOOLEAN As Boolean
 Private P_FORMATRESULT As Boolean
 Private P_GALLOPING_MODE As Boolean
 Private P_RESULT As Variant
@@ -283,6 +284,7 @@ Private Sub Class_Initialize()
     FunctionsId() = Split(BuildinFunctIDList, ";")
     FunctionsName() = Split(BuildinFunctNameList, ";")
     Set P_SCOPE = New VBAexpressionsScope
+    P_FORCE_BOOLEAN = False
     InitCBbuffer UserDefFunctions
     '@--------------------------------------------------------------------
     ' Populate linked index constructor
@@ -368,6 +370,18 @@ End Property
 ''' </summary>
 Public Property Get expression() As String
     expression = P_EXPRESSION
+End Property
+
+''' <summary>
+''' When True, a False is returned on evaluation errors.
+''' This can be useful when evaluating piecewise functions.
+''' </summary>
+Public Property Let ForceBoolean(aValue As Boolean)
+    P_FORCE_BOOLEAN = aValue
+End Property
+
+Public Property Get ForceBoolean() As Boolean
+    ForceBoolean = P_FORCE_BOOLEAN
 End Property
 
 ''' <summary>
@@ -722,6 +736,7 @@ Private Function average(ByRef expression As String) As Double
 End Function
 
 Private Sub BottomLevelEval(ByRef aToken As token)
+    On Error GoTo BLevelEval_errHanlder
     If aToken.OperationToken < 100 Then 'Arithmetic operators
         Select Case aToken.OperationToken
             Case OperatorToken.otSum
@@ -806,6 +821,14 @@ Private Sub BottomLevelEval(ByRef aToken As token)
             End Select
         End If
     End If
+    Exit Sub
+BLevelEval_errHanlder:
+    If Not P_FORCE_BOOLEAN Then
+        aToken.EvalResult = e_ValueError
+    Else
+        aToken.EvalResult = False
+    End If
+    P_ERRTYPE = errEvalError
 End Sub
 
 Private Sub BuildErrMessage(ErrorType As ExpressionErrors, Optional AditionalContext As String)
@@ -1230,6 +1253,7 @@ Eval_errHandler:
 End Function
 
 Private Function EvalFunction(ByRef Argument As String, ByRef FunctionName As String, Optional IsUDF As Boolean = False) As String
+    On Error GoTo EvalFunction_errHandler
     If Not IsUDF Then
         Select Case FunctionName
             Case "Absolute"
@@ -1384,6 +1408,14 @@ Private Function EvalFunction(ByRef Argument As String, ByRef FunctionName As St
     Else
         EvalFunction = EvalUDF(FunctionName, Argument)
     End If
+    Exit Function
+EvalFunction_errHandler:
+    If Not P_FORCE_BOOLEAN Then
+        EvalFunction = e_ValueError
+    Else
+        EvalFunction = False
+    End If
+    P_ERRTYPE = errEvalError
 End Function
 
 Private Function EvalUDF(ByRef UDFname As String, ByRef expression As String) As String
