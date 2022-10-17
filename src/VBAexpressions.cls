@@ -1525,9 +1525,11 @@ Private Function FormatLiteralString(ByRef aString As String, _
     End If
 End Function
 Private Function FormatEntry(expression As String) As String
-    FormatEntry = Replace(Replace(Replace(RemoveDupNegation(ApplyLawOfSigns _
-                        (ReconstructLiteralStrings(CStr(expression), _
-                        Join$(Split(expression, d_Space), vbNullString)))), "()", "('')"), "{{", "({{"), "}}", "}})")
+    FormatEntry = ReplaceImpliedMult( _
+                                Replace(Replace(Replace(RemoveDupNegation(ApplyLawOfSigns _
+                                (ReconstructLiteralStrings(CStr(expression), _
+                                Join$(Split(expression, d_Space), vbNullString)))), "()", "('')"), "{{", "({{"), "}}", "}})") _
+                                )
 End Function
 
 Private Function ToLiteralString(ByRef aString As String) As String
@@ -4217,6 +4219,29 @@ Private Function Replace_(ByRef expression As String) As String
             tmpEval = e_ValueError
     End Select
     Replace_ = tmpEval
+End Function
+
+Private Function ReplaceImpliedMult(expression As String) As String
+    Dim tmpPos As Long
+    Dim tmpStr As String
+    Dim LookupPos As Long
+    
+    LookupPos = 1
+    tmpStr = expression
+    tmpPos = InStrB(LookupPos, tmpStr, d_lParenthesis)
+    Do While tmpPos
+        If tmpPos > 2 Then
+            If InStr(1, op_AllItems, MidB(tmpStr, tmpPos - 2, 2)) = 0 Then  'Implied multiplication found
+                tmpStr = MidB(tmpStr, 1, tmpPos - 1) & op_mult & MidB(tmpStr, tmpPos)
+            End If
+            LookupPos = tmpPos + 4
+            tmpPos = InStrB(LookupPos, tmpStr, d_lParenthesis)
+        Else
+            LookupPos = tmpPos + 2
+            tmpPos = InStrB(LookupPos, tmpStr, d_lParenthesis)
+        End If
+    Loop
+    ReplaceImpliedMult = tmpStr
 End Function
 
 Private Function Right_(ByRef expression As String) As String
