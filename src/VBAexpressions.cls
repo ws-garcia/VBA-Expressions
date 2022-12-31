@@ -4225,14 +4225,26 @@ Private Function ReplaceImpliedMult(expression As String) As String
     Dim tmpPos As Long
     Dim tmpStr As String
     Dim LookupPos As Long
+    Dim tmpVar As String
+    Dim tmpVarInitPos As Long
     
     LookupPos = 1
     tmpStr = expression
     tmpPos = InStrB(LookupPos, tmpStr, d_lParenthesis)
     Do While tmpPos
         If tmpPos > 2 Then
-            If InStr(1, op_AllItems, MidB(tmpStr, tmpPos - 2, 2)) = 0 Then  'Implied multiplication found
-                tmpStr = MidB(tmpStr, 1, tmpPos - 1) & op_mult & MidB(tmpStr, tmpPos)
+            If InStr(1, op_AllItems, MidB(tmpStr, tmpPos - 2, 2)) = 0 Then
+                tmpVarInitPos = tmpPos
+                Do While tmpVarInitPos > 1
+                    If (InStrB(1, op_AllItems, MidB$(tmpStr, tmpVarInitPos - 2, 2)) <> 0) Then
+                        Exit Do
+                    End If
+                    tmpVarInitPos = tmpVarInitPos - 2
+                Loop
+                tmpVar = MidB$(tmpStr, tmpVarInitPos, tmpPos - tmpVarInitPos)
+                If GetFunctionName(LCase$(tmpVar)) = vbNullString Then 'Implied multiplication found
+                    tmpStr = MidB(tmpStr, 1, tmpPos - 1) & op_mult & MidB(tmpStr, tmpPos)
+                End If
             End If
             LookupPos = tmpPos + 4
             tmpPos = InStrB(LookupPos, tmpStr, d_lParenthesis)
