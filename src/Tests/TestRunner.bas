@@ -11,6 +11,10 @@ Private actual As String
 Private Assert As Object
 Private Fakes As Object
 
+Public Sub ShowEvalForm(control As IRibbonControl)
+    EvalForm_frm.Show False
+End Sub
+
 '@ModuleInitialize
 Private Sub ModuleInitialize()
     'this method runs once per module.
@@ -35,18 +39,18 @@ Private Sub TestCleanup()
     'this method runs after every test in the module.
 End Sub
 
-Private Function GetResult(Expression As String _
+Private Function GetResult(expression As String _
                         , Optional VariablesValues As String = vbNullString) As String
     On Error Resume Next
     Set Evaluator = New VBAexpressions
     
     With Evaluator
-        .Create Expression
+        .Create expression
         GetResult = .Eval(VariablesValues)
     End With
 End Function
 
-'@TestMethod("General")
+'@TestMethod("VBA Expressions")
 Private Sub Parentheses()
     On Error GoTo TestFail
     
@@ -62,7 +66,7 @@ TestFail:
     Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
-'@TestMethod("General")
+'@TestMethod("VBA Expressions")
 Private Sub ParenthesesAndSingleFunction()
     On Error GoTo TestFail
     
@@ -78,7 +82,7 @@ TestFail:
     Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
-'@TestMethod("General")
+'@TestMethod("VBA Expressions")
 Private Sub FunctionsWithMoreThanOneArgument()
     On Error GoTo TestFail
     
@@ -94,7 +98,7 @@ TestFail:
     Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
-'@TestMethod("General")
+'@TestMethod("VBA Expressions")
 Private Sub NestedFunctions()
     On Error GoTo TestFail
     
@@ -111,7 +115,7 @@ TestFail:
     Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
-'@TestMethod("General")
+'@TestMethod("VBA Expressions")
 Private Sub FloatingPointArithmetic()
     On Error GoTo TestFail
     
@@ -127,7 +131,7 @@ TestFail:
     Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
-'@TestMethod("General")
+'@TestMethod("VBA Expressions")
 Private Sub ExponentiationPrecedence()
     On Error GoTo TestFail
     
@@ -143,7 +147,7 @@ TestFail:
     Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
-'@TestMethod("General")
+'@TestMethod("VBA Expressions")
 Private Sub Factorials()
     On Error GoTo TestFail
     
@@ -159,7 +163,7 @@ TestFail:
     Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
-'@TestMethod("General")
+'@TestMethod("VBA Expressions")
 Private Sub Precedence()
     On Error GoTo TestFail
     
@@ -175,7 +179,7 @@ TestFail:
     Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
-'@TestMethod("General")
+'@TestMethod("VBA Expressions")
 Private Sub Variables()
     On Error GoTo TestFail
     
@@ -192,7 +196,7 @@ TestFail:
     Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
-'@TestMethod("General")
+'@TestMethod("VBA Expressions")
 Private Sub UDFsAndArrays()
     On Error GoTo TestFail
     '///////////////////////////////////////////////////////////////////////////////////
@@ -218,7 +222,7 @@ TestFail:
     Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
-'@TestMethod("General")
+'@TestMethod("VBA Expressions")
 Private Sub LogicalOperatorsNumericOutput()
     On Error GoTo TestFail
     
@@ -235,7 +239,7 @@ TestFail:
     Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
-'@TestMethod("General")
+'@TestMethod("VBA Expressions")
 Private Sub TestLogicalOperatorsBooleanOutput()
     On Error GoTo TestFail
     
@@ -252,7 +256,7 @@ TestFail:
     Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
-'@TestMethod("General")
+'@TestMethod("VBA Expressions")
 Private Sub TestTrigFunctions()
     On Error GoTo TestFail
     
@@ -268,7 +272,7 @@ TestFail:
     Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
-'@TestMethod("General")
+'@TestMethod("VBA Expressions")
 Private Sub TestModFunction()
     On Error GoTo TestFail
     
@@ -284,7 +288,7 @@ TestFail:
     Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
-'@TestMethod("General")
+'@TestMethod("VBA Expressions")
 Private Sub testStringComp()
     On Error GoTo TestFail
     
@@ -301,4 +305,19 @@ TestFail:
     Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
+'@TestMethod("VBA Expressions")
+Private Sub ImpliedMultiplication()
+    On Error GoTo TestFail
+    
+    actual = GetResult( _
+                        "5(2)(3)(4)" _
+                        )
+    expected = "120"
+    Assert.AreEqual expected, actual
 
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
+    Resume TestExit
+End Sub
