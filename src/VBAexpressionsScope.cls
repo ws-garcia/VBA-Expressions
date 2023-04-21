@@ -10,7 +10,7 @@ Attribute VB_Exposed = True
 Option Explicit
 '#
 '///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-' Copyright © 2022 W. García
+' Copyright © 2022-2023 W. García
 ' GPL-3.0 license | https://www.gnu.org/licenses/gpl-3.0.html/
 ' https://ingwilfredogarcia.wordpress.com
 '///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -293,8 +293,8 @@ Public Function IsConstant(aVarName As String) As Boolean
     IsConstant = GetCBItemIdx(P_CONSTANTS, aVarName) > -1
 End Function
 
-Private Function IsPI(ByRef varName As String) As Boolean
-    IsPI = varName Like "[Pp][Ii]"
+Private Function IsPI(ByRef VarName As String) As Boolean
+    IsPI = VarName Like "[Pp][Ii]"
 End Function
 
 Public Sub VariablesInit()

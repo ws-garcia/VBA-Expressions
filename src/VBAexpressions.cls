@@ -11,7 +11,7 @@ Attribute VB_Exposed = True
 Option Explicit
 '#
 '///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-' Copyright © 2022 W. García
+' Copyright © 2022-2023 W. García
 ' GPL-3.0 license | https://www.gnu.org/licenses/gpl-3.0.html/
 ' https://ingwilfredogarcia.wordpress.com
 '///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -147,7 +147,7 @@ Private Const d_rParenthesis As String = ")"
 Private Const d_Apostrophe As String = "'"
 Private Const d_Space As String = " "
 Private Const e_ValueError As String = "#VALUE!"
-Private Const TINY As Double = 1E-20
+Private Const Tiny As Double = 1E-20
 '#
 '///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ' VARIABLES:
@@ -940,25 +940,22 @@ Private Function Compute() As String
     Dim i As Long
     Dim OperationIndex As Long
     Dim BaseIndex As Long
-    Dim PrevOP1 As String
-    Dim PrevOP2 As String
+    Dim SkipToken As Boolean
     
     BaseIndex = UBound(SubTreeData) + 1
     For b = LBound(EvalTree) To UBound(EvalTree)              'Loop all subexpressions
         OperationIndex = BaseIndex
         For t = 0 To EvalTree(b).index                         'Loop all tokens
             OperationIndex = OperationIndex + 1
-            If Not EvalTree(b).Storage(t).ConstantToken Then   'Gallop
-                If P_GALLOPING_MODE Then
-                    PrevOP1 = EvalTree(b).Storage(t).Arg1.Operand
-                    PrevOP2 = EvalTree(b).Storage(t).Arg2.Operand
-                End If
+            If P_GALLOPING_MODE Then
+                SkipToken = EvalTree(b).Storage(t).ConstantToken And _
+                            EvalTree(b).Storage(t).EvalResult <> vbNullString
+            Else
+                SkipToken = False
+            End If
+            If Not SkipToken Then 'Gallop
                 GetOperands EvalTree(b).Storage(t), EvalTree(b), BaseIndex
                 BottomLevelEval EvalTree(b).Storage(t)
-                If P_GALLOPING_MODE Then
-                    EvalTree(b).Storage(t).ConstantToken = (PrevOP1 = EvalTree(b).Storage(t).Arg1.Operand And _
-                                                            PrevOP2 = EvalTree(b).Storage(t).Arg2.Operand)
-                End If
             End If
         Next t
         If Not EvalTree(b).CompCluster Then
@@ -1505,6 +1502,27 @@ Private Function Format_(ByRef expression As String) As String
     End Select
     Format_ = tmpEval
 End Function
+
+Private Sub FillTokenArgProps(ByRef TokenArg As Argument, Optional OnlySetIndexes As Boolean = False)
+    If Not OnlySetIndexes Then
+        TokenArg.NegationFlagOn = (InStrB(1, TokenArg.DefString, op_neg) = 1) '~*
+        TokenArg.funcName = GetFunctionName(TokenArg.DefString)
+        TokenArg.UDFFunctionIn = IsUDFFunction
+        TokenArg.FunctionIn = (TokenArg.funcName <> vbNullString) Or TokenArg.UDFFunctionIn
+        TokenArg.LinkedIndex = GetIndex(TokenArg.DefString)
+        If Not TokenArg.NegationFlagOn Then
+            TokenArg.LinkedVar = P_SCOPE.VarIndex(CastCase(TokenArg.DefString))
+        Else
+            TokenArg.LinkedVar = P_SCOPE.VarIndex(CastCase(MidB$(TokenArg.DefString, 3)))
+        End If
+        TokenArg.Implicit = (TokenArg.LinkedIndex >= 0)
+        TokenArg.FactorialIn = (InStrB(1, TokenArg.DefString, op_Factorial) = LenB(TokenArg.DefString) - 1)
+    Else
+        TokenArg.LinkedIndex = -1
+        TokenArg.LinkedVar = -1
+    End If
+End Sub
+
 Private Function Floor(ByRef value As Double) As Double
     Dim tmpResult As Double
     
@@ -1775,7 +1793,7 @@ Private Function fZeroMRF(ByRef aFunction As String, ByVal a As Double, _
     Dim fc As Double, fd As Double
     Dim fEvalHelper As VBAexpressions
     Dim i As Long
-    Dim k As Double, ck As Double
+    Dim k As Double, CK As Double
     Dim tmpVar() As String
     Dim toleranceFlag As Boolean
     Dim varCounter As Long
@@ -1816,8 +1834,8 @@ Private Function fZeroMRF(ByRef aFunction As String, ByVal a As Double, _
             fc = CDbl(.Eval): evalCounter = evalCounter + 1
             If fa * fc < 0 Then 'Root in interval a-c
                 'Projection
-                ck = Abs(2 * fc / (b - c))
-                d = ((1 + ck) * a * fb - b * fa) / ((1 + ck) * fb - fa)
+                CK = Abs(2 * fc / (b - c))
+                d = ((1 + CK) * a * fb - b * fa) / ((1 + CK) * fb - fa)
                 'Evaluate the function at projection
                 .VarValue(tmpVar(varIdx)) = d
                 fd = CDbl(.Eval): evalCounter = evalCounter + 1
@@ -1828,8 +1846,8 @@ Private Function fZeroMRF(ByRef aFunction As String, ByVal a As Double, _
                     a = d
                 End If
             ElseIf fa * fc > 0 Then
-                ck = Abs(0.5 * fc / (b - c))
-                d = ((1 + ck) * b * fa - a * fb) / ((1 + ck) * fa - fb)
+                CK = Abs(0.5 * fc / (b - c))
+                d = ((1 + CK) * b * fa - a * fb) / ((1 + CK) * fa - fb)
                 .VarValue(tmpVar(varIdx)) = d
                 fd = CDbl(.Eval): evalCounter = evalCounter + 1
                 If fd * fa > 0 Then
@@ -2047,12 +2065,12 @@ Private Function GetArithOpInfo(ByRef expression As String) As TokenInfo
     End If
 End Function
 
-Private Function GetArrItm(ByRef arr As Variant, ByRef MultiDimArr As Boolean, _
+Private Function GetArrItm(ByRef Arr As Variant, ByRef MultiDimArr As Boolean, _
                             ByRef IdxDim1 As Long, ByRef IdxDim2 As Long) As String
     If MultiDimArr Then
-        GetArrItm = CStr(arr(IdxDim1, IdxDim2))
+        GetArrItm = CStr(Arr(IdxDim1, IdxDim2))
     Else
-        GetArrItm = CStr(arr(IdxDim1))
+        GetArrItm = CStr(Arr(IdxDim1))
     End If
 End Function
 
@@ -2129,59 +2147,32 @@ Private Function GetEvalToken(ByRef expression As String) As token
     TokenDet = GetTokenInfo(expression)
     If TokenDet.Position > 2 Then
         '@--------------------------------------------------------------------
-        ' Find token start
+        ' Delimit token
         GetTokenStart expression, TokenDet.Position, TokenStart
-        '@--------------------------------------------------------------------
-        ' Find token end
         GetTokenEnd expression, TokenDet.Position, TokenDet.OperatorLen, TokenEnd
-        '@--------------------------------------------------------------------
-        ' Fill token data
         GetEvalToken.DefString = MidB$(expression, TokenStart, TokenEnd - TokenStart + 2)
         GetEvalToken.OperationToken = TokenDet.OperationToken
         SplitToken GetEvalToken.DefString, tmpArgs, GetEvalToken.OperationToken
+        GetEvalToken.Logical = TokenDet.LogicalToken
+        '@--------------------------------------------------------------------
+        ' Define arguments
         GetEvalToken.Arg1.DefString = tmpArgs(LBound(tmpArgs))
         GetEvalToken.Arg2.DefString = tmpArgs(UBound(tmpArgs))
-        GetEvalToken.Logical = TokenDet.LogicalToken
-        GetEvalToken.Arg1.NegationFlagOn = (InStrB(1, GetEvalToken.Arg1.DefString, op_neg) = 1) '~*
-        GetEvalToken.Arg2.NegationFlagOn = (InStrB(1, GetEvalToken.Arg2.DefString, op_neg) = 1) '~*
-        GetEvalToken.Arg1.funcName = GetFunctionName(GetEvalToken.Arg1.DefString)
-        GetEvalToken.Arg1.UDFFunctionIn = IsUDFFunction
-        GetEvalToken.Arg2.funcName = GetFunctionName(GetEvalToken.Arg2.DefString)
-        GetEvalToken.Arg2.UDFFunctionIn = IsUDFFunction
-        GetEvalToken.Arg1.FunctionIn = (GetEvalToken.Arg1.funcName <> vbNullString) Or GetEvalToken.Arg1.UDFFunctionIn
-        GetEvalToken.Arg2.FunctionIn = (GetEvalToken.Arg2.funcName <> vbNullString) Or GetEvalToken.Arg2.UDFFunctionIn
-        GetEvalToken.Arg1.LinkedIndex = GetIndex(GetEvalToken.Arg1.DefString)
-        GetEvalToken.Arg2.LinkedIndex = GetIndex(GetEvalToken.Arg2.DefString)
-        If Not GetEvalToken.Arg1.NegationFlagOn Then
-            GetEvalToken.Arg1.LinkedVar = P_SCOPE.VarIndex(CastCase(GetEvalToken.Arg1.DefString))
-        Else
-            GetEvalToken.Arg1.LinkedVar = P_SCOPE.VarIndex(CastCase(MidB$(GetEvalToken.Arg1.DefString, 3)))
-        End If
-        If Not GetEvalToken.Arg2.NegationFlagOn Then
-            GetEvalToken.Arg2.LinkedVar = P_SCOPE.VarIndex(CastCase(GetEvalToken.Arg2.DefString))
-        Else
-            GetEvalToken.Arg2.LinkedVar = P_SCOPE.VarIndex(CastCase(MidB$(GetEvalToken.Arg2.DefString, 3)))
-        End If
-        GetEvalToken.Arg1.Implicit = (GetEvalToken.Arg1.LinkedIndex >= 0)
-        GetEvalToken.Arg2.Implicit = (GetEvalToken.Arg2.LinkedIndex >= 0)
-        GetEvalToken.Arg1.FactorialIn = (InStrB(1, GetEvalToken.Arg1.DefString, op_Factorial) = LenB(GetEvalToken.Arg1.DefString) - 1)
-        GetEvalToken.Arg2.FactorialIn = (InStrB(1, GetEvalToken.Arg2.DefString, op_Factorial) = LenB(GetEvalToken.Arg2.DefString) - 1)
+        '@--------------------------------------------------------------------
+        ' Fill arguments data
+        FillTokenArgProps GetEvalToken.Arg1
+        FillTokenArgProps GetEvalToken.Arg2
     Else            'Retun values
-        GetEvalToken.Arg1.DefString = expression
-        GetEvalToken.Logical = TokenDet.LogicalToken
-        GetEvalToken.Arg1.NegationFlagOn = (InStrB(1, GetEvalToken.Arg1.DefString, op_neg) = 1) '~*
         GetEvalToken.DefString = expression
-        GetEvalToken.Arg1.funcName = GetFunctionName(GetEvalToken.Arg1.DefString)
-        GetEvalToken.Arg1.UDFFunctionIn = IsUDFFunction
-        GetEvalToken.Arg1.FunctionIn = (GetEvalToken.Arg1.funcName <> vbNullString) Or GetEvalToken.Arg1.UDFFunctionIn
-        GetEvalToken.Arg1.LinkedIndex = GetIndex(GetEvalToken.Arg1.DefString)
-        If Not GetEvalToken.Arg1.NegationFlagOn Then
-            GetEvalToken.Arg1.LinkedVar = P_SCOPE.VarIndex(CastCase(GetEvalToken.Arg1.DefString))
-        Else
-            GetEvalToken.Arg1.LinkedVar = P_SCOPE.VarIndex(CastCase(MidB$(GetEvalToken.Arg1.DefString, 3)))
-        End If
-        GetEvalToken.Arg1.Implicit = (GetEvalToken.Arg1.LinkedIndex >= 0)
-        GetEvalToken.Arg1.FactorialIn = (InStrB(1, GetEvalToken.Arg1.DefString, op_Factorial) = LenB(GetEvalToken.Arg1.DefString) - 1)
+        GetEvalToken.OperationToken = OperatorToken.otNull
+        GetEvalToken.Logical = TokenDet.LogicalToken
+        '@--------------------------------------------------------------------
+        ' Define argument
+        GetEvalToken.Arg1.DefString = expression
+        '@--------------------------------------------------------------------
+        ' Fill argument data
+        FillTokenArgProps GetEvalToken.Arg1
+        FillTokenArgProps GetEvalToken.Arg2, True
     End If
 End Function
 
@@ -2931,6 +2922,23 @@ Private Function Determinant(ByRef expression As String) As String
     Determinant = tmpEval
 End Function
 
+''' <summary>
+''' Finds for constant sub-expressions
+''' </summary>
+Private Sub DetermineKtokens()
+    Dim BaseIndex As Long
+    Dim b As Long, t As Long
+    
+    BaseIndex = UBound(SubTreeData) + 1
+    For b = LBound(EvalTree) To UBound(EvalTree)              'Loop all subexpressions
+        For t = 0 To EvalTree(b).index                         'Loop all tokens
+            EvalTree(b).Storage(t).ConstantToken = IsConstantToken( _
+                                                    EvalTree(b).Storage(t), EvalTree(b), BaseIndex _
+                                                    )
+        Next t
+    Next b
+End Sub
+
 Private Function IRR_(ByRef expression As String) As String
     Dim argsCount As Long
     Dim tmpData() As String
@@ -3003,11 +3011,11 @@ Private Sub InitializeErrHandler()
     P_ERRTYPE = errNone
 End Sub
 
-Private Function InitializedArray(ByRef arr As Variant) As Boolean
+Private Function InitializedArray(ByRef Arr As Variant) As Boolean
     Dim UB As Long
     
     On Error GoTo err_handler
-    UB = UBound(arr)
+    UB = UBound(Arr)
     InitializedArray = True
     Exit Function
 err_handler:
@@ -3072,11 +3080,11 @@ Private Function InverseMatrix(ByRef expression As String) As String
     InverseMatrix = tmpEval
 End Function
 
-Private Function Is2Darray(arr As Variant) As Boolean
+Private Function Is2Darray(Arr As Variant) As Boolean
     Dim d As Long
     
     On Error GoTo err_handler
-    d = UBound(arr, 2)
+    d = UBound(Arr, 2)
     Is2Darray = True
     Exit Function
 err_handler:
@@ -3103,6 +3111,58 @@ End Function
 Public Function IsConstant(aVarName As String) As Boolean
     IsConstant = P_SCOPE.IsConstant(aVarName)
 End Function
+
+''' <summary>
+''' Determines if a token/sub-expressions is constant
+''' </summary>
+Private Function IsConstantToken(ByRef CurToken As token, ByRef CurTree As ClusterTree, _
+                                    ByRef BaseIndex As Long) As Boolean
+    Dim VariablesInToken As Boolean
+    Dim VariablesInRelatedToken1 As Boolean
+    Dim VariablesInRelatedToken2 As Boolean
+    Dim iCounter As Long
+    Dim TokensCount As Long
+    
+    VariablesInToken = CurToken.Arg1.LinkedVar <> -1 Or CurToken.Arg2.LinkedVar <> -1
+    If CurToken.Arg1.Implicit Or CurToken.Arg2.Implicit Then 'Check related token
+        If CurToken.Arg1.Implicit Then
+            If CurToken.Arg1.LinkedIndex >= BaseIndex Then 'Data on current tree
+                VariablesInRelatedToken1 = Not IsConstantToken(CurTree.Storage(CurToken.Arg1.LinkedIndex - BaseIndex), _
+                                                            CurTree, BaseIndex)
+            Else 'Data is main tree
+                VariablesInRelatedToken1 = Not IsConstantToken(EvalTree(CurToken.Arg1.LinkedIndex).Storage(0), _
+                                                            EvalTree(CurToken.Arg1.LinkedIndex), BaseIndex)
+                iCounter = 1 'Check all tokens in current cluster
+                TokensCount = EvalTree(CurToken.Arg1.LinkedIndex).index
+                Do While VariablesInRelatedToken1 And iCounter <= TokensCount
+                    VariablesInRelatedToken1 = Not IsConstantToken(EvalTree(CurToken.Arg1.LinkedIndex).Storage(iCounter), _
+                                                            EvalTree(CurToken.Arg1.LinkedIndex), BaseIndex)
+                    iCounter = iCounter + 1
+                Loop
+            End If
+        End If
+        If CurToken.Arg2.Implicit Then
+            If CurToken.Arg2.LinkedIndex >= BaseIndex Then
+                VariablesInRelatedToken2 = Not IsConstantToken(CurTree.Storage(CurToken.Arg2.LinkedIndex - BaseIndex), _
+                                                            CurTree, BaseIndex)
+            Else
+                VariablesInRelatedToken2 = Not IsConstantToken(EvalTree(CurToken.Arg2.LinkedIndex).Storage(0), _
+                                                            EvalTree(CurToken.Arg2.LinkedIndex), BaseIndex)
+                iCounter = 1
+                TokensCount = EvalTree(CurToken.Arg2.LinkedIndex).index
+                Do While VariablesInRelatedToken2 And iCounter <= TokensCount
+                    VariablesInRelatedToken2 = Not IsConstantToken(EvalTree(CurToken.Arg2.LinkedIndex).Storage(iCounter), _
+                                                            EvalTree(CurToken.Arg2.LinkedIndex), BaseIndex)
+                    iCounter = iCounter + 1
+                Loop
+            End If
+        End If
+        IsConstantToken = Not VariablesInToken And (Not VariablesInRelatedToken1 And Not VariablesInRelatedToken2)
+    Else
+        IsConstantToken = Not VariablesInToken
+    End If
+End Function
+
 Private Function IsDigit(ByRef Char As String) As Boolean
     If LenB(Char) Then
         Select Case AscW(Char)
@@ -3384,7 +3444,7 @@ Private Sub LUdecomp(ByRef a() As Double, ByRef indx() As Long, _
         End If
         indx(j) = imax
         If a(j + aLB - 1, j + aLB - 1) = 0 Then    'Avoid division by zero in singular matrix
-            a(j + aLB - 1, j + aLB - 1) = TINY
+            a(j + aLB - 1, j + aLB - 1) = Tiny
         End If
         If j <> n Then           'Divide by the pivot element
             dum = 1 / a(j + aLB - 1, j + aLB - 1)
@@ -3841,8 +3901,8 @@ Private Function NPV_(ByRef expression As String) As String
     NPV_ = tmpEval
 End Function
 
-Private Function NotIsPI(ByRef varName As String) As Boolean
-    NotIsPI = Not varName Like "[Pp][Ii]"
+Private Function NotIsPI(ByRef VarName As String) As Boolean
+    NotIsPI = Not VarName Like "[Pp][Ii]"
 End Function
 
 Private Function Now_(ByRef expression As String) As String
@@ -3913,6 +3973,7 @@ Private Sub Parse(ByRef expression As String)
         ShrinkBuffer EvalTree(meCounter)
     Next meCounter
     If ValidTree Then    'Call the validate function
+        DetermineKtokens 'Detect constants tokens
         GeneratedTree = True
     Else
         GeneratedTree = False
@@ -4274,10 +4335,10 @@ Private Function Right_(ByRef expression As String) As String
     argsCount = UB - LB + 1
     Select Case argsCount
         Case 1
-            tmpEval = ToLiteralString(Right(FormatLiteralString(tmpData(LB), True), 1))
+            tmpEval = ToLiteralString(right(FormatLiteralString(tmpData(LB), True), 1))
         Case 2
             tmpEval = ToLiteralString( _
-                                        Right( _
+                                        right( _
                                                 FormatLiteralString(tmpData(LB), True), _
                                                 CLng(FormatLiteralString(tmpData(UB), True)) _
                                                 ) _
@@ -4329,17 +4390,17 @@ Private Function RemoveDupNegation(ByRef expression As String) As String
     RemoveDupNegation = tmpResult
 End Function
 
-Private Function ReservedToken(ByRef varName As String) As Boolean
+Private Function ReservedToken(ByRef VarName As String) As Boolean
     ReservedToken = True
-    If Not IsBoolean(LCase$(varName)) Then 'Exclude logical values
-        If IsLikeSciNot(varName) Then ' Like "E#*"
-            If Not IsDigit(MidB$(varName, LenB(varName) - 1)) Then 'Exclude Sci notation exp
-                If Not AscW(varName) = 69 Then  'Exclude Sci notation token E
+    If Not IsBoolean(LCase$(VarName)) Then 'Exclude logical values
+        If IsLikeSciNot(VarName) Then ' Like "E#*"
+            If Not IsDigit(MidB$(VarName, LenB(VarName) - 1)) Then 'Exclude Sci notation exp
+                If Not AscW(VarName) = 69 Then  'Exclude Sci notation token E
                     ReservedToken = False
                 End If
             End If
         Else
-            If Not AscW(varName) = 69 Then  'Exclude Sci notation token E
+            If Not AscW(VarName) = 69 Then  'Exclude Sci notation token E
                 ReservedToken = False
             End If
         End If
@@ -4527,7 +4588,7 @@ End Function
 Private Sub SORiteration(n As Long, ByRef a() As Double, ByRef b() As Double, _
                          ByRef x() As Double, iter As Long, tol As Double, omega As Double)
 ''' Hoffman, J. D. (2001). Numerical methods for engineers and scientists (2nd ed., rev.expanded). Marcel Dekker.
-    Dim it As Long
+    Dim IT As Long
     Dim i As Long, j As Long
     Dim dxmax As Double
     Dim residual As Double
@@ -4535,7 +4596,7 @@ Private Sub SORiteration(n As Long, ByRef a() As Double, ByRef b() As Double, _
     
     colLB = LBound(a, 2)
     rowLB = LBound(a)
-    For it = 1 To iter
+    For IT = 1 To iter
         dxmax = 0
         For i = 1 To n
             residual = b(i + rowLB - 1)
@@ -4546,7 +4607,7 @@ Private Sub SORiteration(n As Long, ByRef a() As Double, ByRef b() As Double, _
             x(i + rowLB - 1) = x(i + rowLB - 1) + omega * residual / a(i + rowLB - 1, i + colLB - 1)
         Next i
         If dxmax < tol Then Exit For
-    Next it
+    Next IT
 End Sub
 
 Private Function SplitArgs(ByRef args As String) As String()
