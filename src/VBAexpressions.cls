@@ -268,7 +268,7 @@ Private Sub Class_Initialize()
     PI = 4 * Atn(1)
     e = Exp(1)
     P_SEPARATORCHAR = ";"
-    P_GALLOPING_MODE = False
+    P_GALLOPING_MODE = True
     P_FORMATRESULT = False
     BuildinFunctIDList = "abs;floor;asin;acos;asc;atn;array;avg;ceil;chr;cos;choose;date;dateadd;datediff" & _
                             ";datepart;dateserial;datevalue;day;ddb;det;exp;format;fv;fzero;gamma;hour;iff;inverse;ipmt" & _
