@@ -293,7 +293,7 @@ End Sub
 [![Rubberduck](https://user-images.githubusercontent.com/5751684/48656196-a507af80-e9ef-11e8-9c09-1ce3c619c019.png)](https://github.com/rubberduck-vba/Rubberduck/) 
 ## Licence
 
-Copyright (C) 2022-2024  [W. García](https://github.com/ws-garcia/).
+Copyright: &copy; 2022-2024  [W. García](https://github.com/ws-garcia/).
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
