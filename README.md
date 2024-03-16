@@ -2,7 +2,7 @@
 [![GitHub](https://img.shields.io/github/license/ws-garcia/VBA-Expressions?style=plastic)](https://github.com/ws-garcia/VBA-Expressions/blob/master/LICENSE) [![GitHub release (latest by date)](https://img.shields.io/github/v/release/ws-garcia/VBA-Expressions?style=plastic)](https://github.com/ws-garcia/VBA-Expressions/releases/latest)
 
 ## Introductory words
-VBA Expressions is a powerful string expression evaluator for VBA, which puts more than 60 mathematical, financial, date-time, logic and text manipulation functions at the user's fingertips. The `VBAexpressions.cls` class mediates almost all VBA functions as well as custom functions exposed through it. 
+VBA Expressions is a powerful string expression evaluator for VBA, which puts more than 90 mathematical, financial, date-time, logic and text manipulation functions at the user's fingertips. The `VBAexpressions.cls` class mediates almost all VBA functions as well as custom functions exposed through it. 
 
 Although the main development goal of the class was the integration with [CSV Interface](https://github.com/ws-garcia/VBA-CSV-interface), VBA Expressions has evolved to become a support tool for students and teachers of science, accounting and engineering; this due to the added capability to solve systems of equations and non-linear equations in one variable.
 
@@ -11,7 +11,7 @@ Although the main development goal of the class was the integration with [CSV In
 * __Basic math operators__: `+` `-` `*` `/` `\` `^` `!`
 * __Logical expressions__: `&` (AND), `|` (OR), `||` (XOR)
 * __Binary relations__: `<`, `<=`, `<>`, `>=`, `=`, `>`, `$` (LIKE)
-* __More than 60 built-in functions__: `Max`, `Sin`, `IRR`, `Switch`, `Iff`, `DateDiff`, `Solve`, `fZero`, `Format`...
+* __More than 90 built-in functions__: `Max`, `Sin`, `IRR`, `GAUSS`, `LSQRSOLVE`, `Switch`, `Iff`, `DateDiff`, `Solve`, `fZero`, `Format`...
 * __Very flexible and powerful__: variables, constants and user-defined functions (UDFs) support.
 * __Implied multiplication for variables, constants and functions__: `5avg(2;abs(-3-7tan(5));9)`, `5(x)` and `x(2)(3)` are valid expressions.
 * __Evaluation of arrays of expressions given as text strings, as in Java__: curly brackets must be used to define arrays`{{...};{...}}`
@@ -200,7 +200,32 @@ End Sub
 ''' 			LUSOLVE(ARRAY(a;b;c);{{'x';'y';'z'}};{{2;3;4}};True) : x = -18; y = -9; z = 5 
 ''' 			MMULT(INVERSE(ARRAY(a;b;c));ARRAY(d)) : {{-18};{-9};{5}} 
 ''' 			MMULT(ARRAY(a;b;c);INVERSE(ARRAY(a;b;c))) : {{1;0;0};{0;1;0};{0;0;1}}
-'***********************************FINANTIAL FUNCTIONS***************************************************************
+'''
+''' A={{-2;40};{-1;50};{0;62};{1;58};{2;60}}
+''' 			FIT(A;1;4) : {{62 + 3.6667*x -9.6667*x^2 + 0.3333*x^3 + 1.6667*x^4};{1}}  4th degree polynomial fitting
+''' B={{0;0.1};{0.5;0.45};{1;2.15};{1.5;9.15};{2;40.35};{2.5;180.75}}
+''' 			FIT(B;2) : {{0.102*e^(2.9963*x)};{0.9998}}  Exponential Fitting
+''' C={{1;0.01};{2;1};{3;1.15};{4;1.3};{5;1.52};{6;1.84};{7;2.01};{8;2.05};{9;2.3};{10;2.25}}
+''' 			FIT(C;5) : {{0.9521*ln(x)+0.1049};{0.9752}}  Logarithmic fitting
+'''
+''' A={{2;4};{-5;1},{3;-8}};b={{10;-9.5;12}}
+''' 			MROUND(LSQRSOLVE(A;b);4) : {{2.6576};{-0.1196}}  solve overdetermined system of equations using least squares and QRdec
+'***********************************STATISTICAL FUNCTIONS*******************************************************************************
+''' ROUND(NORM(0.05);8) = 0.96012239
+''' ROUND(CHISQ(4;15);8) = 0.99773734
+''' ROUND(GAUSS(0.05);8) = 0.01993881
+''' ROUND(ERF(0.05);8) = 0.05637198
+''' ROUND(STUDT(0.8;15);8) = 0.43619794
+''' ROUND(ANORM(0.75);8) = 0.31863936
+''' ROUND(AGAUSS(0.75);8) = 0.67448975
+''' ROUND(AERF(0.95);8) = 1.38590382
+''' ROUND(ACHISQ(0.75;15);8) = 11.03653766
+''' ROUND(FISHF(5.5;1.5;3);8) = 0.21407698
+''' ROUND(ASTUDT(0.05;15);8) = 2.13144955
+''' ROUND(AFISHF(0.05;1.5;3);8) = 18.55325631
+''' ROUND(iBETA(0.5;1;3);8) = 0.875
+''' ROUND(BETAINV(0.5;1;3);8) = 0.20629947
+'***********************************FINANTIAL FUNCTIONS*********************************************************************************
 ''' FORMAT(SYD(10000;5000;5;2);'Currency') = '$1,333.33'
 ''' FORMAT(SLN(10000;0;5);'Currency') = '$2,000.00'
 ''' FORMAT(RATE(2*12; -250; 5000; 0; 1);'Percent') = '1.66%'
@@ -219,7 +244,7 @@ End Sub
 ''' FORMAT(IPMT(0.0525/1; 4; 10*1; 6500);'Currency') = '($256.50)'
 ''' FORMAT(FV(0.0525/1; 10*1; -100; -6500; 0);'Currency') = '$12,115.19'
 ''' FORMAT(DDB(10000; 5000; 5; 2);'Currency') = '$1,000.00'
-'***********************************DATE AND TIME FUNCTIONS***************************************************************
+'***********************************DATE AND TIME FUNCTIONS*****************************************************************************
 ''' YEAR(NOW()) = 2022
 ''' WEEKDAYNAME(1;true;2) = 'lun.'
 ''' WEEKDAY(NOW()) = 2
@@ -246,7 +271,7 @@ End Sub
 ''' DATEADD(x;y;DATE()) = 10/3/2023 for x = 'm'; y = 5
 ''' DATEADD(x;y;DATE()) = 20/10/2022 for x = 'd'; y = 10
 ''' DATE() = '10/10/2022'
-'***********************************STRING FUNCTIONS***************************************************************
+'***********************************STRING FUNCTIONS******************************************************************************
 ''' UCASE(x) = ' THIS STRING ' for x = ' This String '
 ''' TRIM(x) = 'Capi tal' for x = '  Capi tal '
 ''' RIGHT(2x+20-5+x;2) = '90' for x = 25
@@ -268,7 +293,7 @@ End Sub
 [![Rubberduck](https://user-images.githubusercontent.com/5751684/48656196-a507af80-e9ef-11e8-9c09-1ce3c619c019.png)](https://github.com/rubberduck-vba/Rubberduck/) 
 ## Licence
 
-Copyright (C) 2022  [W. García](https://github.com/ws-garcia/).
+Copyright (C) 2022-2024  [W. García](https://github.com/ws-garcia/).
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
