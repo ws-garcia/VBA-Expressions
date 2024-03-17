@@ -299,13 +299,13 @@ Private Sub Class_Initialize()
     BuildinFunctIDList = "abs;floor;achisq;asin;acos;aerf;afishf;agauss;asc;anorm;atn;astudt;array;avg;betainv;ceil;chisq;chr;cos;choose;date;dateadd;datediff" & _
                             ";datepart;dateserial;datevalue;day;ddb;det;erf;exp;fishf;fit;format;fv;fzero;gamma;gammaln;gauss;hour;ibeta;iff;inverse;ipmt" & _
                             ";irr;lcase;left;len;log;lgn;ln;lsqrsolve;ludecomp;lusolve;max;mid;min;minute;mirr;mmult;mneg;mround;msum;mtranspose;month;monthname" & _
-                            ";norm;now;nper;npv;percent;pmt;ppmt;pow;pv;qr;rate;rem;replace;right;round;sgn;sin;sln;solve;sqr;studt;switch" & _
+                            ";norm;now;nper;npv;percent;pmt;ppmt;pow;pv;qr;rate;rem;replace;right;round;sgn;sin;sln;solve;sqr;sqrt;studt;switch" & _
                             ";syd;tan;timeserial;timevalue;tinv;tinv_1t;tinv_2t;trim;ucase;weekday;weekdayname;year"
     BuildinFunctNameList = "Absolute;aFloor;ACHISQ;ArcSin;ArcCos;AERF;AFISHF;AGAUSS;ASCII;ANORM;ArcTan;ASTUDT;strArray;Average;BETAINV;aCeiling;CHISQ;ASCIIchr;Cosin" & _
                             ";aChoose;aDate;aDateAdd;aDateDiff;aDatePart;aDateSerial;aDateValue;aDay;aDDB;MatrixDeterminant;ERF" & _
                             ";ExpEuler;FISHF;CurveFit;aFormat;aFV;FunctionZero;Gamma;GammaLN;GAUSS;aHour;iBETA;aIff;InverseMatrix;aIPMT;aIRR;LowerCase;aLeft;aLen;Logarithm" & _
                             ";LgN;LN;LSQRsolve;LUdecomposition;LUSolveLinearSystem;Max;Middle;Min;aMinute;aMIRR;MatrixMult;MatrixNegation;MatrixRound;MatrixSum;MatrixTranspose;aMonth;aMonthName;NORM" & _
-                            ";aNow;aNPER;aNPV;Percent;aPMT;aPPMT;Power;aPV;QRdecomposition;aRATE;REM;aReplace;aRight;ROUND;Sign;Sine;aSLN;SolveLinearSystem;SquareRoot;STUDT;aSwitch" & _
+                            ";aNow;aNPER;aNPV;Percent;aPMT;aPPMT;Power;aPV;QRdecomposition;aRATE;REM;aReplace;aRight;ROUND;Sign;Sine;aSLN;SolveLinearSystem;SquareRoot;SquareRoot;STUDT;aSwitch" & _
                             ";aSYD;Tangent;aTimeSerial;aTimeValue;TINV;TINV_1T;TINV_2T;aTrim;aUcase;aWweekDay;aWeekDayName;aYear"
     FunctionsId() = Split(BuildinFunctIDList, ";")
     FunctionsName() = Split(BuildinFunctNameList, ";")
