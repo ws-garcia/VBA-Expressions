@@ -348,7 +348,7 @@ Private Sub AssignValueTo2ndOrderVariable()
         .VarValue("b") = "{1;1;6}"
         .VarValue("c") = "{-3;0;-10}"
         .ImplicitVarValue("f") = "ARRAY(a;b;c)"
-        .ImplicitVarValue("g") = "INVERSE(ARRAY(a;b;c))"
+        .ImplicitVarValue("g") = "INVERSE(f)"
         actual = .Eval
     End With
     expected = "{{1;0;0};{0;1;0};{0;0;1}}"
