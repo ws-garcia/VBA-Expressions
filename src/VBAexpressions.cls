@@ -3763,6 +3763,14 @@ Private Function GetPowerSymbolPos(ByRef expression As String) As Long
     GetPowerSymbolPos = tmpResult
 End Function
 
+Private Function GetPrecisionResult(p2 As Double) As Double
+    If p2 <> 0 Then
+        GetPrecisionResult = RoundToPrecision(p2, Precision_(p2))
+    Else
+        GetPrecisionResult = 0
+    End If
+End Function
+
 Private Sub GetRootedTree(ByRef SubExpression As String, ByRef tmpReplacement As String, _
                                     ByRef OperationIndex As Long, ByRef outBuffer As ClusterTree)
     Dim vToken As token
@@ -5090,116 +5098,6 @@ Private Function MAX_(ParamArray aList() As Variant) As Double
     MAX_ = tmpResult
 End Function
 
-Private Function method1(t As Double, r As Double) As Double
-    Dim e As Double, h As Double
-    Dim f As Double, i As Double
-    Dim inp1 As Double, inp2 As Double
-    Dim inp3 As Double, inp4 As Double
-    Dim inp5 As Double, inp6 As Double
-    Dim inp7 As Double, inp9 As Double
-    
-    If (0 >= r Or r >= 1) Then
-        method1 = 0: Exit Function
-    End If
-    If (0.5 > r) Then
-        method1 = -method1(t, 1 - r): Exit Function
-    End If
-    e = method3(r)
-    inp1 = e ^ 2
-    inp2 = (27 * inp1 + 339) * inp1 + 930
-    inp2 = inp2 * inp1 - 1782
-    inp2 = ((inp2 * inp1 - 765) * inp1 + 17955) / 368640
-    inp3 = (79 * inp1 + 776) * inp1 + 1482
-    inp3 = inp3 * inp1 - 1920
-    inp3 = (inp3 * inp1 - 945) / 92160
-    inp4 = (((3 * inp1 + 19) * inp1 + 17) * inp1 - 15) / 384
-    inp6 = ((5 * inp1 + 16) * inp1 + 3) / 96
-    inp5 = (inp1 + 1) / 4
-    inp7 = inp3 + inp2 / t
-    inp7 = (inp6 + (inp4 + inp7 / t) / t)
-    inp7 = e * (1 + (inp5 + inp7 / t) / t)
-    If (t <= (Log10(r) ^ 2) + 3) Then
-        Do
-            f = method11(t, inp7)
-            inp9 = t + 1
-            i = Log(inp9 / (t + inp7 * inp7))
-            i = i + Log(t / inp9 / 2 / pi) - 1 + (1 / inp9 - 1 / t)
-            i = (f - r) / Exp((inp9 * i / 6) / 2)
-            inp7 = inp7 + i
-            h = method6(i, Abs(Fix(Log10(Abs(inp7)) - 6)))
-        Loop While (inp7 And 0 <> h)
-    End If
-    method1 = inp7
-End Function
-
-Private Function method11(y1 As Double, y2 As Double) As Double
-    Dim e As Double, rt1 As Double
-    Dim L As Double, n As Double
-    Dim s As Double, rt2 As Double
-    
-    L = Atn((y2 / Sqr(y1)) / 1)
-    n = Cos(L) ^ 2: s = 1
-    For rt2 = y1 - 2 To 2 Step -2
-        s = 1 + (rt2 - 1) / rt2 * n * s
-    Next rt2
-    If REM_(y1, 2) = 0 Then
-        e = 0.5
-        rt1 = Sin(L) / 2
-        method11 = rt1
-    Else
-        e = 0.5 + L / pi
-        If 1 = y1 Then
-            rt1 = 0
-        Else
-            rt1 = Cos(L) * Sin(L) / pi
-        End If
-        method11 = MAX_(0, 1 - e - rt1 * s)
-    End If
-End Function
-
-Private Function method12(p2 As Double) As Double
-    If p2 <> 0 Then
-        method12 = method6(p2, method22(p2))
-    Else
-        method12 = 0
-    End If
-End Function
-
-Private Function method2(x1 As Double, x2 As Double) As Variant
-    If ((0 >= x1 Or Abs(x1) - Abs(Fix(x1)) <> 0) Or (0 >= x2 Or x2 >= 1)) Then
-        method2 = False
-    Else
-        method2 = method12(method1(x1, x2))
-    End If
-End Function
-
-Private Function method22(p5 As Double) As Double
-    method22 = Abs(Fix(Log10(Abs(p5)) - 7))
-End Function
-
-Private Function method3(p3 As Double) As Double
-    Dim p4 As Double
-    Dim e As Double
-    
-    p4 = -Log(4 * p3 * (1 - p3))
-    e = -3.231081277E-09 + p4 * (3.657763036E-11 + 6.936233982E-13 * p4)
-    e = -0.00000104527497 + p4 * (8.360937017E-08 + p4 * e)
-    e = 0.000006841218299 + p4 * (0.000005824238515 + p4 * e)
-    e = -0.0008364353589 + p4 * (-0.0002250947176 + p4 * e)
-    e = Sqr(p4 * (1.570796288 + p4 * (0.03706987906 + p4 * e)))
-    If p3 > 0.5 Then
-        e = -e
-    End If
-    method3 = e
-End Function
-
-Private Function method6(t As Double, r As Double) As Double
-    Dim tmpResult As Double
-
-    tmpResult = t * 10 ^ r
-    method6 = Round(tmpResult) / (10 ^ r)
-End Function
-
 Private Function Mid_(ByRef expression As String, ByRef fName As String) As String
     Dim argsCount As Long
     Dim tmpData() As String
@@ -6364,6 +6262,10 @@ err_handler:
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
+Private Function Precision_(p5 As Double) As Double
+    Precision_ = Abs(Fix(Log10(Abs(p5)) - 7))
+End Function
+
 Private Function PV_(ByRef expression As String, ByRef fName As String) As String
     Dim argsCount As Long
     Dim tmpData() As String
@@ -6903,6 +6805,13 @@ err_handler:
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
+Private Function RoundToPrecision(t As Double, r As Double) As Double
+    Dim tmpResult As Double
+
+    tmpResult = t * 10 ^ r
+    RoundToPrecision = Round(tmpResult) / (10 ^ r)
+End Function
+
 Private Function ROUND_(aNumber As Double, Optional aDigits As Double = 0) As Double
     ROUND_ = Round(aNumber, aDigits)
 End Function
@@ -7300,6 +7209,97 @@ Private Function STUDT_(ByVal t As Double, n As Double) As Double
     End If
 End Function
 
+Private Function subTINV_(x1 As Double, x2 As Double) As Variant
+    If ((0 >= x1 Or Abs(x1) - Abs(Fix(x1)) <> 0) Or (0 >= x2 Or x2 >= 1)) Then
+        subTINV_ = False
+    Else
+        subTINV_ = GetPrecisionResult(subt_(x1, x2))
+    End If
+End Function
+
+Private Function subtprob_(y1 As Double, y2 As Double) As Double
+    Dim e As Double, rt1 As Double
+    Dim L As Double, n As Double
+    Dim s As Double, rt2 As Double
+    
+    L = Atn((y2 / Sqr(y1)) / 1)
+    n = Cos(L) ^ 2: s = 1
+    For rt2 = y1 - 2 To 2 Step -2
+        s = 1 + (rt2 - 1) / rt2 * n * s
+    Next rt2
+    If REM_(y1, 2) = 0 Then
+        e = 0.5
+        rt1 = Sin(L) / 2
+        subtprob_ = rt1
+    Else
+        e = 0.5 + L / pi
+        If 1 = y1 Then
+            rt1 = 0
+        Else
+            rt1 = Cos(L) * Sin(L) / pi
+        End If
+        subtprob_ = MAX_(0, 1 - e - rt1 * s)
+    End If
+End Function
+
+Private Function subt_(t As Double, r As Double) As Double
+    Dim e As Double, h As Double
+    Dim f As Double, i As Double
+    Dim inp1 As Double, inp2 As Double
+    Dim inp3 As Double, inp4 As Double
+    Dim inp5 As Double, inp6 As Double
+    Dim inp7 As Double, inp9 As Double
+    
+    If (0 >= r Or r >= 1) Then
+        subt_ = 0: Exit Function
+    End If
+    If (0.5 > r) Then
+        subt_ = -subt_(t, 1 - r): Exit Function
+    End If
+    e = subu_(r)
+    inp1 = e ^ 2
+    inp2 = (27 * inp1 + 339) * inp1 + 930
+    inp2 = inp2 * inp1 - 1782
+    inp2 = ((inp2 * inp1 - 765) * inp1 + 17955) / 368640
+    inp3 = (79 * inp1 + 776) * inp1 + 1482
+    inp3 = inp3 * inp1 - 1920
+    inp3 = (inp3 * inp1 - 945) / 92160
+    inp4 = (((3 * inp1 + 19) * inp1 + 17) * inp1 - 15) / 384
+    inp6 = ((5 * inp1 + 16) * inp1 + 3) / 96
+    inp5 = (inp1 + 1) / 4
+    inp7 = inp3 + inp2 / t
+    inp7 = (inp6 + (inp4 + inp7 / t) / t)
+    inp7 = e * (1 + (inp5 + inp7 / t) / t)
+    If (t <= (Log10(r) ^ 2) + 3) Then
+        Do
+            f = subtprob_(t, inp7)
+            inp9 = t + 1
+            i = Log(inp9 / (t + inp7 * inp7))
+            i = i + Log(t / inp9 / 2 / pi) - 1 + (1 / inp9 - 1 / t)
+            i = (f - r) / Exp((inp9 * i / 6) / 2)
+            inp7 = inp7 + i
+            h = RoundToPrecision(i, Abs(Fix(Log10(Abs(inp7)) - 6)))
+        Loop While (inp7 And 0 <> h)
+    End If
+    subt_ = inp7
+End Function
+
+Private Function subu_(p3 As Double) As Double
+    Dim p4 As Double
+    Dim e As Double
+    
+    p4 = -Log(4 * p3 * (1 - p3))
+    e = -3.231081277E-09 + p4 * (3.657763036E-11 + 6.936233982E-13 * p4)
+    e = -0.00000104527497 + p4 * (8.360937017E-08 + p4 * e)
+    e = 0.000006841218299 + p4 * (0.000005824238515 + p4 * e)
+    e = -0.0008364353589 + p4 * (-0.0002250947176 + p4 * e)
+    e = Sqr(p4 * (1.570796288 + p4 * (0.03706987906 + p4 * e)))
+    If p3 > 0.5 Then
+        e = -e
+    End If
+    subu_ = e
+End Function
+
 Private Function Switch_(ByRef expression As String, ByRef fName As String) As String
     Dim argsCount As Long
     Dim idx As Long
@@ -7492,10 +7492,10 @@ Private Function TINV_(confidence As Double, dof As Double, _
     End If
     p = (1 - confidence)
     If tOption = 1 Then
-        TINV_ = method2(dof, p)
+        TINV_ = subTINV_(dof, p)
     Else
         If tOption = 2 Then
-            TINV_ = method2(dof, p / 2)
+            TINV_ = subTINV_(dof, p / 2)
         End If
     End If
 End Function
