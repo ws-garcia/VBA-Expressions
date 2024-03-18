@@ -950,7 +950,6 @@ Public Function ArrayFromString(ByRef strArray As String) As String()
     Dim StrLen As Long
     Dim tmpStr() As Variant
     Dim VectorEndPos As Long
-    Dim VectorOpenFlag As Boolean
     Dim VectorStartPos As Long
     
     StrCopy = ReconstructLiteralStrings(strArray, Join$(Split(strArray, d_Space), vbNullString))
@@ -5006,8 +5005,6 @@ Private Function LUsolve(ByRef expression As String, ByRef fName As String) As S
             Dim mUB As Long
             Dim Xarray() As String
             Dim BArray() As Double
-            Dim pivotingIdx() As Long
-            Dim d As Double             'Interchages parity
             Dim tmpElement As String
             
             aArray() = ToDblArray(ArrayFromString(tmpData(LB)))
@@ -5016,8 +5013,7 @@ Private Function LUsolve(ByRef expression As String, ByRef fName As String) As S
             mUB = UBound(aArray)
             
             eqCount = mUB - mLB + 1
-            LUdecomp aArray, pivotingIdx, d             'LU decomposition
-            LUbkSub aArray, pivotingIdx, BArray         'Back substitution, returning in bArray
+            LUsolve_ aArray, BArray
             If argsCount = 4 Then
                 Xarray() = ArrayFromString(tmpData(LB + 1))
                 includeNames = CBool(tmpData(UB))
@@ -5047,6 +5043,15 @@ Private Function LUsolve(ByRef expression As String, ByRef fName As String) As S
 err_handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
+End Function
+
+Private Function LUsolve_(ByRef aArray() As Double, ByRef BArray() As Double) As Double()
+    Dim pivotingIdx() As Long
+    Dim d As Double             'Interchages parity
+    
+    LUdecomp aArray, pivotingIdx, d             'LU decomposition
+    LUbkSub aArray, pivotingIdx, BArray         'Back substitution, returning in bArray
+    LUsolve_ = BArray
 End Function
 
 Private Function Max(ByRef expression As String, ByRef fName As String) As Double
@@ -5402,18 +5407,14 @@ err_handler:
 End Function
 
 Private Function MMULT_(ByRef A() As Double, ByRef b As Variant) As Variant
-    Dim ai As Long, ai2 As Long
-    Dim aIsNxMmatrix As Boolean
     Dim aIsVector As Boolean
     Dim aLB As Long, aLB2 As Long
     Dim aUB As Long, aUB2 As Long
-    Dim bi As Long, bi2 As Long
-    Dim bIsNxMmatrix As Boolean
     Dim bIsVector As Boolean
     Dim bLB As Long, bLB2 As Long
     Dim bUB As Long, bUB2 As Long
     Dim c() As Double
-    Dim i As Long, ii As Long
+    Dim i As Long
     Dim j As Long, jj As Long
     Dim m As Long 'Columns of the output
     Dim n As Long 'Rows of the output
@@ -6214,13 +6215,9 @@ Private Function PolyFit_(ByRef samplesArr() As Double, pDegree As Long, _
     Dim mLB As Long
     Dim mUB As Long
     Dim Xarray() As Double
-    Dim strXArray As String
     Dim BArray() As Double
-    Dim strBarray As String
     Dim cnArray() As String
-    Dim SolverExpr As String
-    Dim SolverResult() As String
-    Dim FittedPolynomial As String
+    Dim SolverResult() As Double
     
     mLB = LBound(samplesArr)
     mUB = UBound(samplesArr)
@@ -6258,12 +6255,12 @@ Private Function PolyFit_(ByRef samplesArr() As Double, pDegree As Long, _
         Next jCounter
     Next iCounter
     'Create B vector
-    ReDim BArray(0, 0 To pDegree)
+    ReDim BArray(0 To pDegree)
     For iCounter = 0 To pDegree  '2*n + 1 < i < 3*n
         If iCounter = 0 Then 'Sum y
-            BArray(0, iCounter) = accumulatorArray(1)
+            BArray(iCounter) = accumulatorArray(1)
         Else
-            BArray(0, iCounter) = accumulatorArray(iCounter + 2 * pDegree)
+            BArray(iCounter) = accumulatorArray(iCounter + 2 * pDegree)
         End If
     Next iCounter
     'Create vector of coefficient names
@@ -6271,18 +6268,11 @@ Private Function PolyFit_(ByRef samplesArr() As Double, pDegree As Long, _
     For iCounter = 0 To pDegree
         cnArray(0, iCounter) = ToLiteralString(ChrW(97 + iCounter))
     Next iCounter
-    'Get linear eq. system
-    strXArray = ArrayToString(Xarray)
-    strBarray = ArrayToString(BArray)
-    SolverExpr = strXArray & P_SEPARATORCHAR & _
-                ArrayToString(cnArray) & P_SEPARATORCHAR & _
-                strBarray & P_SEPARATORCHAR & "False"
-    'Solve
-    SolverResult = ArrayFromString(LUsolve(SolverExpr, "LUsolve"))
+    'Solve linear eq. system
+    SolverResult = LUsolve_(Xarray, BArray)
     If stringOutput Then
         'Format
-        FittedPolynomial = PolyString(SolverResult, pDegree)
-        PolyFit_ = FittedPolynomial
+        PolyFit_ = PolyString(SolverResult, pDegree)
     Else
         PolyFit_ = SolverResult
     End If
@@ -6292,19 +6282,19 @@ End Function
 ''' Creates a polynomial string representation from solver coefficients
 ''' NOTE: PolyFit helper
 ''' </summary>
-Private Function PolyString(ByRef SolverResult() As String, ByRef pDegree As Long) As String
+Private Function PolyString(ByRef SolverResult() As Double, ByRef pDegree As Long) As String
     Dim i As Long
     Dim tmpResult As String
     
     For i = 0 To pDegree
         If i = 0 Then
-            tmpResult = CStr(Round(CDbl(SolverResult(i)), 4))
+            tmpResult = CStr(Round(SolverResult(i), 4))
         Else
             If CDbl(SolverResult(i)) > 0 Then
                 tmpResult = tmpResult & d_Space & op_plus _
-                            & d_Space & Round(CDbl(SolverResult(i)), 4)
+                            & d_Space & Round(SolverResult(i), 4)
             Else
-                tmpResult = tmpResult & d_Space & Round(CDbl(SolverResult(i)), 4)
+                tmpResult = tmpResult & d_Space & Round(SolverResult(i), 4)
             End If
             If i > 1 Then
                 tmpResult = tmpResult & "*x^" & i
@@ -7823,9 +7813,7 @@ End Sub
 ''' <param name="tVector">The vertor to transform.</param>
 Private Function VectorFormat(ByRef tVector As Variant) As Double()
     Dim vLB As Long
-    Dim vLB2 As Long
     Dim vUB As Long
-    Dim fromRowToCol As Boolean
     Dim i As Long, j As Long
     Dim tmpResult() As Double
     
