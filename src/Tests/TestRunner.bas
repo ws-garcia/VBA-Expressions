@@ -675,6 +675,22 @@ TestFail:
     Resume TestExit
 End Sub
 
+'@TestMethod("Linear Algebra Functions")
+Private Sub LUsolve()
+    On Error GoTo TestFail
+
+    actual = GetResult( _
+                        "LUSOLVE(ARRAY(a;b;c);{{'x';'y';'z'}};{{2;3;4}};True)" _
+                        , "a={1;0;4};b={1;1;6};c={-3;0;-10}")
+    expected = "x = -18; y = -9; z = 5"
+    Assert.AreEqual expected, actual
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Resume TestExit
+End Sub
+
 '@TestMethod("Linear Algebra/Stats Functions")
 Private Sub StraightLineFit()
     On Error GoTo TestFail
