@@ -36,10 +36,11 @@ Allowed expressions must follow the following grammar:
 Expression    =     ([{"("}]  SubExpr [{Operator [{"("}] SubExpr [{")"}]}] [{")"}] | {["("] ["{"] List [{";" List}] ["}"] [")"]}) 
 SubExpr       =     Token [{Operator Token}]
 Token         =     [{Unary}] Argument [(Operator | Function) ["("] [{Unary}] [Argument] [")"]]
-Argument      =     (List | Variable | Operand)
+Argument      =     (List | Variable | Operand | Literal)
 List          =     "{" ["{"] SubExpr [{";" SubExpr}] ["}"] "}"
 Unary         =     "-" | "+" | ~
-Operand       =     ({Digit} ["."] [{Digit}] ["E"("-" | "+"){Digit}] | (True | False) | "'"Alphabet"'")
+Literal       =     (Operand | "'"Alphabet"'")
+Operand       =     ({Digit} ["."] [{Digit}] ["E"("-" | "+"){Digit}] | (True | False))
 Variable      =     Alphabet [{Decimal}] [{(Digit | Alphabet)}]
 Alphabet      =     "A-Z" | "a-z"
 Decimal       =     "."
