@@ -296,17 +296,27 @@ Private Sub Class_Initialize()
     P_SEPARATORCHAR = ";"
     P_GALLOPING_MODE = True
     P_FORMATRESULT = False
-    BuildinFunctIDList = "abs;floor;achisq;asin;acos;aerf;afishf;agauss;asc;anorm;atn;astudt;array;avg;betainv;ceil;chisq;chr;cos;choose;date;dateadd;datediff" & _
-                            ";datepart;dateserial;datevalue;day;ddb;det;erf;exp;fishf;fit;format;fv;fzero;gamma;gammaln;gauss;hour;ibeta;iff;inverse;ipmt" & _
-                            ";irr;lcase;left;len;log;lgn;ln;lsqrsolve;ludecomp;lusolve;max;mid;min;minute;mirr;mmult;mneg;mround;msum;mtranspose;month;monthname" & _
-                            ";norm;now;nper;npv;percent;pmt;ppmt;pow;pv;qr;rate;rem;replace;right;round;sgn;sin;sln;solve;sqr;sqrt;studt;switch" & _
-                            ";syd;tan;timeserial;timevalue;tinv;tinv_1t;tinv_2t;trim;ucase;weekday;weekdayname;year"
-    BuildinFunctNameList = "Absolute;aFloor;ACHISQ;ArcSin;ArcCos;AERF;AFISHF;AGAUSS;ASCII;ANORM;ArcTan;ASTUDT;strArray;Average;BETAINV;aCeiling;CHISQ;ASCIIchr;Cosin" & _
-                            ";aChoose;aDate;aDateAdd;aDateDiff;aDatePart;aDateSerial;aDateValue;aDay;aDDB;MatrixDeterminant;ERF" & _
-                            ";ExpEuler;FISHF;CurveFit;aFormat;aFV;FunctionZero;Gamma;GammaLN;GAUSS;aHour;iBETA;aIff;InverseMatrix;aIPMT;aIRR;LowerCase;aLeft;aLen;Logarithm" & _
-                            ";LgN;LN;LSQRsolve;LUdecomposition;LUSolveLinearSystem;Max;Middle;Min;aMinute;aMIRR;MatrixMult;MatrixNegation;MatrixRound;MatrixSum;MatrixTranspose;aMonth;aMonthName;NORM" & _
-                            ";aNow;aNPER;aNPV;Percent;aPMT;aPPMT;Power;aPV;QRdecomposition;aRATE;REM;aReplace;aRight;ROUND;Sign;Sine;aSLN;SolveLinearSystem;SquareRoot;SquareRoot;STUDT;aSwitch" & _
-                            ";aSYD;Tangent;aTimeSerial;aTimeValue;TINV;TINV_1T;TINV_2T;aTrim;aUcase;aWweekDay;aWeekDayName;aYear"
+    BuildinFunctIDList = "abs;floor;achisq;asin;acos;aerf;afishf;agauss;asc;anorm;atn;astudt;array;avg" & _
+                            ";betainv;ceil;chisq;cholesky;cholinverse;cholsolve;chr;cos;choose;date;dateadd;datediff" & _
+                            ";datepart;dateserial;datevalue;day;ddb;det;erf;exp;fishf;fit;format;fv;fzero" & _
+                            ";gamma;gammaln;gauss;hour;ibeta;iff;inverse;ipmt;irr;lcase;left;len;log;lgn" & _
+                            ";ln;lsqrsolve;ludecomp;lusolve;max;mid;min;minute;mirr;mlr;mmult;mneg;mround" & _
+                            ";msum;mtranspose;month;monthname;norm;now;nper;npv;percent;pmt;ppmt;pow;pv" & _
+                            ";qr;rate;rem;replace;right;round;sgn;sin;sln;solve;sqr;sqrt;studt;switch" & _
+                            ";syd;tan;timeserial;timevalue;tinv;tinv_1t;tinv_2t;trim;ucase;weekday" & _
+                            ";weekdayname;year"
+    BuildinFunctNameList = "Absolute;aFloor;ACHISQ;ArcSin;ArcCos;AERF;AFISHF;AGAUSS;ASCII;ANORM;ArcTan" & _
+                            ";ASTUDT;strArray;Average;BETAINV;aCeiling;CHISQ;CholeskyDec;CholeskyInverseMatrix" & _
+                            ";CholeskySolve;ASCIIchr;Cosin;aChoose;aDate;aDateAdd;aDateDiff;aDatePart;aDateSerial" & _
+                            ";aDateValue;aDay;aDDB;MatrixDeterminant;ERF;ExpEuler;FISHF;CurveFit" & _
+                            ";aFormat;aFV;FunctionZero;Gamma;GammaLN;GAUSS;aHour;iBETA;aIff;InverseMatrix" & _
+                            ";aIPMT;aIRR;LowerCase;aLeft;aLen;Logarithm;LgN;LN;LSQRsolve;LUdecomposition" & _
+                            ";LUSolveLinearSystem;Max;Middle;Min;aMinute;aMIRR;MultiLinearReg;MatrixMult" & _
+                            ";MatrixNegation;MatrixRound;MatrixSum;MatrixTranspose;aMonth;aMonthName;NORM" & _
+                            ";aNow;aNPER;aNPV;Percent;aPMT;aPPMT;Power;aPV;QRdecomposition;aRATE;REM" & _
+                            ";aReplace;aRight;ROUND;Sign;Sine;aSLN;SolveLinearSystem;SquareRoot;SquareRoot" & _
+                            ";STUDT;aSwitch;aSYD;Tangent;aTimeSerial;aTimeValue;TINV;TINV_1T;TINV_2T;aTrim" & _
+                            ";aUcase;aWweekDay;aWeekDayName;aYear"
     FunctionsId() = Split(BuildinFunctIDList, ";")
     FunctionsName() = Split(BuildinFunctNameList, ";")
     Set P_SCOPE = New VBAexpressionsScope
@@ -496,19 +506,19 @@ End Property
 '///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ' METHODS:
 Private Function Absolute(ByRef expression As String, ByRef fName As String) As Double
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     Absolute = Abs(CDbl(expression))
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
 Private Function aCeiling(ByRef expression As String, ByRef fName As String) As Double
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     aCeiling = Ceiling(CDbl(expression))
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -525,7 +535,7 @@ Private Function ACHISQ(ByRef expression As String, ByRef fName As String) As St
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -542,28 +552,97 @@ Private Function ACHISQ(ByRef expression As String, ByRef fName As String) As St
     End Select
     ACHISQ = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
 Private Function ACHISQ_(p As Double, n As Double) As Double
-    Dim v As Double, dv As Double, X As Double
+    Dim v As Double, dv As Double, x As Double
     
-    v = 0.5: dv = 0.5: X = 0
+    v = 0.5: dv = 0.5: x = 0
     Do While (dv > 0.000000000000001)
-        X = 1 / v - 1: dv = dv / 2
-        If (CHISQ_(X, n) > p) Then
+        x = 1 / v - 1: dv = dv / 2
+        If (CHISQ_(x, n) > p) Then
             v = v - dv
         Else
             v = v + dv
         End If
     Loop
-    ACHISQ_ = X
+    ACHISQ_ = x
 End Function
 
 Public Sub AddConstant(aValue As String, aKey As String)
     P_SCOPE.AddConstant aValue, aKey
+End Sub
+
+Private Sub AddExponentialPredictors(ByRef x() As Double, ByRef pExponents() As Long)
+    Dim i As Long
+    Dim j As Long
+    Dim UB As Long
+    Dim UB2 As Long
+    Dim tmpData() As Double
+    
+    UB = UBound(x)
+    UB2 = UBound(x, 2)
+    tmpData = x
+    For i = 0 To UBound(pExponents)
+        If pExponents(i) > 1 Then 'Only not lineal degrees
+            UB2 = UB2 + 1
+            ReDim Preserve tmpData(0 To UB, 0 To UB2)
+            For j = 0 To UB
+                tmpData(j, UB2) = x(j, 0) ^ pExponents(i)
+            Next j
+        End If
+    Next i
+    x = tmpData
+    Erase tmpData
+End Sub
+
+Private Sub AddIntersectionCol(ByRef x() As Double)
+    Dim i As Long
+    Dim j As Long
+    Dim UB As Long
+    Dim UB2 As Long
+    
+    UB = UBound(x)
+    UB2 = UBound(x, 2)
+    ReDim Preserve x(0 To UB, 0 To UB2 + 1)
+    For i = 0 To UB
+        For j = UB2 To 0 Step -1
+            x(i, j + 1) = x(i, j)
+            If j = 0 Then
+                x(i, j) = 1
+            End If
+        Next j
+    Next i
+End Sub
+
+Private Sub AddPredictorsRelations(ByRef x() As Double, ByRef PredInteractions As Variant)
+    Dim i As Long
+    Dim j As Long
+    Dim UB As Long
+    Dim UB2 As Long
+    Dim idx1 As Long
+    Dim idx2 As Long
+    Dim tmpPredict() As String
+    Dim tmpData() As Double
+    
+    UB = UBound(x)
+    UB2 = UBound(x, 2)
+    tmpData = x
+    For i = 0 To UBound(PredInteractions)
+        tmpPredict = Split(PredInteractions(i), op_mult)
+        idx1 = CLng(MidB(tmpPredict(LBound(tmpPredict)), 3))
+        idx2 = CLng(MidB(tmpPredict(LBound(tmpPredict) + 1), 3))
+        UB2 = UB2 + 1
+        ReDim Preserve tmpData(0 To UB, 0 To UB2)
+        For j = 0 To UB
+            tmpData(j, UB2) = x(j, idx1) * x(j, idx2)
+        Next j
+    Next i
+    x = tmpData
+    Erase tmpData
 End Sub
 
 Private Sub AddToMap(aValue As Long, aTarget As ClusterTree)
@@ -589,7 +668,7 @@ Private Function AERF(ByRef expression As String, ByRef fName As String) As Stri
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -605,7 +684,7 @@ Private Function AERF(ByRef expression As String, ByRef fName As String) As Stri
     End Select
     AERF = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -627,7 +706,7 @@ Private Function AFISHF(ByRef expression As String, ByRef fName As String) As St
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -645,7 +724,7 @@ Private Function AFISHF(ByRef expression As String, ByRef fName As String) As St
     End Select
     AFISHF = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -680,7 +759,7 @@ Private Function AGAUSS(ByRef expression As String, ByRef fName As String) As St
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -696,7 +775,7 @@ Private Function AGAUSS(ByRef expression As String, ByRef fName As String) As St
     End Select
     AGAUSS = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -720,7 +799,7 @@ Private Function anorm(ByRef expression As String, ByRef fName As String) As Str
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -736,7 +815,7 @@ Private Function anorm(ByRef expression As String, ByRef fName As String) As Str
     End Select
     anorm = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -799,7 +878,7 @@ End Function
 Private Function ArcCos(ByRef expression As String, ByRef fName As String) As Double
     Dim tmpEval As Double
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpEval = CDbl(expression)
     tmpEval = Atn(-tmpEval / Sqr(-tmpEval * tmpEval + 1)) + 2 * Atn(1)
     If P_DEGREES Then
@@ -807,7 +886,7 @@ Private Function ArcCos(ByRef expression As String, ByRef fName As String) As Do
     End If
     ArcCos = tmpEval
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -815,7 +894,7 @@ End Function
 Private Function ArcSin(ByRef expression As String, ByRef fName As String) As Double
     Dim tmpEval As Double
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpEval = CDbl(expression)
     tmpEval = Atn(tmpEval / Sqr(-tmpEval * tmpEval + 1))
     If P_DEGREES Then
@@ -823,7 +902,7 @@ Private Function ArcSin(ByRef expression As String, ByRef fName As String) As Do
     End If
     ArcSin = tmpEval
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -831,7 +910,7 @@ End Function
 Private Function ArcTan(ByRef expression As String, ByRef fName As String) As Double
     Dim tmpEval As Double
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpEval = CDbl(expression)
     tmpEval = Atn(tmpEval)
     If P_DEGREES Then
@@ -839,7 +918,7 @@ Private Function ArcTan(ByRef expression As String, ByRef fName As String) As Do
     End If
     ArcTan = tmpEval
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -855,7 +934,7 @@ Private Function aREM(ByRef expression As String, ByRef fName As String) As Stri
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -872,7 +951,7 @@ Private Function aREM(ByRef expression As String, ByRef fName As String) As Stri
     End Select
     aREM = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -883,7 +962,7 @@ Private Function aROUND(ByRef expression As String, ByRef fName As String) As St
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -904,7 +983,7 @@ Private Function aROUND(ByRef expression As String, ByRef fName As String) As St
     End Select
     aROUND = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -913,7 +992,7 @@ End Function
 ''' Turns a two dimensional array into a one dimensional array.
 ''' </summary>
 ''' <param name="InputArray">The array to operate.</param>
-Private Function Array1DFrom2DArr(ByRef InputArray() As String) As String()
+Private Function ArraySTR1DFrom2DArr(ByRef InputArray() As String) As String()
     Dim i As Long, LB As Long, UB As Long
     Dim j As Long, LB2 As Long, UB2 As Long
     Dim tmpData() As String
@@ -928,7 +1007,7 @@ Private Function Array1DFrom2DArr(ByRef InputArray() As String) As String()
             tmpData(i * (UB2 - LB2 + 1) + j) = InputArray(i, j)
         Next j
     Next i
-    Array1DFrom2DArr = tmpData
+    ArraySTR1DFrom2DArr = tmpData
 End Function
 
 ''' <summary>
@@ -1148,7 +1227,7 @@ Private Function Array_(ByRef expression As String, ByRef fName As String) As St
     Dim LB As Long, UB As Long
     Dim iCounter As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -1158,16 +1237,16 @@ Private Function Array_(ByRef expression As String, ByRef fName As String) As St
     Next iCounter
     Array_ = d_lCurly & tmpEval & d_rCurly
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
 Private Function Asc_(ByRef expression As String, ByRef fName As String) As Long
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     Asc_ = AscW(FormatLiteralString(expression, True))
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -1184,7 +1263,7 @@ Private Function ASTUDT(ByRef expression As String, ByRef fName As String) As St
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -1201,7 +1280,7 @@ Private Function ASTUDT(ByRef expression As String, ByRef fName As String) As St
     End Select
     ASTUDT = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -1226,7 +1305,7 @@ Private Function average(ByRef expression As String, ByRef fName As String) As D
     Dim tmpData() As String
     Dim tmpEval As Double
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpEval = 0
     tmpData() = Split(expression, P_SEPARATORCHAR)
     For g = LBound(tmpData) To UBound(tmpData)
@@ -1235,12 +1314,12 @@ Private Function average(ByRef expression As String, ByRef fName As String) As D
     tmpEval = tmpEval / (UBound(tmpData) - LBound(tmpData) + 1)
     average = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
-Private Function betacf(X As Double, A As Double, B As Double) As Double
+Private Function betacf(x As Double, A As Double, B As Double) As Double
     Dim fpmin As Double
     Dim m As Long
     Dim M2 As Long
@@ -1254,20 +1333,20 @@ Private Function betacf(X As Double, A As Double, B As Double) As Double
 
 '   // These q's will be used in factors that occur in the coefficients
     qab = A + B: qap = A + 1: qam = A - 1
-    c = 1: d = 1 - qab * X / qap
+    c = 1: d = 1 - qab * x / qap
     If Abs(d) < fpmin Then d = fpmin
     d = 1 / d
     h = d
     Do While m <= 100
         M2 = 2 * m
-        aa = m * (B - m) * X / ((qam + M2) * (A + M2))
+        aa = m * (B - m) * x / ((qam + M2) * (A + M2))
 '       // One step (the even one) of the recurrence
         d = 1 + aa * d
         If Abs(d) < fpmin Then d = fpmin
         c = 1 + aa / c
         If Abs(c) < fpmin Then c = fpmin
         d = 1 / d: h = h * d * c
-        aa = -(A + m) * (qab + m) * X / ((A + M2) * (qap + M2))
+        aa = -(A + m) * (qab + m) * x / ((A + M2) * (qap + M2))
 '       // Next step of the recurrence (the odd one)
         d = 1 + aa * d
         If Abs(d) < fpmin Then d = fpmin
@@ -1297,7 +1376,7 @@ Private Function BETAINV(ByRef expression As String, ByRef fName As String) As S
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -1314,7 +1393,7 @@ Private Function BETAINV(ByRef expression As String, ByRef fName As String) As S
     End Select
     BETAINV = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -1327,7 +1406,7 @@ Private Function BETAINV_(p As Double, A As Double, B As Double) As Double
     Dim lna As Double, lnb As Double
     Dim pp As Double, t As Double
     Dim u As Double, err As Double
-    Dim X As Double, h As Double
+    Dim x As Double, h As Double
     Dim w As Double, afac As Double
     
     a1 = A - 1: b1 = B - 1
@@ -1347,37 +1426,37 @@ Private Function BETAINV_(p As Double, A As Double, B As Double) As Double
             pp = 1 - p
         End If
         t = Sqr(-2 * Log(pp))
-        X = (2.30753 + t * 0.27061) / (1 + t * (0.99229 + t * 0.04481)) - t
-        If p < 0.5 Then X = -X
-        aL = (X * X - 3) / 6
+        x = (2.30753 + t * 0.27061) / (1 + t * (0.99229 + t * 0.04481)) - t
+        If p < 0.5 Then x = -x
+        aL = (x * x - 3) / 6
         h = 2 / (1 / (2 * A - 1) + 1 / (2 * B - 1))
-        w = (X * Sqr(aL + h) / h) - (1 / (2 * B - 1) - 1 / (2 * A - 1)) * _
+        w = (x * Sqr(aL + h) / h) - (1 / (2 * B - 1) - 1 / (2 * A - 1)) * _
             (aL + 5 / 6 - 2 / (3 * h))
-        X = A / (A + B * Exp(2 * w))
+        x = A / (A + B * Exp(2 * w))
     Else
         lna = Log(A / (A + B)): lnb = Log(B / (A + B))
         t = Exp(A * lna) / A: u = Exp(B * lnb) / B
         w = t + u
         If p < t / w Then
-            X = (A * w * p) ^ (1 / A)
+            x = (A * w * p) ^ (1 / A)
         Else
-            X = 1 - ((B * w * (1 - p)) ^ (1 / B))
+            x = 1 - ((B * w * (1 - p)) ^ (1 / B))
         End If
     End If
     afac = -GAMMALN_(A) - GAMMALN_(B) + GAMMALN_(A + B)
     Do While j < 10
-        If X = 0 Or X = 1 Then BETAINV_ = X: Exit Function
-        err = iBETA_(X, A, B) - p
-        t = Exp(a1 * Log(X) + b1 * Log(1 - X) + afac)
+        If x = 0 Or x = 1 Then BETAINV_ = x: Exit Function
+        err = iBETA_(x, A, B) - p
+        t = Exp(a1 * Log(x) + b1 * Log(1 - x) + afac)
         u = err / t
-        t = u / (1 - 0.5 * MIN_(1, u * (a1 / X - b1 / (1 - X))))
-        X = X - t
-        If X <= 0 Then X = 0.5 * (X + t)
-        If X >= 1 Then X = 0.5 * (X + t + 1)
-        If Abs(t) < EPS * X And j > 0 Then Exit Do
+        t = u / (1 - 0.5 * MIN_(1, u * (a1 / x - b1 / (1 - x))))
+        x = x - t
+        If x <= 0 Then x = 0.5 * (x + t)
+        If x >= 1 Then x = 0.5 * (x + t + 1)
+        If Abs(t) < EPS * x And j > 0 Then Exit Do
         j = j + 1
     Loop
-    BETAINV_ = X
+    BETAINV_ = x
 End Function
 
 Private Sub BottomLevelEval(ByRef aToken As token)
@@ -1573,7 +1652,7 @@ Private Function CHISQ(ByRef expression As String, ByRef fName As String) As Str
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -1590,42 +1669,326 @@ Private Function CHISQ(ByRef expression As String, ByRef fName As String) As Str
     End Select
     CHISQ = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
-Private Function CHISQ_(X As Double, n As Double) As Double
+Private Function CHISQ_(x As Double, n As Double) As Double
     Dim q As Double
     Dim p As Double
     Dim k As Double
     Dim t As Double
     Dim A As Double
     
-    If (X > 1000 Or n > 1000) Then
-        q = NORM_((((X / n) ^ (1 / 3)) + 2 / (9 * n) - 1) / Sqr(2 / (9 * n))) / 2
-        If (X > n) Then
+    If (x > 1000 Or n > 1000) Then
+        q = NORM_((((x / n) ^ (1 / 3)) + 2 / (9 * n) - 1) / Sqr(2 / (9 * n))) / 2
+        If (x > n) Then
             CHISQ_ = q: Exit Function
         Else
             CHISQ_ = 1 - q: Exit Function
         End If
     End If
-    p = Exp(-0.5 * X)
+    p = Exp(-0.5 * x)
     If (REM_(n, 2) = 1) Then
-        p = p * Sqr(2 * X / pi)
+        p = p * Sqr(2 * x / pi)
     End If
     k = n
     Do While (k >= 2)
-        p = p * X / k: k = k - 2
+        p = p * x / k: k = k - 2
     Loop
     t = p
     A = n
     Do While (t > 0.000000000000001 * p)
         A = A + 2
-        t = t * X / A: p = p + t
+        t = t * x / A: p = p + t
     Loop
     CHISQ_ = 1 - p
 End Function
+
+''' <summary>
+'''     Given a positive-definite symmetric square matrix A[0..n-1][0..n-1], construct
+'''     and store its Cholesky decomposition, A = L.LT. The result is the lower triangular
+'''     matrix L.
+'''
+'''     NOTE: el() Stores the decomposition.
+''' </summary>
+Private Function Cholesky(ByRef A() As Double, ByRef el() As Double) As Double()
+    Dim n As Long   'Rows
+    Dim m As Long   'Columns
+    Dim i As Long
+    Dim j As Long
+    Dim k As Long
+    Dim sum As Double
+    
+    n = UBound(A) - LBound(A) + 1
+    m = UBound(A, 2) - LBound(A, 2) + 1
+    If m <> n Then Exit Function 'need square matrix
+    el = A
+    For i = 0 To n - 1
+        For j = i To n - 1
+            sum = el(i, j)
+            k = i - 1
+            Do While k >= 0
+                sum = sum - el(i, k) * el(j, k)
+                k = k - 1
+            Loop
+            If i = j Then 'Check diagonal elements
+                If sum <= 0 Then 'A, with rounding errors, is not positive-definite.
+                    Erase el 'Cholesky failed. Test for not initialized array needed.
+                    Exit Function
+                End If
+                el(i, i) = Sqr(sum)
+            Else
+                el(j, i) = sum / el(i, i)
+            End If
+        Next j
+    Next i
+    For i = 0 To n - 1
+        For j = 0 To i - 1
+            el(j, i) = 0
+        Next j
+    Next i
+    Cholesky = el
+End Function
+
+''' <summary>
+'''     Given a positive-definite symmetric square matrix A[0..n-1][0..n-1], construct
+'''     and store its Cholesky decomposition, A = L.LT. The result is the lower triangular
+'''     matrix L.
+''' </summary>
+Private Function CholeskyDecomposition(ByRef expression As String, ByRef fName As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    On Error GoTo err_Handler
+    tmpData() = SplitArgs(expression)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 1
+            Dim aArray() As Double
+            Dim cholDec() As Double
+            
+            aArray() = ToDblArray(ArrayFromString(tmpData(LB)))
+            Cholesky aArray(), cholDec
+            If IsArrayAllocated(Not cholDec) Then
+                tmpEval = ArrayToString(cholDec)
+            Else
+                tmpEval = e_ValueError
+                BuildErrMessage errEvalError, d_lCurly & fName & _
+                                ": the give matrix is not positive-definite symmetric." & d_rCurly
+                Exit Function 'Error computing Decomposition
+            End If
+        Case Else
+            tmpEval = e_ValueError
+              BuildErrMessage errMissingArgsOrTooManyArgs, d_lCurly & fName & d_rCurly
+    End Select
+    CholeskyDecomposition = tmpEval: Erase tmpData
+    Exit Function
+err_Handler:
+    BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
+                                    d_lParenthesis & err.Description & d_rParenthesis
+End Function
+
+''' <summary>
+''' Returns the inverse of a matrix by Cholesky decomposition
+''' </summary>
+Private Function CholeskyInverseMatrix(ByRef expression As String, ByRef fName As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    On Error GoTo err_Handler
+    tmpData() = SplitArgs(expression)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 1
+            Dim aArray() As Double
+            Dim cholDec() As Double
+            
+            aArray() = ToDblArray(ArrayFromString(tmpData(LB)))
+            Cholesky aArray(), cholDec
+            If IsArrayAllocated(Not cholDec) Then
+                tmpEval = ArrayToString(CholeskyInverseMatrix_(cholDec))
+            Else
+                tmpEval = e_ValueError
+                BuildErrMessage errEvalError, d_lCurly & fName & _
+                                ": the give matrix is not positive-definite symmetric." & d_rCurly
+                Exit Function 'Error computing Decomposition
+            End If
+        Case Else
+            tmpEval = e_ValueError
+            BuildErrMessage errMissingArgsOrTooManyArgs, d_lCurly & fName & d_rCurly
+    End Select
+    CholeskyInverseMatrix = tmpEval: Erase tmpData
+    Exit Function
+err_Handler:
+    BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
+                                    d_lParenthesis & err.Description & d_rParenthesis
+End Function
+
+''' <summary>
+'''     Set ainv[0..n-1][0..n-1] to the matrix inverse of A, the matrix whose Cholesky
+'''     decomposition has been stored.
+''' </summary>
+Private Function CholeskyInverseMatrix_(ByRef el() As Double) As Double()
+    Dim n As Long
+    Dim i As Long
+    Dim j As Long
+    Dim k As Long
+    Dim sum As Double
+    Dim ainv() As Double
+    
+    n = UBound(el) - LBound(el) + 1
+    ReDim ainv(0 To n - 1, 0 To n - 1)
+    For i = 0 To n - 1
+        For j = 0 To i
+            sum = IIf(i = j, 1, 0)
+            For k = i - 1 To j Step -1
+                sum = sum - el(i, k) * ainv(j, k)
+            Next k
+            ainv(j, i) = sum / el(i, i)
+        Next j
+    Next i
+    For i = n - 1 To 0 Step -1
+        For j = 0 To i
+            sum = IIf(i < j, 0, ainv(j, i))
+            For k = i + 1 To n - 1
+                sum = sum - el(k, i) * ainv(j, k)
+            Next k
+            ainv(i, j) = sum / el(i, i)
+            ainv(j, i) = ainv(i, j)
+        Next j
+    Next i
+    CholeskyInverseMatrix_ = ainv
+    Erase ainv
+End Function
+
+''' <summary>
+''' Solves the linear system AX = B using Cholesky decomposition. The function
+''' requires that the <expression> argument be composed of the following:
+'''                     1-) An array in text form containing the coefficients of all equations.
+'''                     2-) An one dimentional array containing the name of each variable
+'''                         (the first name will be applied to the first column of coefficients,
+'''                         the second name to the second column and so on).
+'''                     3-) An one dimentional array containing the right-hand side of each equation,
+'''                         (the first name will be applied to the first column of coefficients,
+'''                         the second name to the second column and so on).
+'''                     4-) A True or False parameter to decide when to include the variable names
+'''                         in the result set.
+''' </summary>
+Private Function CholeskySolve(ByRef expression As String, ByRef fName As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    On Error GoTo err_Handler
+    tmpData() = SplitArgs(expression)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 3, 4
+            Dim aArray() As Double
+            Dim eqCount As Long
+            Dim iCounter As Long
+            Dim includeNames As Boolean
+            Dim mLB As Long
+            Dim mUB As Long
+            Dim NamesArray() As String
+            Dim xArray() As Double
+            Dim bArray() As Double
+            Dim tmpElement As String
+            Dim cholDec() As Double
+            
+            aArray() = ToDblArray(ArrayFromString(tmpData(LB)))
+            bArray() = ToDblArray(ArrayFromString(tmpData(LB + 2)))
+            mLB = LBound(aArray)
+            mUB = UBound(aArray)
+            
+            eqCount = mUB - mLB + 1
+            Cholesky aArray(), cholDec
+            If IsArrayAllocated(Not cholDec) Then
+                CholeskySolve_ cholDec, bArray, xArray
+            Else
+                Exit Function 'Error computing Decomposition
+            End If
+            If argsCount = 4 Then
+                NamesArray() = ArrayFromString(tmpData(LB + 1))
+                includeNames = CBool(tmpData(UB))
+            End If
+            For iCounter = mLB To mUB
+                If iCounter > mLB Then
+                    tmpEval = tmpEval & P_SEPARATORCHAR & d_Space
+                End If
+                If includeNames Then
+                    tmpElement = FormatLiteralString(NamesArray(iCounter)) _
+                                & d_Space & op_equal & d_Space _
+                                & xArray(iCounter)
+                Else
+                    tmpElement = xArray(iCounter)
+                End If
+                tmpEval = tmpEval & tmpElement
+            Next iCounter
+            If Not includeNames Then
+                tmpEval = d_lCurly & d_lCurly & tmpEval & d_rCurly & d_rCurly
+            End If
+        Case Else
+            tmpEval = e_ValueError
+              BuildErrMessage errMissingArgsOrTooManyArgs, d_lCurly & fName & d_rCurly
+    End Select
+    CholeskySolve = tmpEval: Erase tmpData
+    Exit Function
+err_Handler:
+    BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
+                                    d_lParenthesis & err.Description & d_rParenthesis
+End Function
+
+''' <summary>
+'''     Solve the set of n linear equations A.x = b, where a is
+'''     a positive-definite symmetric matrix. whose Cholesky
+'''     decomposition has been stored. b[0..n-1] is input as the right-hand
+'''     side vector. The solution vector is returned in x[0..n-1].
+'''     NOTE: el() Stores the decomposition.
+''' </summary>
+Private Sub CholeskySolve_(ByRef el() As Double, ByRef B() As Double, ByRef x() As Double)
+    Dim i As Long
+    Dim k As Long
+    Dim sum As Double
+    Dim n As Long
+    Dim e As Long
+    
+    n = UBound(el) - LBound(el) + 1
+    e = UBound(B) - LBound(B) + 1
+    If e <> n Then Exit Sub 'bad lengths in Cholesky
+    ReDim x(0 To n - 1)
+    For i = 0 To n - 1 'Solve L.y = b, storing y in x.
+        sum = B(i)
+        k = i - 1
+        Do While k >= 0
+            sum = sum - el(i, k) * x(k)
+            k = k - 1
+        Loop
+        x(i) = sum / el(i, i)
+    Next i
+    For i = n - 1 To 0 Step -1 'Solve LT.x = y
+        sum = x(i)
+        k = i + 1
+        Do While k < n
+            sum = sum - el(k, i) * x(k)
+            k = k + 1
+        Loop
+        x(i) = sum / el(i, i)
+    Next i
+End Sub
 
 Private Function Choose(ByRef expression As String, ByRef fName As String) As String
     Dim LB As Long
@@ -1633,7 +1996,7 @@ Private Function Choose(ByRef expression As String, ByRef fName As String) As St
     Dim tmpData() As String
     Dim index As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -1644,16 +2007,16 @@ Private Function Choose(ByRef expression As String, ByRef fName As String) As St
         Choose = e_ValueError
     End If
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
 Private Function Chr_(ByRef expression As String, ByRef fName As String) As String
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     Chr_ = ToLiteralString(ChrW(CLng(expression))) 'Expected numeric value
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -1662,14 +2025,20 @@ End Function
 ''' Computes the mean for the given column from a 2D array
 ''' NOTE: PolyFit helper
 ''' </summary>
-Private Function ColumnAvg(vArr() As Double, colIndex As Long) As Double
+Private Function ColumnAvg(vArr() As Double, Optional colIndex As Long) As Double
     Dim i As Long
     Dim n As Long
+    Dim TDflag As Boolean
     Dim tmpResult As Double
     
     n = UBound(vArr) - LBound(vArr) + 1
+    TDflag = Is2Darray(vArr)
     For i = 0 To n - 1
-        tmpResult = tmpResult + vArr(i, colIndex) / n
+        If TDflag Then
+            tmpResult = tmpResult + vArr(i, colIndex) / n
+        Else
+            tmpResult = tmpResult + vArr(i) / n
+        End If
     Next i
     ColumnAvg = tmpResult
 End Function
@@ -1725,14 +2094,14 @@ End Function
 Private Function Cosin(ByRef expression As String, ByRef fName As String) As Double
     Dim tmpEval As Double
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpEval = CDbl(expression)
     If P_DEGREES Then
         tmpEval = tmpEval * pi / 180
     End If
     Cosin = Cos(tmpEval)
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -1829,7 +2198,7 @@ Private Function DateAdd_(ByRef expression As String, ByRef fName As String) As 
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -1847,7 +2216,7 @@ Private Function DateAdd_(ByRef expression As String, ByRef fName As String) As 
     End Select
     DateAdd_ = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -1858,7 +2227,7 @@ Private Function DateDiff_(ByRef expression As String, ByRef fName As String) As
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -1891,7 +2260,7 @@ Private Function DateDiff_(ByRef expression As String, ByRef fName As String) As
     End Select
     DateDiff_ = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -1902,7 +2271,7 @@ Private Function DatePart_(ByRef expression As String, ByRef fName As String) As
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -1932,7 +2301,7 @@ Private Function DatePart_(ByRef expression As String, ByRef fName As String) As
     End Select
     DatePart_ = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -1943,7 +2312,7 @@ Private Function DateSerial_(ByRef expression As String, ByRef fName As String) 
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -1961,7 +2330,7 @@ Private Function DateSerial_(ByRef expression As String, ByRef fName As String) 
     End Select
     DateSerial_ = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -1972,7 +2341,7 @@ Private Function DateValue_(ByRef expression As String, ByRef fName As String) A
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -1988,16 +2357,16 @@ Private Function DateValue_(ByRef expression As String, ByRef fName As String) A
     End Select
     DateValue_ = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
 Private Function Date_(ByRef expression As String, ByRef fName As String) As String
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     Date_ = ToLiteralString(Date)
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -2008,7 +2377,7 @@ Private Function Day_(ByRef expression As String, ByRef fName As String) As Stri
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -2024,7 +2393,7 @@ Private Function Day_(ByRef expression As String, ByRef fName As String) As Stri
     End Select
     Day_ = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -2035,7 +2404,7 @@ Private Function DDB_(ByRef expression As String, ByRef fName As String) As Stri
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -2058,7 +2427,7 @@ Private Function DDB_(ByRef expression As String, ByRef fName As String) As Stri
     End Select
     DDB_ = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -2098,7 +2467,7 @@ Private Function Determinant(ByRef expression As String, ByRef fName As String) 
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -2122,7 +2491,7 @@ Private Function Determinant(ByRef expression As String, ByRef fName As String) 
     End Select
     Determinant = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -2157,7 +2526,7 @@ Private Function ERF(ByRef expression As String, ByRef fName As String) As Strin
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -2173,16 +2542,16 @@ Private Function ERF(ByRef expression As String, ByRef fName As String) As Strin
     End Select
     ERF = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
-Private Function ERF_(X As Double) As Double
-    If (X < 0) Then
-        ERF_ = (2 * (GAUSS_(Sqr(2) * X) + 0.5) - 1) 'Use CDF function over GAUSS value
+Private Function ERF_(x As Double) As Double
+    If (x < 0) Then
+        ERF_ = (2 * (GAUSS_(Sqr(2) * x) + 0.5) - 1) 'Use CDF function over GAUSS value
     Else
-        ERF_ = (1 - 2 * (GAUSS_(-Sqr(2) * X) + 0.5))
+        ERF_ = (1 - 2 * (GAUSS_(-Sqr(2) * x) + 0.5))
     End If
 End Function
 
@@ -2258,6 +2627,12 @@ Private Function EvalFunction(ByRef Argument As String, ByRef FunctionName As St
                 EvalFunction = Cosin(Argument, FunctionName)
             Case "CHISQ"
                 EvalFunction = CHISQ(Argument, FunctionName)
+            Case "CholeskyDec"
+                EvalFunction = CholeskyDecomposition(Argument, FunctionName)
+            Case "CholeskyInverseMatrix"
+                EvalFunction = CholeskyInverseMatrix(Argument, FunctionName)
+            Case "CholeskySolve"
+                EvalFunction = CholeskySolve(Argument, FunctionName)
             Case "aChoose"
                 EvalFunction = Choose(Argument, FunctionName)
             Case "ASCIIchr"
@@ -2346,6 +2721,8 @@ Private Function EvalFunction(ByRef Argument As String, ByRef FunctionName As St
                 EvalFunction = MIRR_(Argument, FunctionName)
             Case "MatrixMult"
                 EvalFunction = MMult(Argument, FunctionName)
+            Case "MultiLinearReg"
+                EvalFunction = MLR(Argument, FunctionName)
             Case "MatrixNegation"
                 EvalFunction = MNEG(Argument, FunctionName)
             Case "MatrixRound"
@@ -2465,10 +2842,10 @@ Private Sub ExpandCBbuffer(ByRef aBuffer As ClusterBuffer)
 End Sub
 
 Private Function ExpEuler(ByRef expression As String, ByRef fName As String) As Double
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     ExpEuler = Exp(CDbl(expression))
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -2509,10 +2886,10 @@ Private Function FACT(n As Double) As Double
 End Function
 
 Private Function Factorial(ByRef expression As String) As String
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     Factorial = FACT(CDbl(expression))
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & "Factorial" & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -2551,7 +2928,7 @@ Private Function FISHF(ByRef expression As String, ByRef fName As String) As Str
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -2569,24 +2946,24 @@ Private Function FISHF(ByRef expression As String, ByRef fName As String) As Str
     End Select
     FISHF = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
 Private Function FISHF_(f As Double, N1 As Double, N2 As Double) As Double
-    Dim X As Double, th As Double
+    Dim x As Double, th As Double
     Dim A As Double, sth As Double
     Dim cth As Double, c As Double
     Dim k As Double
     
-    X = N2 / (N1 * f + N2)
+    x = N2 / (N1 * f + N2)
     If (REM_(N1, 2) = 0) Then
-        FISHF_ = STATCOM(1 - X, N2, N1 + N2 - 4, N2 - 2) * (X ^ (N2 / 2))
+        FISHF_ = STATCOM(1 - x, N2, N1 + N2 - 4, N2 - 2) * (x ^ (N2 / 2))
         Exit Function
     End If
     If REM_(N2, 2) = 0 Then
-        FISHF_ = 1 - STATCOM(X, N1, N1 + N2 - 4, N1 - 2) * ((1 - X) ^ (N1 / 2))
+        FISHF_ = 1 - STATCOM(x, N1, N1 + N2 - 4, N1 - 2) * ((1 - x) ^ (N1 / 2))
         Exit Function
     End If
     th = Atn(Sqr(N1 * f / N2))
@@ -2628,10 +3005,10 @@ Private Function Fit(ByRef expression As String, ByRef fName As String) As Strin
     Dim ObservatiosnArray() As Double
     Dim fittingOption As Long
     Dim pDegree As Long
-    Dim FittedPolynomial As String
+    Dim fittedPolynomial As String
     Dim solverCoeff As Variant
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -2642,10 +3019,10 @@ Private Function Fit(ByRef expression As String, ByRef fName As String) As Strin
             fittingOption = CLng(tmpData(UB))
             If fittingOption = 1 Then 'Fit straight line [y = a + bx]
                 pDegree = fittingOption
-                FittedPolynomial = PolyFit_(ObservatiosnArray, pDegree)
+                fittedPolynomial = PolyFit_(ObservatiosnArray, pDegree)
                 tmpEval = d_lCurly & _
-                        d_lCurly & FittedPolynomial & d_rCurly & P_SEPARATORCHAR & _
-                        d_lCurly & CStr(GoodnessOfFit_(FittedPolynomial, ObservatiosnArray)) & d_rCurly & _
+                        d_lCurly & fittedPolynomial & d_rCurly & P_SEPARATORCHAR & _
+                        d_lCurly & CStr(GoodnessOfFit_(fittedPolynomial, ObservatiosnArray)) & d_rCurly & _
                         d_rCurly
             Else
                 solverCoeff = PolyFit_(DataLinearization(ObservatiosnArray, fittingOption), 1, False)
@@ -2659,10 +3036,10 @@ Private Function Fit(ByRef expression As String, ByRef fName As String) As Strin
                     Case 4 'Power [y = a*x^b]
                         solverCoeff(0) = 10 ^ solverCoeff(0) 'antilog_10 (A)
                 End Select
-                FittedPolynomial = CurveString(solverCoeff, fittingOption)
+                fittedPolynomial = CurveString(solverCoeff, fittingOption)
                 tmpEval = d_lCurly & _
-                            d_lCurly & FittedPolynomial & d_rCurly & P_SEPARATORCHAR & _
-                            d_lCurly & CStr(GoodnessOfFit_(FittedPolynomial, ObservatiosnArray)) & d_rCurly & _
+                            d_lCurly & fittedPolynomial & d_rCurly & P_SEPARATORCHAR & _
+                            d_lCurly & CStr(GoodnessOfFit_(fittedPolynomial, ObservatiosnArray)) & d_rCurly & _
                             d_rCurly
             End If
         Case 3 'polynomial fitting
@@ -2670,10 +3047,10 @@ Private Function Fit(ByRef expression As String, ByRef fName As String) As Strin
             If fittingOption = 1 Then 'Polynomial fitting
                 ObservatiosnArray() = ToDblArray(ArrayFromString(tmpData(LB)))
                 pDegree = CLng(tmpData(UB))
-                FittedPolynomial = PolyFit_(ObservatiosnArray, pDegree)
+                fittedPolynomial = PolyFit_(ObservatiosnArray, pDegree)
                 tmpEval = d_lCurly & _
-                        d_lCurly & FittedPolynomial & d_rCurly & P_SEPARATORCHAR & _
-                        d_lCurly & CStr(GoodnessOfFit_(FittedPolynomial, ObservatiosnArray)) & d_rCurly & _
+                        d_lCurly & fittedPolynomial & d_rCurly & P_SEPARATORCHAR & _
+                        d_lCurly & CStr(GoodnessOfFit_(fittedPolynomial, ObservatiosnArray)) & d_rCurly & _
                         d_rCurly
             Else
                 tmpEval = e_ValueError
@@ -2684,7 +3061,7 @@ Private Function Fit(ByRef expression As String, ByRef fName As String) As Strin
     End Select
     Fit = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -2717,13 +3094,106 @@ Private Function FormatLiteralString(ByRef aString As String, _
     End If
 End Function
 
+''' <summary>
+'''     Turns predictros literal names to X1;X2;X3 format.
+'''     If there are duplicates, an error will occur.
+'''     The replacement will carry reordering to enforce
+'''     i<=j in all interactions X{i}:X{j}.
+'''
+'''     Usage example:
+'''                     ReplaceNamedPredictors("'Height;Width'","'Height:Width'")
+''' </summary>
+''' <param name="strPredictorsNames">
+'''     The full list of predictors names in '$;$;$' format.
+'''     Here the $ symbol denotre a valid string name
+''' </param>
+''' <param name="strPredictorsInterList">
+'''     A list of predictors relations with the syntax '$#:$#;$#:$#'
+'''     The # symbol denotes relative position of the predictor $ in the
+'''     model.
+''' </param>
+''' <param name="namedToNominal"> If True, the named predictors are turned
+''''    to its nominal representation
+''' </param>
+Private Function FormatNamedPredictors(ByRef strPredictorsNames As String, _
+                                        ByRef strPredictorsInterList As String, _
+                                        Optional namedToNominal As Boolean = True) As String
+    Dim tmpData() As String
+    Dim tmpResult As String
+    Dim savedPredNames() As String
+    Dim s As Long
+    Dim n As Long
+    Dim i As Long
+    
+    'Split predictors names
+    tmpData = Split(FormatLiteralString(strPredictorsNames, True), P_SEPARATORCHAR)
+    n = UBound(tmpData) - LBound(tmpData) + 1
+    ReDim savedPredNames(0 To n - 1)
+    Do While i < n
+        If tmpData(i) <> vbNullString Then
+            If Not IsSavedPredictorName(tmpData(i), savedPredNames) Then
+                savedPredNames(s) = tmpData(i)
+                s = s + 1
+            Else 'Duplicate predictor name
+                Exit Function
+            End If
+        End If
+        i = i + 1
+    Loop
+    tmpResult = strPredictorsInterList
+    For i = 0 To s - 1
+        If namedToNominal Then
+            tmpResult = Replace(tmpResult, savedPredNames(i), "X" & CStr(i + 1))
+        Else
+            tmpResult = Replace(tmpResult, "X" & CStr(i + 1), savedPredNames(i))
+        End If
+    Next i
+    Erase tmpData, savedPredNames
+    If namedToNominal Then
+        FormatNamedPredictors = FormatNumeredInteractions(tmpResult)
+    Else
+        FormatNamedPredictors = tmpResult
+    End If
+End Function
+
+Private Function FormatNumeredInteractions(ByRef strPredictorsInterList As String) As String
+    Dim i As Long
+    Dim n As Long
+    Dim e As Long
+    Dim f As Long
+    Dim u As String
+    Dim v As String
+    Dim tmpElem As String
+    Dim tmpData() As String
+    Dim tmpPredict() As String
+    
+    tmpData = Split(FormatLiteralString(strPredictorsInterList, True), P_SEPARATORCHAR)
+    n = UBound(tmpData) - LBound(tmpData) + 1
+    For i = 0 To n - 1
+        If Not tmpData(i) Like "[Xx]*#:[Xx]*#" Then Exit Function
+        tmpPredict = Split(tmpData(i), ChrW(58))
+        u = MidB(tmpPredict(0), 3)
+        v = MidB(tmpPredict(1), 3)
+        If Not IsNumeric(u) Or Not IsNumeric(v) Then Exit Function
+        e = CLng(MidB(tmpPredict(0), 3))
+        f = CLng(v)
+        If e > f Then
+            tmpElem = tmpPredict(0)
+            tmpPredict(0) = tmpPredict(1)
+            tmpPredict(1) = tmpElem
+            tmpData(i) = Join(tmpPredict, ChrW(58))
+        End If
+    Next i
+    FormatNumeredInteractions = ToLiteralString(Join(tmpData, P_SEPARATORCHAR))
+End Function
+
 Private Function Format_(ByRef expression As String, ByRef fName As String) As String
      Dim argsCount As Long
     Dim tmpData() As String
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -2761,7 +3231,7 @@ Private Function Format_(ByRef expression As String, ByRef fName As String) As S
     End Select
     Format_ = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -2818,7 +3288,7 @@ Private Function FV_(ByRef expression As String, ByRef fName As String) As Strin
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -2845,7 +3315,7 @@ Private Function FV_(ByRef expression As String, ByRef fName As String) As Strin
     End Select
     FV_ = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -3099,15 +3569,15 @@ End Function
 ''' [(c) John C. Pezzullo](https://statpages.info/scicalc.html)
 ''' </summary>
 ''' <param name="x">Value to compute the GAMMA function from.</param>
-Private Function GAMMA(X As Double) As Variant
-    GAMMA = FACT(X - 1)
+Private Function GAMMA(x As Double) As Variant
+    GAMMA = FACT(x - 1)
 End Function
 
 Private Function GAMMALN(ByRef expression As String, ByRef fName As String) As String
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     GAMMALN = GAMMALN_(CDbl(expression))
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -3117,21 +3587,21 @@ End Function
 ''' [(c) John C. Pezzullo](https://statpages.info/scicalc.html)
 ''' </summary>
 ''' <param name="x">Value to compute the GAMMALN function from.</param>
-Private Function GAMMALN_(X As Double) As Double
+Private Function GAMMALN_(x As Double) As Double
     Dim j As Long
     Dim cof As Variant
     Dim ser As Double
-    Dim xx As Double, Y As Double
+    Dim xx As Double, y As Double
     Dim tmp As Double
 
     cof = [{76.18009172947146, -86.50532032941677, 24.01409824083091, -1.231739572450155, 0.1208650973866179E-2, -0.5395239384953E-5}]
     ser = 1.00000000019001
-    Y = X: xx = X
-    tmp = X + 5.5
+    y = x: xx = x
+    tmp = x + 5.5
     tmp = tmp - (xx + 0.5) * Log(tmp)
     For j = LBound(cof) To UBound(cof)
-        Y = Y + 1
-        ser = ser + cof(j) / (Y)
+        y = y + 1
+        ser = ser + cof(j) / (y)
     Next j
     GAMMALN_ = Log(2.506628274631 * ser / xx) - tmp
 End Function
@@ -3151,7 +3621,7 @@ Private Function GAUSS(ByRef expression As String, ByRef fName As String) As Str
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -3167,7 +3637,7 @@ Private Function GAUSS(ByRef expression As String, ByRef fName As String) As Str
     End Select
     GAUSS = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -3189,7 +3659,7 @@ Private Function GAUSS_(z As Double) As Double
     GAUSS_ = GAUSS_ - 0.5
 End Function
 
-Private Function get2DimArrayCopy(ByRef BArray() As Double) As Double()
+Private Function get2DimArrayCopy(ByRef bArray() As Double) As Double()
     Dim tmpResult() As Double
     Dim isArray2D As Boolean
     Dim colDim As Long
@@ -3197,24 +3667,24 @@ Private Function get2DimArrayCopy(ByRef BArray() As Double) As Double()
     Dim LB As Long, UB As Long
     Dim LB2 As Long, UB2 As Long
     
-    isArray2D = Is2Darray(BArray)
-    UB = UBound(BArray)
-    LB = LBound(BArray)
+    isArray2D = Is2Darray(bArray)
+    UB = UBound(bArray)
+    LB = LBound(bArray)
     If isArray2D Then
-        UB2 = UBound(BArray, 2)
-        LB2 = LBound(BArray, 2)
+        UB2 = UBound(bArray, 2)
+        LB2 = LBound(bArray, 2)
         colDim = UB2 - LB2
     End If
     ReDim tmpResult(0 To UB - LB, 0 To colDim)
     If isArray2D Then
         For i = LB To UB
             For j = LB2 To UB2
-                tmpResult(0 + i - LB, 0 + j - LB2) = BArray(i, j)
+                tmpResult(0 + i - LB, 0 + j - LB2) = bArray(i, j)
             Next j
         Next i
     Else
         For i = LB To UB
-            tmpResult(0 + i - LB, 0) = BArray(i)
+            tmpResult(0 + i - LB, 0) = bArray(i)
         Next i
     End If
     get2DimArrayCopy = tmpResult
@@ -3771,6 +4241,114 @@ Private Function GetPrecisionResult(p2 As Double) As Double
     End If
 End Function
 
+''' <summary>
+'''     Returns an array populated with the predictors relations to
+'''     be used in a multiple linear regression model. The relations
+'''     are expressed using dot to separate IDs. If named predictors
+'''     are used, the list of predictors names must be supplied.
+'''     Usage example:
+'''                    GetPredInterArr("'X1:X2;X2:X2'",2)
+'''                    GetPredInterArr("'Height:Width'",2,"'Height;Width'")
+''' </summary>
+''' <param name="strPredictorsInterList">
+'''     A list of predictors relations with the syntax 'X#:X#;X#:X#'.
+'''     The # symbol denotes relative position of the predictor X in the
+'''     model. The entire list must be enclosed in apostrophes.
+''' </param>
+''' <param name="n"> Predictors count.</param>
+''' <param name="strPreditorsNames">
+'''     The full list of predictors names in '$;$;$' format.
+'''     Here the $ symbol denotre a valid string name
+''' </param>
+Private Function GetPredInterArr(ByRef strPredictorsInterList As String, n As Long, _
+                                Optional strPreditorsNames As String = vbNullString) As Boolean()
+    Dim tmpData() As String
+    Dim tmpPredict() As String
+    Dim tmpResult() As Boolean
+    Dim fInteractions As String
+    Dim idx1 As Long
+    Dim idx2 As Long
+    Dim s As Long
+    Dim i As Long
+    Dim j As Long
+    Dim m As Long
+    Dim elemComb As Long
+    Dim r As Double    'Sample of r elements
+    
+    On Error GoTo err_Handler
+    r = 2
+    elemComb = FACT(n + r - 1) / (FACT(r) * FACT(n - 1)) 'Combination with replacement taken from a set of n distinct objects
+    ReDim tmpResult(0 To elemComb - 1)
+    If strPreditorsNames <> vbNullString Then
+        fInteractions = FormatNumeredInteractions( _
+                                FormatNamedPredictors(strPreditorsNames, strPredictorsInterList) _
+                            )
+    Else
+        fInteractions = FormatNumeredInteractions(strPredictorsInterList)
+    End If
+    If fInteractions = vbNullString Then Exit Function 'Syntax error or missed req. argument
+    tmpData = Split(FormatLiteralString(fInteractions, True), P_SEPARATORCHAR)
+    For m = LBound(tmpData) To UBound(tmpData)
+        tmpPredict = Split(tmpData(m), ChrW(58))
+        idx1 = CLng(MidB(tmpPredict(LBound(tmpPredict)), 3))
+        idx2 = CLng(MidB(tmpPredict(LBound(tmpPredict) + 1), 3))
+        s = 0
+        j = 0
+        Do While s < elemComb
+            i = 1
+            j = j + 1
+            Do While i <= j
+                'Check predictor "Xi.Xj"
+                If idx1 = i And idx2 = j Then
+                    tmpResult(s) = True
+                    Exit Do
+                End If
+                i = i + 1
+                s = s + 1
+            Loop
+        Loop
+    Next m
+    GetPredInterArr = tmpResult
+err_Handler:
+End Function
+
+''' <summary>
+'''     Returns a string holding a list of predictors relations with the syntax 'X1*X2;X3*X4'
+''' </summary>
+''' <param name="PredInterArr">
+'''     A list of predictors relations used in a multiple linear regression model.
+''' </param>
+Private Function GetPredInterNames(ByRef PredInterArr() As Boolean) As String
+    Dim tmpResult As String
+    Dim idx1 As Long
+    Dim idx2 As Long
+    Dim s As Long
+    Dim i As Long
+    Dim j As Long
+    Dim elemComb As Long
+    
+    elemComb = UBound(PredInterArr) - LBound(PredInterArr) + 1
+
+    Do While s < elemComb
+        i = 1
+        j = j + 1
+        Do While i <= j
+            'Check predictor "Xi.Xj"
+            If PredInterArr(s) Then
+                If tmpResult <> vbNullString Then
+                    tmpResult = tmpResult & P_SEPARATORCHAR & _
+                                "X" & i & op_mult & "X" & j
+                Else
+                    tmpResult = "X" & i & op_mult & "X" & j
+                End If
+            End If
+            i = i + 1
+            s = s + 1
+        Loop
+    Loop
+    GetPredInterNames = tmpResult
+End Function
+
 Private Sub GetRootedTree(ByRef SubExpression As String, ByRef tmpReplacement As String, _
                                     ByRef OperationIndex As Long, ByRef outBuffer As ClusterTree)
     Dim vToken As token
@@ -4119,7 +4697,7 @@ Private Function Hour_(ByRef expression As String, ByRef fName As String) As Str
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -4135,7 +4713,7 @@ Private Function Hour_(ByRef expression As String, ByRef fName As String) As Str
     End Select
     Hour_ = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -4155,7 +4733,7 @@ Private Function iBETA(ByRef expression As String, ByRef fName As String) As Str
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -4172,7 +4750,7 @@ Private Function iBETA(ByRef expression As String, ByRef fName As String) As Str
     End Select
     iBETA = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -4185,7 +4763,7 @@ Public Function iBETAINV(p As Double, A As Double, B As Double) As Double
     Dim lna As Double, lnb As Double
     Dim pp As Double, t As Double
     Dim u As Double, err As Double
-    Dim X As Double, h As Double
+    Dim x As Double, h As Double
     Dim w As Double, afac As Double
 
     a1 = A - 1: b1 = B - 1
@@ -4205,57 +4783,57 @@ Public Function iBETAINV(p As Double, A As Double, B As Double) As Double
             pp = 1 - p
         End If
         t = Sqr(-2 * Log(pp))
-        X = (2.30753 + t * 0.27061) / (1 + t * (0.99229 + t * 0.04481)) - t
-        If p < 0.5 Then X = -X
-        aL = (X * X - 3) / 6
+        x = (2.30753 + t * 0.27061) / (1 + t * (0.99229 + t * 0.04481)) - t
+        If p < 0.5 Then x = -x
+        aL = (x * x - 3) / 6
         h = 2 / (1 / (2 * A - 1) + 1 / (2 * B - 1))
-        w = (X * Sqr(aL + h) / h) - (1 / (2 * B - 1) - 1 / (2 * A - 1)) * _
+        w = (x * Sqr(aL + h) / h) - (1 / (2 * B - 1) - 1 / (2 * A - 1)) * _
             (aL + 5 / 6 - 2 / (3 * h))
-        X = A / (A + B * Exp(2 * w))
+        x = A / (A + B * Exp(2 * w))
     Else
         lna = Log(A / (A + B)): lnb = Log(B / (A + B))
         t = Exp(A * lna) / A: u = Exp(B * lnb) / B
         w = t + u
         If p < t / w Then
-            X = (A * w * p) ^ (1 / A)
+            x = (A * w * p) ^ (1 / A)
         Else
-            X = 1 - ((B * w * (1 - p)) ^ (1 / B))
+            x = 1 - ((B * w * (1 - p)) ^ (1 / B))
         End If
     End If
     afac = -GAMMALN_(A) - GAMMALN_(B) + GAMMALN_(A + B)
     Do While j < 10
-        If X = 0 Or X = 1 Then iBETAINV = X: Exit Function
-        err = iBETA_(X, A, B) - p
-        t = Exp(a1 * Log(X) + b1 * Log(1 - X) + afac)
+        If x = 0 Or x = 1 Then iBETAINV = x: Exit Function
+        err = iBETA_(x, A, B) - p
+        t = Exp(a1 * Log(x) + b1 * Log(1 - x) + afac)
         u = err / t
-        t = u / (1 - 0.5 * Min(1, u * (a1 / X - b1 / (1 - X))))
-        X = X - t
-        If X <= 0 Then X = 0.5 * (X + t)
-        If X >= 1 Then X = 0.5 * (X + t + 1)
-        If Abs(t) < EPS * X And j > 0 Then Exit Do
+        t = u / (1 - 0.5 * Min(1, u * (a1 / x - b1 / (1 - x))))
+        x = x - t
+        If x <= 0 Then x = 0.5 * (x + t)
+        If x >= 1 Then x = 0.5 * (x + t + 1)
+        If Abs(t) < EPS * x And j > 0 Then Exit Do
         j = j + 1
     Loop
-    iBETAINV = X
+    iBETAINV = x
 End Function
 
-Private Function iBETA_(X As Double, A As Double, B As Double) As Variant
+Private Function iBETA_(x As Double, A As Double, B As Double) As Variant
     Dim BT As Double
 
 '   // Factors in front of the continued fraction.
-    If X = 0 Or X = 1 Then
+    If x = 0 Or x = 1 Then
         BT = 0
     Else
-        BT = Exp(GAMMALN_(A + B) - GAMMALN_(A) - GAMMALN_(B) + A * Log(X) + B * Log(1 - X))
+        BT = Exp(GAMMALN_(A + B) - GAMMALN_(A) - GAMMALN_(B) + A * Log(x) + B * Log(1 - x))
     End If
-    If X < 0 Or X > 1 Then
+    If x < 0 Or x > 1 Then
         iBETA_ = False: Exit Function
     Else
-        If X < (A + 1) / (A + B + 2) Then
+        If x < (A + 1) / (A + B + 2) Then
 '           // Use continued fraction directly.
-            iBETA_ = BT * betacf(X, A, B) / A
+            iBETA_ = BT * betacf(x, A, B) / A
         Else
 '           // else use continued fraction after making the symmetry transformation.
-            iBETA_ = 1 - BT * betacf(1 - X, B, A) / B
+            iBETA_ = 1 - BT * betacf(1 - x, B, A) / B
         End If
     End If
 End Function
@@ -4266,7 +4844,7 @@ Private Function Iff_(ByRef expression As String, ByRef fName As String) As Stri
     Dim tmpEval As Boolean
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -4286,7 +4864,7 @@ Private Function Iff_(ByRef expression As String, ByRef fName As String) As Stri
         Iff_ = tmpData(UB)
     End If
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -4317,11 +4895,11 @@ End Sub
 Private Function InitializedArray(ByRef arr As Variant) As Boolean
     Dim UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     UB = UBound(arr)
     InitializedArray = True
     Exit Function
-err_handler:
+err_Handler:
     InitializedArray = False
 End Function
 
@@ -4330,47 +4908,13 @@ Private Sub InitializeErrHandler()
     P_ERRTYPE = errNone
 End Sub
 
-Private Function Inverse(ByRef A() As Double, ByRef indx() As Long, _
-                        ByRef d As Double) As Double()
-'@----------------------------------------------------------------------------------------
-' Numerical recipes in C: the art of scientific computing / William H. Press [et al.]
-' - 2nd ed. (p.48)
-'-----------------------------------------------------------------------------------------
-    Dim Y() As Double
-    Dim col() As Double
-    Dim i As Long
-    Dim j As Long
-    Dim aUB As Long
-    Dim aLB As Long
-    Dim n As Long
-    
-    aUB = UBound(A)
-    aLB = LBound(A)
-    n = aUB - aLB + 1
-    ReDim Y(1 To n, 1 To n)
-    ReDim col(1 To n)
-    LUdecomp A, indx, d
-    For j = 1 To n
-        For i = 1 To n
-            col(i) = 0
-        Next i
-        col(j) = 1
-        LUbkSub A, indx, col
-        For i = 1 To n
-            If Abs(col(i)) = 0 Then col(i) = 0      'Avoid VBA -0 value
-            Y(i, j) = col(i)
-        Next i
-    Next j
-    Inverse = Y
-End Function
-
 Private Function InverseMatrix(ByRef expression As String, ByRef fName As String) As String
     Dim argsCount As Long
     Dim tmpData() As String
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -4382,14 +4926,14 @@ Private Function InverseMatrix(ByRef expression As String, ByRef fName As String
             Dim d As Double             'Interchages parity
             
             aArray() = ToDblArray(ArrayFromString(tmpData(LB)))
-            tmpEval = ArrayToString(Inverse(aArray, pivotingIdx, d))
+            tmpEval = ArrayToString(MInverse_(aArray, pivotingIdx, d))
         Case Else
             tmpEval = e_ValueError
               BuildErrMessage errMissingArgsOrTooManyArgs, d_lCurly & fName & d_rCurly
     End Select
     InverseMatrix = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -4400,7 +4944,7 @@ Private Function IPMT_(ByRef expression As String, ByRef fName As String) As Str
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -4430,7 +4974,7 @@ Private Function IPMT_(ByRef expression As String, ByRef fName As String) As Str
     End Select
     IPMT_ = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -4442,7 +4986,7 @@ Private Function IRR_(ByRef expression As String, ByRef fName As String) As Stri
     Dim LB As Long, UB As Long
     Dim strArray() As String
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -4465,7 +5009,7 @@ Private Function IRR_(ByRef expression As String, ByRef fName As String) As Stri
     End Select
     IRR_ = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -4473,11 +5017,11 @@ End Function
 Private Function Is2Darray(arr As Variant) As Boolean
     Dim d As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     d = UBound(arr, 2)
     Is2Darray = True
     Exit Function
-err_handler:
+err_Handler:
     Is2Darray = False
 End Function
 
@@ -4490,6 +5034,15 @@ Private Function IsAlphaNumeric(ByRef Char As String) As Boolean
                 IsAlphaNumeric = False
         End Select
     End If
+End Function
+
+''' <summary>
+''' Determines if an array is allocated
+'''
+''' usage: IsArrayAllocated(Not ArrayName)
+''' </summary>
+Public Function IsArrayAllocated(ByVal Not_Array As Variant) As Boolean
+    IsArrayAllocated = Not (Not_Array = -1&)
 End Function
 
 Private Function IsBoolean(ByRef expression As String) As Boolean
@@ -4620,6 +5173,20 @@ Private Function IsPlusOrMinus(ByRef Char As String) As Boolean
     End If
 End Function
 
+Private Function IsSavedPredictorName(ByRef aName As String, ByRef aNamesList() As String) As Boolean
+    Dim i As Long
+    Dim tmpResult As Boolean
+    Dim n As Long
+
+    n = UBound(aNamesList)
+    i = LBound(aNamesList)
+    Do While Not tmpResult And i <= n
+        tmpResult = (aName = aNamesList(i))
+        i = i + 1
+    Loop
+    IsSavedPredictorName = tmpResult
+End Function
+
 Private Function IsSymbolInLiteralString(ByRef expression As String, SymbolPos As Long) As Boolean
     Dim flagCounter As Long
     Dim tmpPos As Long
@@ -4635,10 +5202,10 @@ Private Function IsSymbolInLiteralString(ByRef expression As String, SymbolPos A
 End Function
 
 Private Function IsTwiceJaggedArr(ByRef arr As Variant, elIdx As Long) As Boolean
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     IsTwiceJaggedArr = IsArray(arr(elIdx)(LBound(arr(elIdx))))
     Exit Function
-err_handler:
+err_Handler:
     IsTwiceJaggedArr = False
     err.Clear
 End Function
@@ -4670,10 +5237,10 @@ Private Function JoinArrFunctArg(ByRef DecompArray() As String, ByRef MaxRowInde
 End Function
 
 Private Function LCase_(ByRef expression As String, ByRef fName As String) As String
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     LCase_ = ToLiteralString(LCase(expression))
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -4684,7 +5251,7 @@ Private Function Left_(ByRef expression As String, ByRef fName As String) As Str
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -4705,20 +5272,20 @@ Private Function Left_(ByRef expression As String, ByRef fName As String) As Str
     End Select
     Left_ = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
 Private Function Len_(ByRef expression As String, ByRef fName As String) As Long
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     If IsLiteralString(expression) Then
         Len_ = Len(FormatLiteralString(expression))
     Else
         Len_ = Len(expression)
     End If
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -4728,7 +5295,7 @@ Private Function LgN(ByRef expression As String, ByRef fName As String) As Doubl
     Dim tmpEval As Double
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpEval = 0
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
@@ -4742,16 +5309,16 @@ Private Function LgN(ByRef expression As String, ByRef fName As String) As Doubl
     End If
     LgN = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
 Private Function LN(ByRef expression As String, ByRef fName As String) As Double
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     LN = Log(CDbl(expression))
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -4761,10 +5328,10 @@ Private Function Log10(aValue As Double) As Double
 End Function
 
 Private Function Logarithm(ByRef expression As String, ByRef fName As String) As Double
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     Logarithm = Log(CDbl(expression)) / Log(10)
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -4782,7 +5349,7 @@ Private Function LSQRsolve(ByRef expression As String, ByRef fName As String) As
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -4799,7 +5366,7 @@ Private Function LSQRsolve(ByRef expression As String, ByRef fName As String) As
     End Select
     LSQRsolve = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -4954,7 +5521,7 @@ Private Function LUdecomposition(ByRef expression As String, ByRef fName As Stri
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -4974,7 +5541,7 @@ Private Function LUdecomposition(ByRef expression As String, ByRef fName As Stri
     End Select
     LUdecomposition = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -4998,7 +5565,7 @@ Private Function LUsolve(ByRef expression As String, ByRef fName As String) As S
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -5011,19 +5578,19 @@ Private Function LUsolve(ByRef expression As String, ByRef fName As String) As S
             Dim includeNames As Boolean
             Dim mLB As Long
             Dim mUB As Long
-            Dim Xarray() As String
-            Dim BArray() As Double
+            Dim xArray() As String
+            Dim bArray() As Double
             Dim tmpElement As String
             
             aArray() = ToDblArray(ArrayFromString(tmpData(LB)))
-            BArray() = ToDblArray(ArrayFromString(tmpData(LB + 2)))
+            bArray() = ToDblArray(ArrayFromString(tmpData(LB + 2)))
             mLB = LBound(aArray)
             mUB = UBound(aArray)
             
             eqCount = mUB - mLB + 1
-            LUsolve_ aArray, BArray
+            LUsolve_ aArray, bArray
             If argsCount = 4 Then
-                Xarray() = ArrayFromString(tmpData(LB + 1))
+                xArray() = ArrayFromString(tmpData(LB + 1))
                 includeNames = CBool(tmpData(UB))
             End If
             For iCounter = mLB To mUB
@@ -5031,11 +5598,11 @@ Private Function LUsolve(ByRef expression As String, ByRef fName As String) As S
                     tmpEval = tmpEval & P_SEPARATORCHAR & d_Space
                 End If
                 If includeNames Then
-                    tmpElement = FormatLiteralString(Xarray(iCounter)) _
+                    tmpElement = FormatLiteralString(xArray(iCounter)) _
                                 & d_Space & op_equal & d_Space _
-                                & BArray(iCounter)
+                                & bArray(iCounter)
                 Else
-                    tmpElement = BArray(iCounter)
+                    tmpElement = bArray(iCounter)
                 End If
                 tmpEval = tmpEval & tmpElement
             Next iCounter
@@ -5048,18 +5615,18 @@ Private Function LUsolve(ByRef expression As String, ByRef fName As String) As S
     End Select
     LUsolve = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
-Private Function LUsolve_(ByRef aArray() As Double, ByRef BArray() As Double) As Double()
+Private Function LUsolve_(ByRef aArray() As Double, ByRef bArray() As Double) As Double()
     Dim pivotingIdx() As Long
     Dim d As Double             'Interchages parity
     
     LUdecomp aArray, pivotingIdx, d             'LU decomposition
-    LUbkSub aArray, pivotingIdx, BArray         'Back substitution, returning in bArray
-    LUsolve_ = BArray
+    LUbkSub aArray, pivotingIdx, bArray         'Back substitution, returning in bArray
+    LUsolve_ = bArray
 End Function
 
 Private Function Max(ByRef expression As String, ByRef fName As String) As Double
@@ -5068,7 +5635,7 @@ Private Function Max(ByRef expression As String, ByRef fName As String) As Doubl
     Dim tmpEval As Double
     Dim compEval As Double
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     tmpEval = CDbl(tmpData(LBound(tmpData)))
     For g = LBound(tmpData) + 1 To UBound(tmpData)
@@ -5079,7 +5646,7 @@ Private Function Max(ByRef expression As String, ByRef fName As String) As Doubl
     Next g
     Max = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -5104,7 +5671,7 @@ Private Function Mid_(ByRef expression As String, ByRef fName As String) As Stri
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -5131,7 +5698,7 @@ Private Function Mid_(ByRef expression As String, ByRef fName As String) As Stri
     End Select
     Mid_ = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -5142,7 +5709,7 @@ Private Function Min(ByRef expression As String, ByRef fName As String) As Doubl
     Dim tmpEval As Double
     Dim compEval As Double
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     tmpEval = CDbl(tmpData(LBound(tmpData)))
     For g = LBound(tmpData) + 1 To UBound(tmpData)
@@ -5153,7 +5720,7 @@ Private Function Min(ByRef expression As String, ByRef fName As String) As Doubl
     Next g
     Min = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -5189,7 +5756,7 @@ Private Function Minute_(ByRef expression As String, ByRef fName As String) As S
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -5205,9 +5772,43 @@ Private Function Minute_(ByRef expression As String, ByRef fName As String) As S
     End Select
     Minute_ = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
+End Function
+
+Private Function MInverse_(ByRef A() As Double, ByRef indx() As Long, _
+                        ByRef d As Double) As Double()
+'@----------------------------------------------------------------------------------------
+' Numerical recipes in C: the art of scientific computing / William H. Press [et al.]
+' - 2nd ed. (p.48)
+'-----------------------------------------------------------------------------------------
+    Dim y() As Double
+    Dim col() As Double
+    Dim i As Long
+    Dim j As Long
+    Dim aUB As Long
+    Dim aLB As Long
+    Dim n As Long
+    
+    aUB = UBound(A)
+    aLB = LBound(A)
+    n = aUB - aLB + 1
+    ReDim y(1 To n, 1 To n)
+    ReDim col(1 To n)
+    LUdecomp A, indx, d
+    For j = 1 To n
+        For i = 1 To n
+            col(i) = 0
+        Next i
+        col(j) = 1
+        LUbkSub A, indx, col
+        For i = 1 To n
+            If Abs(col(i)) = 0 Then col(i) = 0      'Avoid VBA -0 value
+            y(i, j) = col(i)
+        Next i
+    Next j
+    MInverse_ = y
 End Function
 
 Private Function MIN_(ParamArray aList() As Variant) As Double
@@ -5233,7 +5834,7 @@ Private Function MIRR_(ByRef expression As String, ByRef fName As String) As Str
     Dim strArray() As String
     Dim dblArray() As Double
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -5254,9 +5855,146 @@ Private Function MIRR_(ByRef expression As String, ByRef fName As String) As Str
     End Select
     MIRR_ = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
+End Function
+
+''' <summary>
+'''     Performs a multiple linear regression over a model with more than to regressors/predictors.
+'''     The parameters required by the functions are:
+'''         1- X: the model NxK matrix with K regressors variables for all the N observations.
+'''         2- Y: a Nx1 vector with N observations for the model.
+'''         3- formatOutput: a boolean indicating when to format the output as polynomial.
+'''         4-PredInteractions: an optional list of interactions between predictors in the model.
+'''             This parameter use the syntax 'X#:X#;...;X#:X#' for nominal predictors.
+'''             The # symbol indicates the position of the predictor X# in the model matrix
+'''             The alternative syntax is '$#:$#;...;$#:$#', where the symbol $ refers to a predictor
+'''             name from the PredNames list. If named predictors are used, the list of predictors
+'''             names must be supplied.
+'''         5-PredNames: an optional list of names for all the predictors in the model in '$;$;$' format.
+'''     NOTES: for a predictors relation X{i}:X{j} the method will ensure i>=j.
+''' </summary>
+Private Function MLR(ByRef expression As String, ByRef fName As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    On Error GoTo err_Handler
+    tmpData() = SplitArgs(expression)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 3, 4, 5
+            Dim x() As Double
+            Dim y() As Double
+            Dim tmpResult() As Double
+            Dim formatOutput As Boolean
+            Dim k As Long
+            Dim m As Long
+            Dim Rsquared As Double
+            Dim Rsquared_adj As Double
+            Dim fittedPolynomial As String
+            
+            x = ToDblArray(ArrayFromString(tmpData(LB)))
+            y = ToDblArray(ArrayFromString(tmpData(LB + 1)))
+            formatOutput = CBool(tmpData(LB + 2))
+            m = UBound(x, 2) - LBound(x, 2) + 1 'Number of regressors/predictors on user input
+            AddIntersectionCol x
+            If argsCount > 3 Then
+                Dim PredInteractions() As String
+                
+                If argsCount = 4 Then
+                    PredInteractions = Split(GetPredInterNames(GetPredInterArr(tmpData(LB + 3), m)), P_SEPARATORCHAR)
+                Else
+                    PredInteractions = Split(GetPredInterNames(GetPredInterArr(tmpData(LB + 3), m, tmpData(LB + 4))), P_SEPARATORCHAR)
+                End If
+                AddPredictorsRelations x, PredInteractions
+            End If
+            k = UBound(x, 2) - LBound(x, 2) 'Total number of predictors on model
+            tmpResult = MLR_(x, y, k, Rsquared, Rsquared_adj:=Rsquared_adj) 'Saves goodness of fit to the Rsquared and Rsquared_adj parameters
+            If formatOutput Then
+                If argsCount > 3 Then
+                    If argsCount = 5 Then
+                        fittedPolynomial = RegressionString(tmpResult, _
+                                        Split(FormatLiteralString(tmpData(LB + 4), True), P_SEPARATORCHAR), _
+                                        PredInteractions)
+                    Else
+                        fittedPolynomial = RegressionString(tmpResult, PredInteractions:=PredInteractions)
+                    End If
+                Else
+                    fittedPolynomial = RegressionString(tmpResult)
+                End If
+                tmpEval = d_lCurly & _
+                        d_lCurly & fittedPolynomial & d_rCurly & P_SEPARATORCHAR & _
+                        d_lCurly & CStr(Rsquared) & P_SEPARATORCHAR & _
+                        CStr(Rsquared_adj) & d_rCurly & d_rCurly
+            Else
+                tmpEval = d_lCurly & _
+                        d_lCurly & ArrayToString(MROUND_(tmpResult, 4)) & d_rCurly & _
+                        P_SEPARATORCHAR & d_lCurly & CStr(Rsquared) & P_SEPARATORCHAR & _
+                        CStr(Rsquared_adj) & d_rCurly & d_rCurly
+            End If
+        Case Else
+            tmpEval = e_ValueError
+              BuildErrMessage errMissingArgsOrTooManyArgs, d_lCurly & fName & d_rCurly
+    End Select
+    MLR = tmpEval: Erase tmpData, tmpResult
+    Exit Function
+err_Handler:
+    BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
+                                    d_lParenthesis & err.Description & d_rParenthesis
+End Function
+
+Private Function MLR_(x() As Double, y() As Double, Optional k As Long = -1, _
+                        Optional ByRef Rsquared As Double, _
+                        Optional ByRef standardError As Double, _
+                        Optional ByRef Rsquared_adj As Double) As Double()
+    Dim Xt() As Double
+    Dim XtX() As Double
+    Dim XtY() As Double
+    Dim XtXInv() As Double
+    Dim indx() As Long
+    Dim Betahat() As Double
+    Dim yhat() As Double
+    Dim e() As Double
+    Dim sigmaSquared As Double
+    Dim ymean As Double
+    Dim d As Double
+    Dim n As Long
+    Dim p As Long
+    Dim SSE As Double
+    Dim SST As Double
+    Dim i As Long
+    
+    Xt = MTranspose_(x) 'Transpose of X
+    XtX = ToDblArray(MMULT_(Xt, x)) 'Transpose of X multiplied by X
+    XtY = ToDblArray(MMULT_(Xt, y)) 'Transpose of X multiplied by Y
+    XtXInv = MInverse_(XtX, indx, d)
+    Betahat = ToDblArray(MMULT_(XtXInv, XtY))
+    If k > 0 Then
+        'Compute goodness of fit
+        n = UBound(y) - LBound(y) + 1 'Number of observations in the model
+        p = k + 1 'Number of parameters in the model
+        yhat = ToDblArray(MMULT_(x, Betahat)) 'Predictions
+        e = MSum_(y, yhat, True)    'Residuals
+        ymean = ColumnAvg(y)
+        For i = 0 To n - 1
+            SSE = SSE + e(i) ^ 2
+            SST = SST + (y(i) - ymean) ^ 2
+        Next i
+        If n > p Then
+            sigmaSquared = SSE / (n - p) 'Squared standard error
+        Else
+            sigmaSquared = 1.79769313486231E+308
+        End If
+        Rsquared = Round(1 - SSE / SST, 4)
+        standardError = Round(Sqr(sigmaSquared), 4)
+        Rsquared_adj = Round(1 - (1 - Rsquared) * (n - 1) / (n - k - 1), 4)
+    End If
+    MLR_ = Betahat
 End Function
 
 ''' <summary>
@@ -5271,7 +6009,7 @@ Private Function MMult(ByRef expression As String, ByRef fName As String) As Str
     Dim tmpOP As Variant
     Dim bIsMatrix As Boolean
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -5299,7 +6037,7 @@ Private Function MMult(ByRef expression As String, ByRef fName As String) As Str
     End Select
     MMult = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -5314,8 +6052,8 @@ Private Function MMULT_(ByRef A() As Double, ByRef B As Variant) As Variant
     Dim c() As Double
     Dim i As Long
     Dim j As Long, jj As Long
-    Dim m As Long 'Columns of the output
-    Dim n As Long 'Rows of the output
+    Dim m As Long
+    Dim n As Long
     Dim OutputIsArray As Boolean
     Dim sum As Double
     
@@ -5363,10 +6101,10 @@ Private Function MMULT_(ByRef A() As Double, ByRef B As Variant) As Variant
         bLB2 = LBound(B, 2): bUB2 = UBound(B, 2)
         n = aUB - aLB + 1
         m = bUB2 - bLB2 + 1
-        If Not (aUB2 - aLB2 + 1) <> (bUB - bLB + 1) Then 'Requires columns from a() equals to rows from b()
+        If Not (aUB2 - aLB2 + 1) <> (bUB - bLB + 1) Then
             ReDim c(0 To n - 1, 0 To m - 1)
-            For i = 0 To n - 1 'Loop a() rows
-                For j = 0 To m - 1 'Loop c() columns
+            For i = 0 To n - 1
+                For j = 0 To m - 1
                     sum = 0
                     For jj = 0 To aUB2 - aLB2 'Loop a() columns
                         sum = sum + A(aLB + jj) * B(bLB + jj, bLB2 + j)
@@ -5382,12 +6120,12 @@ Private Function MMULT_(ByRef A() As Double, ByRef B As Variant) As Variant
         bLB2 = LBound(B, 2): bUB2 = UBound(B, 2)
         n = aUB - aLB + 1
         m = bUB2 - bLB2 + 1
-        If Not (aUB2 - aLB2 + 1) <> (bUB - bLB + 1) Then 'Requires columns from a() equals to rows from b()
+        If Not (aUB2 - aLB2 + 1) <> (bUB - bLB + 1) Then
             ReDim c(0 To n - 1, 0 To m - 1)
-            For i = 0 To n - 1 'Loop c() rows
-                For j = 0 To m - 1 'Loop c() columns
+            For i = 0 To n - 1
+                For j = 0 To m - 1
                     sum = 0
-                    For jj = 0 To aUB2 - aLB2 'Loop a() columns
+                    For jj = 0 To aUB2 - aLB2
                         sum = sum + A(aLB + i, aLB2 + jj) * B(bLB + jj, bLB2 + j)
                     Next jj
                     c(i, j) = sum
@@ -5401,13 +6139,13 @@ Private Function MMULT_(ByRef A() As Double, ByRef B As Variant) As Variant
         bLB2 = LBound(B): bUB2 = UBound(B)
         n = aUB - aLB + 1
         m = bUB - bLB + 1
-        If Not (aUB2 - aLB2 + 1) <> (bUB - bLB + 1) Then 'Requires columns from a() equals to rows from b()
+        If Not (aUB2 - aLB2 + 1) <> (bUB2 - bLB2 + 1) Then
             ReDim c(0 To n - 1, 0 To m - 1)
-            For i = 0 To n - 1 'Loop c() rows
-                For j = 0 To m - 1 'Loop c() columns
+            For i = 0 To n - 1
+                For j = 0 To m - 1
                     sum = 0
-                    For jj = 0 To aUB2 - aLB2 'Loop a() columns
-                        sum = sum + A(aLB + i, aLB2 + jj) * B(bLB2 + i)
+                    For jj = 0 To aUB2 - aLB2
+                        sum = sum + A(aLB + i, aLB2 + jj) * B(bLB2 + jj)
                     Next jj
                     c(i, j) = sum
                 Next j
@@ -5435,7 +6173,7 @@ Private Function MNEG(ByRef expression As String, ByRef fName As String) As Stri
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -5451,7 +6189,7 @@ Private Function MNEG(ByRef expression As String, ByRef fName As String) As Stri
     End Select
     MNEG = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -5496,7 +6234,7 @@ Private Function MonthName_(ByRef expression As String, ByRef fName As String) A
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -5517,7 +6255,7 @@ Private Function MonthName_(ByRef expression As String, ByRef fName As String) A
     End Select
     MonthName_ = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -5528,7 +6266,7 @@ Private Function Month_(ByRef expression As String, ByRef fName As String) As St
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -5544,7 +6282,7 @@ Private Function Month_(ByRef expression As String, ByRef fName As String) As St
     End Select
     Month_ = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -5555,7 +6293,7 @@ Private Function MROUND(ByRef expression As String, ByRef fName As String) As St
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -5576,7 +6314,7 @@ Private Function MROUND(ByRef expression As String, ByRef fName As String) As St
     End Select
     MROUND = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -5617,7 +6355,7 @@ Private Function MSum(ByRef expression As String, ByRef fName As String) As Stri
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -5639,7 +6377,7 @@ Private Function MSum(ByRef expression As String, ByRef fName As String) As Stri
     End Select
     MSum = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -5657,28 +6395,94 @@ Private Function MSum_(ByRef A() As Double, ByRef B() As Double, _
     Dim i As Long
     Dim j As Long
     Dim sum As Double
+    Dim aFlag As Boolean
+    Dim bFlag As Boolean
     
     LBa = LBound(A)
-    LBa2 = LBound(A, 2)
-
-    n = UBound(A) - LBa + 1
-    m = UBound(A, 2) - LBa2 + 1
     LBb = LBound(B)
-    LBb2 = LBound(B, 2)
     UBb = UBound(B)
-    If UBb - LBb + 1 <> n Then Exit Function    'Required equal numbers of rows
-    If UBound(B, 2) - LBb2 + 1 <> m Then Exit Function     'Required equal numbers of columns
-    ReDim c(0 To n - 1, 0 To m - 1)
-    For i = 0 To n - 1
-        For j = 0 To m - 1
-            If Not Difference Then
-                sum = A(i + LBa, j + LBa2) + B(i + LBb, j + LBb2)
+    aFlag = Is2Darray(A)
+    bFlag = Is2Darray(B)
+    If aFlag And bFlag Then 'Two 2D matrices
+        LBa2 = LBound(A, 2)
+        n = UBound(A) - LBa + 1
+        m = UBound(A, 2) - LBa2 + 1
+        LBb2 = LBound(B, 2)
+        If UBb - LBb + 1 <> n Then Exit Function    'Required equal numbers of rows
+        If UBound(B, 2) - LBb2 + 1 <> m Then Exit Function     'Required equal numbers of columns
+        ReDim c(0 To n - 1, 0 To m - 1)
+        For i = 0 To n - 1
+            For j = 0 To m - 1
+                If Not Difference Then
+                    sum = A(i + LBa, j + LBa2) + B(i + LBb, j + LBb2)
+                Else
+                    sum = A(i + LBa, j + LBa2) - B(i + LBb, j + LBb2)
+                End If
+                c(i, j) = sum
+            Next j
+        Next i
+    Else
+        If Not aFlag And Not bFlag Then 'Two vectors
+            n = UBound(A) - LBa + 1
+            If UBb - LBb + 1 <> n Then Exit Function
+            ReDim c(0 To n - 1)
+            For i = 0 To n - 1
+                If Not Difference Then
+                    sum = A(i + LBa) + B(i + LBb)
+                Else
+                    sum = A(i + LBa) - B(i + LBb)
+                End If
+                c(i) = sum
+            Next i
+        Else 'One vector and one 2D matrix
+            Dim M2D() As Double
+            Dim VECT1D() As Double
+            Dim lbM2D As Long
+            Dim ubM2D As Long
+            Dim lb2M2D As Long
+            Dim ub2M2D As Long
+            Dim lbV1D As Long
+            Dim ubV1D As Long
+            Dim invertedSumFlag As Boolean
+            
+            If aFlag Then 'A is the 2D matrix
+                M2D = A
+                lbM2D = LBa
+                ubM2D = UBound(A)
+                VECT1D = B
+                lbV1D = LBb
+                ubV1D = UBb
+                invertedSumFlag = False
             Else
-                sum = A(i + LBa, j + LBa2) - B(i + LBb, j + LBb2)
+                M2D = B
+                lbM2D = LBb
+                ubM2D = UBb
+                VECT1D = A
+                lbV1D = LBa
+                ubV1D = UBound(A)
+                invertedSumFlag = True
             End If
-            c(i, j) = sum
-        Next j
-    Next i
+            lb2M2D = LBound(M2D, 2)
+            ub2M2D = UBound(M2D, 2)
+            If ub2M2D - lbM2D + 1 = 1 Then 'Vector expressed as 2d matrix
+                n = ubV1D - lbV1D + 1
+                If ubM2D - lbM2D + 1 <> n Then Exit Function
+                ReDim c(0 To n - 1)
+                For i = 0 To n - 1
+                    If Not Difference Then
+                        sum = M2D(i + lbM2D, lb2M2D) + VECT1D(i + lbV1D)
+                    Else 'Always compute A-B
+                        If Not invertedSumFlag Then
+                            sum = M2D(i + lbM2D, lb2M2D) - VECT1D(i + lbV1D)
+                        Else
+                            sum = VECT1D(i + lbV1D) - M2D(i + lbM2D, lb2M2D)
+                        End If
+                    End If
+                    c(i) = sum
+                Next i
+            End If
+        End If
+    End If
     MSum_ = c
 End Function
 
@@ -5691,7 +6495,7 @@ Private Function MTranspose(ByRef expression As String, ByRef fName As String) A
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -5706,7 +6510,7 @@ Private Function MTranspose(ByRef expression As String, ByRef fName As String) A
     End Select
     MTranspose = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -5766,7 +6570,7 @@ Private Function NORM(ByRef expression As String, ByRef fName As String) As Stri
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -5782,7 +6586,7 @@ Private Function NORM(ByRef expression As String, ByRef fName As String) As Stri
     End Select
     NORM = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -5802,10 +6606,10 @@ Private Function NotIsPI(ByRef VarName As String) As Boolean
 End Function
 
 Private Function Now_(ByRef expression As String, ByRef fName As String) As String
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     Now_ = ToLiteralString(Now)
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -5816,7 +6620,7 @@ Private Function NPER_(ByRef expression As String, ByRef fName As String) As Str
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -5843,7 +6647,7 @@ Private Function NPER_(ByRef expression As String, ByRef fName As String) As Str
     End Select
     NPER_ = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -5858,7 +6662,7 @@ Private Function NPV_(ByRef expression As String, ByRef fName As String) As Stri
     Dim cLooper As Long
     Dim strArray() As String
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -5878,7 +6682,7 @@ Private Function NPV_(ByRef expression As String, ByRef fName As String) As Stri
     End Select
     NPV_ = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -6043,10 +6847,10 @@ Private Function PatternToCheckOn(ByRef ArgDefStr As String) As String
 End Function
 
 Private Function Percent(ByRef expression As String, ByRef fName As String) As Double
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     Percent = CDbl(expression) / 100
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -6057,7 +6861,7 @@ Private Function PMT_(ByRef expression As String, ByRef fName As String) As Stri
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -6084,84 +6888,54 @@ Private Function PMT_(ByRef expression As String, ByRef fName As String) As Stri
     End Select
     PMT_ = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
 ''' <summary>
-''' Performs a regression polynomial fitting in which the relationship between the
-''' independent variable x and the dependent variable y is modelled as an nth
-''' degree polynomial in x in the form y = a + b*x + c*x^2 +...+ m*x^n, where
-''' the calculated parameters and the number of equations will be n+1.
-''' Furthermore, the power summations for the independent variable will be 2n,
-''' while n multiplications are required for the dependent variable.
-'''
-''' In summary, a table with n + 1 rows and 3*n + 1 columns will be needed to perform
-''' the calculations. The products will be allocated aferter 2*n + 1 indexes.
-'''
+'''     Performs a regression polynomial fitting in which the relationship between the
+'''     independent variable x and the dependent variable y is modelled as an nth
+'''     degree polynomial in x in the form y = a + b*x + c*x^2 +...+ m*x^n. The method use
+'''     multiple linear regresion as core basis.
 ''' </summary>
 ''' <param name="samplesArr">Data sample containing the observations pairs (x,y).</param>
 ''' <param name="pDegree">Polynomial degree.</param>
 ''' <param name="stringOutput">When 'False' the coeficents array is returned.</param>
 Private Function PolyFit_(ByRef samplesArr() As Double, pDegree As Long, _
                             Optional stringOutput As Boolean = True) As Variant
-    Dim accumulatorArray() As Double
     Dim observCount As Long
-    Dim iCounter As Long
-    Dim jCounter As Long
+    Dim i As Long
     Dim mLB As Long
     Dim mUB As Long
-    Dim Xarray() As Double
-    Dim BArray() As Double
+    Dim modelArray() As Double
+    Dim responseArray() As Double
+    Dim pDegreesArr() As Long
     Dim SolverResult() As Double
+    Dim k As Long
     
     mLB = LBound(samplesArr)
     mUB = UBound(samplesArr)
     observCount = mUB - mLB + 1
-    '|x|y|x^2|x^3|...|x^2n|y*x|y*x^2|...|y*x^n|
-    ReDim accumulatorArray(0 To 3 * pDegree) '3*n + 1 columns
-    For iCounter = 0 To observCount - 1
-        For jCounter = 0 To UBound(accumulatorArray)
-            If jCounter <= 1 Then 'Accumulate observations
-                accumulatorArray(jCounter) = accumulatorArray(jCounter) _
-                                                        + samplesArr(iCounter, jCounter)
-            Else
-                If jCounter > 1 And jCounter <= 2 * pDegree Then 'Accumulate powers
-                    accumulatorArray(jCounter) = accumulatorArray(jCounter) + samplesArr(iCounter, 0) ^ (jCounter) 'SUM(x ^ i)
-                Else 'Accumulate products
-                    accumulatorArray(jCounter) = accumulatorArray(jCounter) + samplesArr(iCounter, 1) * _
-                                                samplesArr(iCounter, 0) ^ (jCounter - 2 * pDegree) 'SUM((x ^ i) * y)
-                End If
-            End If
-        Next jCounter
-    Next iCounter
-    'Create parameters array
-    ReDim Xarray(0 To pDegree, 0 To pDegree)
-    For iCounter = 0 To pDegree
-        For jCounter = 0 To pDegree
-            If iCounter + jCounter = 0 Then
-                Xarray(iCounter, jCounter) = observCount
-            Else
-                If iCounter + jCounter = 1 Then
-                    Xarray(iCounter, jCounter) = accumulatorArray(0) 'Sum x
-                Else
-                    Xarray(iCounter, jCounter) = accumulatorArray(iCounter + jCounter) 'Sum x^i
-                End If
-            End If
-        Next jCounter
-    Next iCounter
-    'Create B vector
-    ReDim BArray(0 To pDegree)
-    For iCounter = 0 To pDegree  '2*n + 1 < i < 3*n
-        If iCounter = 0 Then 'Sum y
-            BArray(iCounter) = accumulatorArray(1)
-        Else
-            BArray(iCounter) = accumulatorArray(iCounter + 2 * pDegree)
-        End If
-    Next iCounter
+    'Create arrays
+    ReDim modelArray(0 To observCount - 1, 0 To 0)
+    ReDim responseArray(0 To observCount - 1, 0 To 0)
+    For i = 0 To observCount - 1
+        modelArray(i, 0) = samplesArr(i, 0)
+        responseArray(i, 0) = samplesArr(i, 1)
+    Next i
+    'Create degrees vector
+    ReDim pDegreesArr(0 To pDegree - 1)
+    For i = 0 To pDegree - 1
+        pDegreesArr(i) = i + 1
+    Next i
+    'Add polynomial substitutions predictors
+    AddExponentialPredictors modelArray, pDegreesArr
+    'Add columns of ones
+    AddIntersectionCol modelArray
     'Solve linear eq. system
-    SolverResult = LUsolve_(Xarray, BArray)
+    k = UBound(modelArray, 2) - LBound(modelArray)
+    SolverResult = MLR_(modelArray, responseArray)
     If stringOutput Then
         'Format
         PolyFit_ = PolyString(SolverResult, pDegree)
@@ -6203,7 +6977,7 @@ Private Function Power(ByRef expression As String, ByRef fName As String) As Dou
     Dim tmpEval As Double
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -6216,7 +6990,7 @@ Private Function Power(ByRef expression As String, ByRef fName As String) As Dou
     End If
     Power = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -6227,7 +7001,7 @@ Private Function PPMT_(ByRef expression As String, ByRef fName As String) As Str
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -6257,7 +7031,7 @@ Private Function PPMT_(ByRef expression As String, ByRef fName As String) As Str
     End Select
     PPMT_ = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -6272,7 +7046,7 @@ Private Function PV_(ByRef expression As String, ByRef fName As String) As Strin
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -6299,7 +7073,7 @@ Private Function PV_(ByRef expression As String, ByRef fName As String) As Strin
     End Select
     PV_ = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -6328,7 +7102,7 @@ Private Function QRdec(ByRef expression As String, ByRef fName As String) As Str
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -6350,7 +7124,7 @@ Private Function QRdec(ByRef expression As String, ByRef fName As String) As Str
     End Select
     QRdec = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -6521,41 +7295,41 @@ Private Function QR_solve(ByRef B() As Double) As Double()
     If Not QR_isFullRank Then
         Exit Function '"Matrix is rank deficient."
     End If
-    Dim X() As Double, nx As Long
+    Dim x() As Double, nx As Long
     Dim i As Long, j As Long, k As Long
     Dim s As Double, tmpResult() As Double
     
 '    // Copy right hand side
-    X() = get2DimArrayCopy(B)
-    nx = UBound(X, 2) - LBound(X, 2) + 1
+    x() = get2DimArrayCopy(B)
+    nx = UBound(x, 2) - LBound(x, 2) + 1
 '    // Compute Y = transpose(Q)*B
     For k = 0 To n - 1
         For j = 0 To nx - 1
             s = 0
             For i = k To m - 1
-                s = s + QR(i, k) * X(i, j)
+                s = s + QR(i, k) * x(i, j)
             Next i
             s = -s / QR(k, k)
             For i = k To m - 1
-                X(i, j) = X(i, j) + s * QR(i, k)
+                x(i, j) = x(i, j) + s * QR(i, k)
             Next i
         Next j
     Next k
 '    // Solve R*X = Y
     For k = n - 1 To 0 Step -1
         For j = 0 To nx - 1
-            X(k, j) = X(k, j) / rDiag(k)
+            x(k, j) = x(k, j) / rDiag(k)
         Next j
         For i = 0 To k - 1
             For j = 0 To nx - 1
-                X(i, j) = X(i, j) - X(k, j) * QR(i, k)
+                x(i, j) = x(i, j) - x(k, j) * QR(i, k)
             Next j
         Next i
     Next k
     ReDim tmpResult(0 To n - 1, 0 To nx - 1)
     For i = 0 To n - 1
         For j = 0 To nx - 1
-            tmpResult(i, j) = X(i, j)
+            tmpResult(i, j) = x(i, j)
         Next j
     Next i
     QR_solve = tmpResult
@@ -6567,7 +7341,7 @@ Private Function RATE_(ByRef expression As String, ByRef fName As String) As Str
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -6601,7 +7375,7 @@ Private Function RATE_(ByRef expression As String, ByRef fName As String) As Str
     End Select
     RATE_ = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -6635,6 +7409,62 @@ Private Function ReconstructLiteralStrings(InputExpr As String, StoredExp As Str
     ReconstructLiteralStrings = tmpResult
     Exit Function
 Reconstruct_errHandler:
+End Function
+
+''' <summary>
+''' Creates a polynomial string representation from regression coefficients
+''' NOTE: MLR helper
+''' </summary>
+Private Function RegressionString(ByRef SolverResult() As Double, Optional ByRef PredNames As Variant = -1, _
+                                    Optional ByRef PredInteractions As Variant = -1) As String
+    Dim i As Long
+    Dim tmpResult As String
+    Dim tmpNames() As String
+    Dim strPNames As String
+    Dim m As Long
+    Dim n As Long
+    Dim o As Long
+    Dim s As Long
+    
+    m = -1
+    n = -1
+    If Not IsNumeric(PredNames) Then
+        m = UBound(PredNames)
+        strPNames = Join$(PredNames, P_SEPARATORCHAR)
+    End If
+    If Not IsNumeric(PredInteractions) Then n = UBound(PredInteractions)
+    o = UBound(SolverResult)
+    ReDim tmpNames(0 To o - 1)
+    For i = 0 To o - 1
+        If m >= 0 And n >= 0 Then
+            If s <= m Then
+                tmpNames(i) = PredNames(i)
+                s = s + 1
+            Else
+                tmpNames(i) = FormatNamedPredictors(strPNames, CStr(PredInteractions(i - s)), False)
+            End If
+        Else
+            If n + 1 - (o - i) >= 0 Then 'Save predictors relations without names
+                tmpNames(i) = PredInteractions(n + 1 - (o - i))
+            Else
+                tmpNames(i) = "X" & CStr(i + 1)
+            End If
+        End If
+    Next i
+    For i = 0 To o
+        If i = 0 Then
+            tmpResult = CStr(Round(SolverResult(i), 4))
+        Else
+            If CDbl(SolverResult(i)) > 0 Then
+                tmpResult = tmpResult & d_Space & op_plus _
+                            & d_Space & Round(SolverResult(i), 4)
+            Else
+                tmpResult = tmpResult & d_Space & Round(SolverResult(i), 4)
+            End If
+            tmpResult = tmpResult & op_mult & tmpNames(i - 1)
+        End If
+    Next i
+    RegressionString = tmpResult
 End Function
 
 Private Function RemoveDupNegation(ByRef expression As String) As String
@@ -6701,7 +7531,7 @@ Private Function Replace_(ByRef expression As String, ByRef fName As String) As 
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -6751,7 +7581,7 @@ Private Function Replace_(ByRef expression As String, ByRef fName As String) As 
     End Select
     Replace_ = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -6779,7 +7609,7 @@ Private Function Right_(ByRef expression As String, ByRef fName As String) As St
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -6800,7 +7630,7 @@ Private Function Right_(ByRef expression As String, ByRef fName As String) As St
     End Select
     Right_ = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -6848,10 +7678,10 @@ Private Sub ShrinkBuffer(ByRef aBuffer As ClusterTree)
 End Sub
 
 Private Function Sign(ByRef expression As String, ByRef fName As String) As Double
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     Sign = (Sgn(CDbl(expression)))
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -6865,14 +7695,14 @@ End Sub
 Private Function Sine(ByRef expression As String, ByRef fName As String) As Double
     Dim tmpEval As Double
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpEval = CDbl(expression)
     If P_DEGREES Then
         tmpEval = tmpEval * pi / 180
     End If
     Sine = Sin(tmpEval)
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -6883,7 +7713,7 @@ Private Function SLN_(ByRef expression As String, ByRef fName As String) As Stri
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -6899,7 +7729,7 @@ Private Function SLN_(ByRef expression As String, ByRef fName As String) As Stri
     End Select
     SLN_ = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -6927,7 +7757,7 @@ Private Function solve(ByRef expression As String, ByRef fName As String) As Str
     Dim LB As Long, UB As Long
     Dim tolerance As Double
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -6944,7 +7774,7 @@ Private Function solve(ByRef expression As String, ByRef fName As String) As Str
             Dim rArray() As Double
             Dim tmpElement As String
             Dim significantDigits As Long
-            Dim Xarray() As Double
+            Dim xArray() As Double
             
             tolerance = 0.0000000001
             significantDigits = Len(CStr(1 / tolerance)) - 1
@@ -6953,9 +7783,9 @@ Private Function solve(ByRef expression As String, ByRef fName As String) As Str
             mLB = LBound(cArray)
             mUB = UBound(cArray)
             
-            ReDim Xarray(mLB To mUB)
+            ReDim xArray(mLB To mUB)
             eqCount = mUB - mLB + 1
-            SORiteration eqCount, cArray, rArray, Xarray, 500, tolerance, 1
+            SORiteration eqCount, cArray, rArray, xArray, 500, tolerance, 1
             If argsCount = 4 Then
                 nArray() = ArrayFromString(tmpData(LB + 1))
                 includeNames = CBool(tmpData(UB))
@@ -6967,9 +7797,9 @@ Private Function solve(ByRef expression As String, ByRef fName As String) As Str
                 If includeNames Then
                     tmpElement = FormatLiteralString(nArray(iCounter)) _
                                 & d_Space & op_equal & d_Space _
-                                & Round(Xarray(iCounter), significantDigits)
+                                & Round(xArray(iCounter), significantDigits)
                 Else
-                    tmpElement = Round(Xarray(iCounter), significantDigits)
+                    tmpElement = Round(xArray(iCounter), significantDigits)
                 End If
                 tmpEval = tmpEval & tmpElement
             Next iCounter
@@ -6982,13 +7812,13 @@ Private Function solve(ByRef expression As String, ByRef fName As String) As Str
     End Select
     solve = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
 Private Sub SORiteration(n As Long, ByRef A() As Double, ByRef B() As Double, _
-                         ByRef X() As Double, iter As Long, tol As Double, omega As Double)
+                         ByRef x() As Double, iter As Long, tol As Double, omega As Double)
 ''' Hoffman, J. D. (2001). Numerical methods for engineers and scientists (2nd ed., rev.expanded). Marcel Dekker.
     Dim IT As Long
     Dim i As Long, j As Long
@@ -7003,10 +7833,10 @@ Private Sub SORiteration(n As Long, ByRef A() As Double, ByRef B() As Double, _
         For i = 1 To n
             residual = B(i + rowLB - 1)
             For j = 1 To n
-                residual = residual - A(i + rowLB - 1, j + colLB - 1) * X(j + rowLB - 1)
+                residual = residual - A(i + rowLB - 1, j + colLB - 1) * x(j + rowLB - 1)
             Next j
             If Abs(residual) > dxmax Then dxmax = Abs(residual)
-            X(i + rowLB - 1) = X(i + rowLB - 1) + omega * residual / A(i + rowLB - 1, i + colLB - 1)
+            x(i + rowLB - 1) = x(i + rowLB - 1) + omega * residual / A(i + rowLB - 1, i + colLB - 1)
         Next i
         If dxmax < tol Then Exit For
     Next IT
@@ -7047,7 +7877,12 @@ Private Function SplitArgs(ByRef args As String) As String()
             tmpPos = i + 4
         Else
             SargStart = tmpPos
-            SargEnd = InStrB(tmpPos, args, P_SEPARATORCHAR)
+            curChar = MidB$(args, SargStart, 2)
+            If curChar = d_Apostrophe Then 'Literal string into arguments
+                SargEnd = InStrB(tmpPos + 1, args, d_Apostrophe) + 2
+            Else
+                SargEnd = InStrB(tmpPos, args, P_SEPARATORCHAR)
+            End If
             If SargEnd = 0 Then
                 SargEnd = LenArgsStr + 1
             End If
@@ -7077,7 +7912,7 @@ Private Function SplitArrBranch(ByRef Argument As String, ByRef outArr() As Stri
     tmpArr() = ArrayFromString(Argument)
     If InitializedArray(tmpArr) Then 'Transform success
         If Is2Darray(tmpArr) Then
-            outArr = Array1DFrom2DArr(tmpArr)
+            outArr = ArraySTR1DFrom2DArr(tmpArr)
             tmpResult(0) = UBound(tmpArr)   'Rows in the array
             tmpResult(1) = UBound(tmpArr, 2)  'Columns in each row
         Else
@@ -7117,10 +7952,10 @@ Private Sub SplitToken(ByRef expression As String, ByRef oArray() As String, ByR
 End Sub
 
 Private Function SquareRoot(ByRef expression As String, ByRef fName As String) As Double
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     SquareRoot = Sqr(CDbl(expression))
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -7169,7 +8004,7 @@ Private Function STUDT(ByRef expression As String, ByRef fName As String) As Str
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -7186,7 +8021,7 @@ Private Function STUDT(ByRef expression As String, ByRef fName As String) As Str
     End Select
     STUDT = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -7307,7 +8142,7 @@ Private Function Switch_(ByRef expression As String, ByRef fName As String) As S
     Dim tmpData() As String
     Dim tmpEval As Boolean
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -7331,7 +8166,7 @@ Private Function Switch_(ByRef expression As String, ByRef fName As String) As S
         Switch_ = "#Null!"
     End If
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -7342,7 +8177,7 @@ Private Function SYD_(ByRef expression As String, ByRef fName As String) As Stri
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -7359,7 +8194,7 @@ Private Function SYD_(ByRef expression As String, ByRef fName As String) As Stri
     End Select
     SYD_ = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -7367,23 +8202,23 @@ End Function
 Private Function Tangent(ByRef expression As String, ByRef fName As String) As Double
     Dim tmpEval As Double
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpEval = CDbl(expression)
     If P_DEGREES Then
         tmpEval = tmpEval * pi / 180
     End If
     Tangent = Tan(tmpEval)
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
 Private Function tGamma(ByRef expression As String, ByRef fName As String) As Double
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tGamma = GAMMA(CDbl(expression))
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -7394,7 +8229,7 @@ Private Function TimeSerial_(ByRef expression As String, ByRef fName As String) 
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -7412,7 +8247,7 @@ Private Function TimeSerial_(ByRef expression As String, ByRef fName As String) 
     End Select
     TimeSerial_ = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -7423,7 +8258,7 @@ Private Function TimeValue_(ByRef expression As String, ByRef fName As String) A
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -7439,7 +8274,7 @@ Private Function TimeValue_(ByRef expression As String, ByRef fName As String) A
     End Select
     TimeValue_ = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -7460,7 +8295,7 @@ Private Function TINV(ByRef expression As String, ByRef fName As String) As Stri
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -7478,7 +8313,7 @@ Private Function TINV(ByRef expression As String, ByRef fName As String) As Stri
     End Select
     TINV = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -7514,7 +8349,7 @@ Private Function TINV_1T(ByRef expression As String, ByRef fName As String) As S
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -7532,7 +8367,7 @@ Private Function TINV_1T(ByRef expression As String, ByRef fName As String) As S
     End Select
     TINV_1T = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -7561,7 +8396,7 @@ Private Function TINV_2T(ByRef expression As String, ByRef fName As String) As S
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -7578,23 +8413,23 @@ Private Function TINV_2T(ByRef expression As String, ByRef fName As String) As S
     End Select
     TINV_2T = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
 Private Function TINV_2T_(ByVal p As Double, dof As Long) As Double
-    Dim X As Double
+    Dim x As Double
     
     If p > 1 Then 'Percentage entry
         p = p / 100
     End If
-    X = iBETAINV(p, 0.5 * dof, 0.5)
-    X = Sqr(dof * (1 - X) / X)
+    x = iBETAINV(p, 0.5 * dof, 0.5)
+    x = Sqr(dof * (1 - x) / x)
     If p > 0 Then
-        TINV_2T_ = X
+        TINV_2T_ = x
     Else
-        TINV_2T_ = -X
+        TINV_2T_ = -x
     End If
 End Function
 
@@ -7686,19 +8521,19 @@ Private Function ToLiteralString(ByRef aString As String) As String
 End Function
 
 Private Function Trim_(ByRef expression As String, ByRef fName As String) As String
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     Trim_ = ToLiteralString(Trim(FormatLiteralString(expression, True)))
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
 Private Function UCase_(ByRef expression As String, ByRef fName As String) As String
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     UCase_ = ToLiteralString(UCase(expression))
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -7842,7 +8677,7 @@ Private Function WeekDayName_(ByRef expression As String, ByRef fName As String)
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -7869,7 +8704,7 @@ Private Function WeekDayName_(ByRef expression As String, ByRef fName As String)
     End Select
     WeekDayName_ = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -7880,7 +8715,7 @@ Private Function WeekDay_(ByRef expression As String, ByRef fName As String) As 
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -7901,7 +8736,7 @@ Private Function WeekDay_(ByRef expression As String, ByRef fName As String) As 
     End Select
     WeekDay_ = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -7912,7 +8747,7 @@ Private Function Year_(ByRef expression As String, ByRef fName As String) As Str
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -7928,7 +8763,7 @@ Private Function Year_(ByRef expression As String, ByRef fName As String) As Str
     End Select
     Year_ = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -7939,7 +8774,7 @@ Private Function Zero(ByRef expression As String, ByRef fName As String) As Stri
     Dim tmpEval As String
     Dim LB As Long, UB As Long
     
-    On Error GoTo err_handler
+    On Error GoTo err_Handler
     tmpData() = Split(expression, P_SEPARATORCHAR)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
@@ -7962,7 +8797,7 @@ Private Function Zero(ByRef expression As String, ByRef fName As String) As Stri
     End Select
     Zero = tmpEval: Erase tmpData
     Exit Function
-err_handler:
+err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function

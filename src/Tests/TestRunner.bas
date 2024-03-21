@@ -63,7 +63,7 @@ Private Sub Parentheses()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 '@TestMethod("Parentheses and Single Function")
@@ -79,7 +79,7 @@ Private Sub ParenthesesAndSingleFunction()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 '@TestMethod("Functions with More than One Argument")
@@ -95,7 +95,7 @@ Private Sub FunctionsWithMoreThanOneArgument()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 '@TestMethod("Nested Functions")
@@ -112,7 +112,7 @@ Private Sub NestedFunctions()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 '@TestMethod("Floating Point Arithmetic")
@@ -128,7 +128,7 @@ Private Sub FloatingPointArithmetic()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 '@TestMethod("Exponentiation Precedence")
@@ -144,7 +144,7 @@ Private Sub ExponentiationPrecedence()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 '@TestMethod("Factorials")
@@ -160,7 +160,7 @@ Private Sub Factorials()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 '@TestMethod("Precedence")
@@ -176,7 +176,7 @@ Private Sub Precedence()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 '@TestMethod("Variables")
@@ -193,7 +193,7 @@ Private Sub Variables()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 '@TestMethod("UDFs and Basic Array Functions")
@@ -219,7 +219,7 @@ Private Sub UDFsAndArrays()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 '@TestMethod("Logical Operators with Numeric Output")
@@ -236,7 +236,7 @@ Private Sub LogicalOperatorsNumericOutput()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 '@TestMethod("Logical Operators with Boolean Output")
@@ -253,7 +253,7 @@ Private Sub TestLogicalOperatorsBooleanOutput()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 '@TestMethod("Trig Functions")
@@ -269,7 +269,7 @@ Private Sub TestTrigFunctions()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 '@TestMethod("Mod Function")
@@ -285,10 +285,10 @@ Private Sub TestModFunction()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
-'@TestMethod("String Comparison")
+'@TestMethod("String Arguments and Parameters")
 Private Sub testStringComp()
     On Error GoTo TestFail
     
@@ -302,7 +302,24 @@ Private Sub testStringComp()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
+    Resume TestExit
+End Sub
+'@TestMethod("String Arguments and Parameters")
+Private Sub testStringArgumentes()
+    On Error GoTo TestFail
+    
+    actual = GetResult( _
+                        "REPLACE(x;'a';'A';1;2)" _
+                        , "x = 'Capital'" _
+                        )
+    expected = "'CApitAl'"
+    Assert.AreEqual expected, actual
+
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 '@TestMethod("Implied Multiplication")
@@ -318,7 +335,7 @@ Private Sub ImpliedMultiplication()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 '@TestMethod("Array Arguments And Variables")
@@ -334,7 +351,7 @@ Private Sub DirectArrayVariableAssignment()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 '@TestMethod("Assign Value To 2nd Order Variable")
@@ -357,7 +374,7 @@ Private Sub AssignValueTo2ndOrderVariable()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 '@TestMethod("Array Constructors And Parsers")
@@ -376,7 +393,7 @@ Private Sub ArrayConstructorsAndParsers()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 '@TestMethod("Array Arguments And Variables")
@@ -391,7 +408,7 @@ Private Sub DirectArrayArguments()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 '@TestMethod("Array Arguments And Variables")
@@ -406,7 +423,7 @@ Private Sub MatrixNegation()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 '@TestMethod("Array Arguments And Variables")
@@ -421,7 +438,7 @@ Private Sub VectorsMultiplication()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 '@TestMethod("Statistical Functions")
@@ -436,7 +453,7 @@ Private Sub NORM()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 '@TestMethod("Statistical Functions")
@@ -451,7 +468,7 @@ Private Sub CHISQ()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 '@TestMethod("Statistical Functions")
@@ -466,7 +483,7 @@ Private Sub GAUSS()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 '@TestMethod("Statistical Functions")
@@ -481,7 +498,7 @@ Private Sub ERF()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 '@TestMethod("Statistical Functions")
@@ -496,11 +513,11 @@ Private Sub STUDT()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 '@TestMethod("Statistical Functions")
-Private Sub ANORM()
+Private Sub anorm()
     On Error GoTo TestFail
     
     actual = GetResult( _
@@ -511,7 +528,7 @@ Private Sub ANORM()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 '@TestMethod("Statistical Functions")
@@ -526,7 +543,7 @@ Private Sub AGAUSS()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 '@TestMethod("Statistical Functions")
@@ -541,7 +558,7 @@ Private Sub AERF()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 '@TestMethod("Statistical Functions")
@@ -556,7 +573,7 @@ Private Sub ACHISQ()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 '@TestMethod("Statistical Functions")
@@ -571,7 +588,7 @@ Private Sub FISHF()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 '@TestMethod("Statistical Functions")
@@ -586,7 +603,7 @@ Private Sub ASTUDT()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 '@TestMethod("Statistical Functions")
@@ -601,7 +618,7 @@ Private Sub AFISHF()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 '@TestMethod("Statistical Functions")
@@ -616,7 +633,7 @@ Private Sub iBETA()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 '@TestMethod("Statistical Functions")
@@ -631,7 +648,7 @@ Private Sub BETAINV()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 
@@ -655,7 +672,53 @@ Private Sub QR()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
+    Resume TestExit
+End Sub
+
+'@TestMethod("Linear Algebra Functions")
+Private Sub CholeskyDecomposition()
+    On Error GoTo TestFail
+
+    actual = GetResult("MROUND(MTRANSPOSE(CHOLESKY({{2.5;1.1;0.3};{2.2;1.9;0.4};{1.8;0.1;0.3}}));4)")
+    expected = "{{1.5811;0.6957;0.1897};{0;1.19;0.2252};{0;0;0.4618}}" 'Octave output
+    Assert.AreEqual expected, actual
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
+    Resume TestExit
+End Sub
+
+'@TestMethod("Linear Algebra Functions")
+Private Sub CholeskySolve()
+    On Error GoTo TestFail
+
+    actual = GetResult( _
+                        "MROUND(CHOLSOLVE(ARRAY(a;b;c);{{'x';'y';'z'}};{{76;295;1259}};False);4)" _
+                        , "a={6;15;55};b={15;55;225};c={55;225;979}")
+    expected = "{{1;1;1}}"
+    Assert.AreEqual expected, actual
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
+    Resume TestExit
+End Sub
+
+'@TestMethod("Linear Algebra Functions")
+Private Sub CholeskyInverse()
+    On Error GoTo TestFail
+
+    actual = GetResult( _
+                        "MROUND(CHOLINVERSE(ARRAY(a;b;c));4)" _
+                        , "a={6;15;55};b={15;55;225};c={55;225;979}")
+    expected = "{{0.8214;-0.5893;0.0893};{-0.5893;0.7268;-0.1339};{0.0893;-0.1339;0.0268}}" 'Octave output
+    Assert.AreEqual expected, actual
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 
@@ -665,13 +728,13 @@ Private Sub LSQRsolve()
 
     actual = GetResult( _
                         "MROUND(LSQRSOLVE(A;b);4)" _
-                        , "A={{2;4};{-5;1},{3;-8}};b={{10;-9.5;12}}")
-    expected = "{{2.6576};{-0.1196}}"
+                        , "A={{2;4};{-5;1};{3;-8}};b={{10;-9.5;12}}")
+    expected = "{{2.6576;-0.1196}}"
     Assert.AreEqual expected, actual
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 
@@ -687,7 +750,7 @@ Private Sub LUsolve()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 
@@ -703,7 +766,7 @@ Private Sub StraightLineFit()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 
@@ -719,7 +782,7 @@ Private Sub PolynomialFit()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 
@@ -735,7 +798,7 @@ Private Sub ExponentialFit()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 
@@ -751,7 +814,7 @@ Private Sub ExponentialFit2()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 
@@ -767,7 +830,7 @@ Private Sub PowerFit()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 
@@ -783,7 +846,133 @@ Private Sub LogarithmicFit()
 TestExit:
     Exit Sub
 TestFail:
-    Assert.Fail "Test raised an error: #" & err.number & " - " & err.Description
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
+    Resume TestExit
+End Sub
+'@TestMethod("Linear Algebra/Stats Functions")
+Private Sub testMLR_FNominal()
+    On Error GoTo TestFail
+
+    actual = GetResult( _
+                        "MLR(X;Y;True)" _
+                        , "X={{1;1};{2;2};{3;3};{4;4};{5;1};{6;2};{7;3};{8;4}};Y={{2;4.1;5.8;7.8;5.5;5.2;8.2;11.1}}")
+    expected = "{{0.0625 + 0.6438*X1 + 1.3013*X2};{0.9415;0.9181}}"
+    Assert.AreEqual expected, actual
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
 
+'@TestMethod("Linear Algebra/Stats Functions")
+Private Sub testMLR_CFNominal()
+    On Error GoTo TestFail
+
+    actual = GetResult( _
+                        "MLR(X;Y;False)" _
+                        , "X={{1;1};{2;2};{3;3};{4;4};{5;1};{6;2};{7;3};{8;4}};Y={{2;4.1;5.8;7.8;5.5;5.2;8.2;11.1}}")
+    expected = "{{{{0.0625;0.6438;1.3013}}};{0.9415;0.9181}}"
+    Assert.AreEqual expected, actual
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
+    Resume TestExit
+End Sub
+
+'@TestMethod("Linear Algebra/Stats Functions")
+Private Sub testMLR_FNominal_Interactions()
+    On Error GoTo TestFail
+
+    actual = GetResult( _
+                        "MLR(X;Y;True;'X1:X2')" _
+                        , "X={{1;1};{2;2};{3;3};{4;4};{5;1};{6;2};{7;3};{8;4}};Y={{2;4.1;5.8;7.8;5.5;5.2;8.2;11.1}}")
+    expected = "{{0.8542 + 0.4458*X1 + 0.945*X2 + 0.0792*X1*X2};{0.947;0.9072}}"
+    Assert.AreEqual expected, actual
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
+    Resume TestExit
+End Sub
+
+'@TestMethod("Linear Algebra/Stats Functions")
+Private Sub testMLR_CFNominal_Interactions()
+    On Error GoTo TestFail
+
+    actual = GetResult( _
+                        "MLR(X;Y;False;'X1:X2')" _
+                        , "X={{1;1};{2;2};{3;3};{4;4};{5;1};{6;2};{7;3};{8;4}};Y={{2;4.1;5.8;7.8;5.5;5.2;8.2;11.1}}")
+    expected = "{{{{0.8542;0.4458;0.945;0.0792}}};{0.947;0.9072}}"
+    Assert.AreEqual expected, actual
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
+    Resume TestExit
+End Sub
+
+'@TestMethod("Linear Algebra/Stats Functions")
+Private Sub testMLR_FNamed_Interactions()
+    On Error GoTo TestFail
+
+    actual = GetResult( _
+                        "MLR(X;Y;True;'Height:Width';'Height;Width')" _
+                        , "X={{1;1};{2;2};{3;3};{4;4};{5;1};{6;2};{7;3};{8;4}};Y={{2;4.1;5.8;7.8;5.5;5.2;8.2;11.1}}")
+    expected = "{{0.8542 + 0.4458*Height + 0.945*Width + 0.0792*Height*Width};{0.947;0.9072}}"
+    Assert.AreEqual expected, actual
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
+    Resume TestExit
+End Sub
+
+'@TestMethod("Linear Algebra/Stats Functions")
+Private Sub testMLR_CFNamed_Interactions()
+    On Error GoTo TestFail
+
+    actual = GetResult( _
+                        "MLR(X;Y;False;'Height:Width';'Height;Width')" _
+                        , "X={{1;1};{2;2};{3;3};{4;4};{5;1};{6;2};{7;3};{8;4}};Y={{2;4.1;5.8;7.8;5.5;5.2;8.2;11.1}}")
+    expected = "{{{{0.8542;0.4458;0.945;0.0792}}};{0.947;0.9072}}"
+    Assert.AreEqual expected, actual
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
+    Resume TestExit
+End Sub
+
+'@TestMethod("Linear Algebra/Stats Functions")
+Private Sub testMLR_FNamed_MultiInteractions()
+    On Error GoTo TestFail
+
+    actual = GetResult( _
+                        "MLR(X;Y;True;'Height:Width;Height:Height';'Height;Width')" _
+                        , "X={{1;1};{2;2};{3;3};{4;4};{5;1};{6;2};{7;3};{8;4}};Y={{2;4.1;5.8;7.8;5.5;5.2;8.2;11.1}}")
+    expected = "{{2.0875 + 2.08*Height -2.1075*Width -0.37*Height*Height + 0.7575*Height*Width};{0.9638;0.9155}}"
+    Assert.AreEqual expected, actual
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
+    Resume TestExit
+End Sub
+
+'@TestMethod("Linear Algebra/Stats Functions")
+Private Sub testMLR_CFname_MultiInteractions()
+    On Error GoTo TestFail
+
+    actual = GetResult( _
+                        "MLR(X;Y;False;'Height:Width;Height:Height';'Height;Width')" _
+                        , "X={{1;1};{2;2};{3;3};{4;4};{5;1};{6;2};{7;3};{8;4}};Y={{2;4.1;5.8;7.8;5.5;5.2;8.2;11.1}}")
+    expected = "{{{{2.0875;2.08;-2.1075;-0.37;0.7575}}};{0.9638;0.9155}}"
+    Assert.AreEqual expected, actual
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
+    Resume TestExit
+End Sub

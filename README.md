@@ -11,6 +11,7 @@ Although the main development goal of the class was the integration with [CSV In
 * __Basic math operators__: `+` `-` `*` `/` `\` `^` `!`
 * __Logical expressions__: `&` (AND), `|` (OR), `||` (XOR)
 * __Binary relations__: `<`, `<=`, `<>`, `>=`, `=`, `>`, `$` (LIKE)
+* __Outstanding matrix and statistical functions__: `CHOLESKY`, `MLR` (Multivariate Linear Regression), `FIT` (Curve fitting), `INVERSE`, and a lot more!
 * __More than 90 built-in functions__: `Max`, `Sin`, `IRR`, `GAUSS`, `LSQRSOLVE`, `Switch`, `Iff`, `DateDiff`, `Solve`, `fZero`, `Format`...
 * __Very flexible and powerful__: variables, constants and user-defined functions (UDFs) support.
 * __Implied multiplication for variables, constants and functions__: `5avg(2;abs(-3-7tan(5));9)`, `5(x)` and `x(2)(3)` are valid expressions.
@@ -194,23 +195,64 @@ End Sub
 '@------------------------------------------------------
 ' Here a list of the new functions and its results
 '***********************************ADVANCED MATH FUNCTIONS***************************************************************
-''' FZERO('2x^2+x-12';-2;3) : x = 2.21221445045296       (find a zero for the given function in the interval -2<=x<=3)
+''' A={{-2;40};{-1;50};{0;62};{1;58};{2;60}}
+''' B={{0;0.1};{0.5;0.45};{1;2.15};{1.5;9.15};{2;40.35};{2.5;180.75}}
+''' C={{1;0.01};{2;1};{3;1.15};{4;1.3};{5;1.52};{6;1.84};{7;2.01};{8;2.05};{9;2.3};{10;2.25}}
+''' 			 ----------------------------------------------------------------------------
+''' 			| Fitting data model with a 4th degree polynomial                            |
+''' 			| FIT(A;1;4) : {{62 + 3.6667*x -9.6667*x^2 + 0.3333*x^3 + 1.6667*x^4};{1}}   |
+''' 			|                                                                            |
+''' 			| Exponential Fitting                                                        |
+''' 			| FIT(B;2) : {{0.102*e^(2.9963*x)};{0.9998}}                                 |
+''' 			|                                                                            |
+''' 			| Logarithmic Fitting                                                        |
+''' 			| FIT(C;5) : {{0.9521*ln(x)+0.1049};{0.9752}}                                |
+''' 			 ----------------------------------------------------------------------------
+'''
+''' X={{1;1};{2;2};{3;3};{4;4};{5;1};{6;2};{7;3};{8;4}}
+''' Y={{2;4.1;5.8;7.8;5.5;5.2;8.2;11.1}}
+''' 			 ------------------------------------------------------------------------------------------
+''' 			| Multivariate Linear Regression with regressors/predictors interaction.                   |
+''' 			|                                                                                          |
+''' 			| MLR(X;Y;True;'X1:X2') : {{0.8542 + 0.4458*X1 + 0.945*X2 + 0.0792*X1*X2};{0.947;0.9072}}  | 
+'''				 ------------------------------------------------------------------------------------------
+'''
+''' 			 ----------------------------------------------------------------
+''' 			| Finding a zero for the given function in the interval -2<=x<=3 |
+''' 			|                                                                |
+''' 			| FZERO('2x^2+x-12';-2;3) : x = 2.21221445045296                 |
+''' 			 ----------------------------------------------------------------
 '''
 ''' a = {1;0;4}; b = {1;1;6}; c = {-3;0;-10}; d = {2;3;4}
-''' 			LUDECOMP(ARRAY(a;b;c)) : {{-3;0;-10};{-0.333333333333333;1;2.66666666666667};{-0.333333333333333;0;0.666666666666667}}  
-''' 			LUSOLVE(ARRAY(a;b;c);{{'x';'y';'z'}};{{2;3;4}};True) : x = -18; y = -9; z = 5 
-''' 			MMULT(INVERSE(ARRAY(a;b;c));ARRAY(d)) : {{-18};{-9};{5}} 
-''' 			MMULT(ARRAY(a;b;c);INVERSE(ARRAY(a;b;c))) : {{1;0;0};{0;1;0};{0;0;1}}
+''' 			 ------------------------------------------------------------------------------------------------
+''' 			| Using LU decomposition for a given matrix                                                      |
+''' 			|                                                                                                |
+''' 			| LUDECOMP(ARRAY(a;b;c)) :                                                                       |
+''' 			|                                                                                                |
+''' 			| {{-3;0;-10};{-0.333333333333333;1;2.66666666666667};{-0.333333333333333;0;0.666666666666667}}  |
+''' 			 ------------------------------------------------------------------------------------------------
+''' 
+''' 			 ----------------------------------------------------------------------------------
+''' 			| Using LU decomposition for solve linear equations system                         |
+''' 			|                                                                                  |
+''' 			| LUSOLVE(ARRAY(a;b;c);{{'x';'y';'z'}};{{2;3;4}};True) : x = -18; y = -9; z = 5    |
+''' 			 ----------------------------------------------------------------------------------
 '''
-''' A={{-2;40};{-1;50};{0;62};{1;58};{2;60}}
-''' 			FIT(A;1;4) : {{62 + 3.6667*x -9.6667*x^2 + 0.3333*x^3 + 1.6667*x^4};{1}}  4th degree polynomial fitting
-''' B={{0;0.1};{0.5;0.45};{1;2.15};{1.5;9.15};{2;40.35};{2.5;180.75}}
-''' 			FIT(B;2) : {{0.102*e^(2.9963*x)};{0.9998}}  Exponential Fitting
-''' C={{1;0.01};{2;1};{3;1.15};{4;1.3};{5;1.52};{6;1.84};{7;2.01};{8;2.05};{9;2.3};{10;2.25}}
-''' 			FIT(C;5) : {{0.9521*ln(x)+0.1049};{0.9752}}  Logarithmic fitting
+''' 			 ---------------------------------------------------------------------------
+''' 			| Using matrix multiplication for solve a linear equations system           |
+''' 			|                                                                           |
+''' 			| MMULT(INVERSE(ARRAY(a;b;c));ARRAY(d)) : {{-18};{-9};{5}}                  |     
+''' 			| MMULT(ARRAY(a;b;c);INVERSE(ARRAY(a;b;c))) : {{1;0;0};{0;1;0};{0;0;1}}     |
+''' 			 ---------------------------------------------------------------------------
 '''
 ''' A={{2;4};{-5;1},{3;-8}};b={{10;-9.5;12}}
-''' 			MROUND(LSQRSOLVE(A;b);4) : {{2.6576};{-0.1196}}  solve overdetermined system of equations using least squares and QRdec
+''' 			 --------------------------------------------------------------------
+''' 		    | Solving overdetermined system of equations using least squares and |
+''' 			| the QR decomposition                                               |
+''' 			|                                                                    |
+''' 			| MROUND(LSQRSOLVE(A;b);4) : {{2.6576;-0.1196}}                      |
+''' 			 --------------------------------------------------------------------
+'''
 '***********************************STATISTICAL FUNCTIONS*******************************************************************************
 ''' ROUND(NORM(0.05);8) = 0.96012239
 ''' ROUND(CHISQ(4;15);8) = 0.99773734
@@ -249,13 +291,13 @@ End Sub
 ''' YEAR(NOW()) = 2022
 ''' WEEKDAYNAME(1;true;2) = 'lun.'
 ''' WEEKDAY(NOW()) = 2
-''' TIMEVALUE(NOW()) = '7:53:00 a. m.'
-''' TIMESERIAL(x;y;z) = '6:45:50 a. m.' for x = 7; y = -15; z = 50
+''' TIMEVALUE(NOW()) = '7:53:00 a. m.'
+''' TIMESERIAL(x;y;z) = '6:45:50 a. m.' for x = 7; y = -15; z = 50
 ''' MONTH(NOW()) = 10
 ''' MONTHNAME(x;y) = 'marzo' for x = 3; y = false
-''' MONTH(x) = 10 for x = '10/10/2022 7:53:10 a. m.'
-''' MINUTE(x) = 53 for x = '10/10/2022 7:53:12 a. m.'
-''' HOUR(x) = 7 for x = '10/10/2022 7:53:15 a. m.'
+''' MONTH(x) = 10 for x = '10/10/2022 7:53:10 a. m.'
+''' MINUTE(x) = 53 for x = '10/10/2022 7:53:12 a. m.'
+''' HOUR(x) = 7 for x = '10/10/2022 7:53:15 a. m.'
 ''' DAY(DATE()) = 10
 ''' DATEVALUE(DATE()) = '10/10/2022'
 ''' DATESERIAL(2022;x+2;3y) = '21/12/2022' for x = 10; y = 7
