@@ -215,7 +215,7 @@ End Sub
 ''' 			| Multivariate Linear Regression with regressors/predictors interaction.                   |
 ''' 			|                                                                                          |
 ''' 			| MLR(X;Y;True;'X1:X2') : {{0.8542 + 0.4458*X1 + 0.945*X2 + 0.0792*X1*X2};{0.947;0.9072}}  | 
-'''				 ------------------------------------------------------------------------------------------
+''' 			 ------------------------------------------------------------------------------------------
 '''
 ''' 			 ----------------------------------------------------------------
 ''' 			| Finding a zero for the given function in the interval -2<=x<=3 |
@@ -247,7 +247,7 @@ End Sub
 '''
 ''' A={{2;4};{-5;1},{3;-8}};b={{10;-9.5;12}}
 ''' 			 --------------------------------------------------------------------
-''' 		    | Solving overdetermined system of equations using least squares and |
+''' 		        | Solving overdetermined system of equations using least squares and |
 ''' 			| the QR decomposition                                               |
 ''' 			|                                                                    |
 ''' 			| MROUND(LSQRSOLVE(A;b);4) : {{2.6576;-0.1196}}                      |
