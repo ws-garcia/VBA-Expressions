@@ -146,6 +146,8 @@ Private Const d_lCurly As String = "{"
 Private Const d_rCurly As String = "}"
 Private Const d_lParenthesis As String = "("
 Private Const d_rParenthesis As String = ")"
+Private Const d_lSquareB As String = "["
+Private Const d_rSquareB As String = "]"
 Private Const d_Apostrophe As String = "'"
 Private Const d_Space As String = " "
 Private Const e_ValueError As String = "#VALUE!"
@@ -286,7 +288,7 @@ End Type
 '#
 '///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ''' <summary>
-''' Initializes this instance.
+'''     Initializes this instance.
 ''' </summary>
 Private Sub Class_Initialize()
     AssignedExpression = False
@@ -299,22 +301,22 @@ Private Sub Class_Initialize()
     BuildinFunctIDList = "abs;floor;achisq;asin;acos;aerf;afishf;agauss;asc;anorm;atn;astudt;array;avg" & _
                             ";betainv;ceil;chisq;cholesky;cholinverse;cholsolve;chr;cos;choose;date;dateadd;datediff" & _
                             ";datepart;dateserial;datevalue;day;ddb;det;erf;exp;fishf;fit;format;fv;fzero" & _
-                            ";gamma;gammaln;gauss;hour;ibeta;iff;inverse;ipmt;irr;lcase;left;len;log;lgn" & _
+                            ";gamma;gammaln;gauss;get;hour;ibeta;iff;inverse;ipmt;irr;lcase;left;len;log;lgn" & _
                             ";ln;lsqrsolve;ludecomp;lusolve;max;mid;min;minute;mirr;mlr;mmult;mneg;mround" & _
                             ";msum;mtranspose;month;monthname;norm;now;nper;npv;percent;pmt;ppmt;pow;pv" & _
-                            ";qr;rate;rem;replace;right;round;sgn;sin;sln;solve;sqr;sqrt;studt;switch" & _
+                            ";qr;rate;rem;replace;right;round;sgn;sin;sln;solve;sqr;sqrt;sum;studt;switch" & _
                             ";syd;tan;timeserial;timevalue;tinv;tinv_1t;tinv_2t;trim;ucase;weekday" & _
                             ";weekdayname;year"
     BuildinFunctNameList = "Absolute;aFloor;ACHISQ;ArcSin;ArcCos;AERF;AFISHF;AGAUSS;ASCII;ANORM;ArcTan" & _
                             ";ASTUDT;strArray;Average;BETAINV;aCeiling;CHISQ;CholeskyDec;CholeskyInverseMatrix" & _
                             ";CholeskySolve;ASCIIchr;Cosin;aChoose;aDate;aDateAdd;aDateDiff;aDatePart;aDateSerial" & _
                             ";aDateValue;aDay;aDDB;MatrixDeterminant;ERF;ExpEuler;FISHF;CurveFit" & _
-                            ";aFormat;aFV;FunctionZero;Gamma;GammaLN;GAUSS;aHour;iBETA;aIff;InverseMatrix" & _
+                            ";aFormat;aFV;FunctionZero;Gamma;GammaLN;GAUSS;GET;aHour;iBETA;aIff;InverseMatrix" & _
                             ";aIPMT;aIRR;LowerCase;aLeft;aLen;Logarithm;LgN;LN;LSQRsolve;LUdecomposition" & _
                             ";LUSolveLinearSystem;Max;Middle;Min;aMinute;aMIRR;MultiLinearReg;MatrixMult" & _
                             ";MatrixNegation;MatrixRound;MatrixSum;MatrixTranspose;aMonth;aMonthName;NORM" & _
                             ";aNow;aNPER;aNPV;Percent;aPMT;aPPMT;Power;aPV;QRdecomposition;aRATE;REM" & _
-                            ";aReplace;aRight;ROUND;Sign;Sine;aSLN;SolveLinearSystem;SquareRoot;SquareRoot" & _
+                            ";aReplace;aRight;ROUND;Sign;Sine;aSLN;SolveLinearSystem;SquareRoot;SquareRoot;SUM" & _
                             ";STUDT;aSwitch;aSYD;Tangent;aTimeSerial;aTimeValue;TINV;TINV_1T;TINV_2T;aTrim" & _
                             ";aUcase;aWweekDay;aWeekDayName;aYear"
     FunctionsId() = Split(BuildinFunctIDList, ";")
@@ -344,29 +346,29 @@ End Sub
 
 
 ''' <summary>
-''' Gets the constants collection. By default this is pre-populated with PI and e.
+'''     Gets the constants collection. By default this is pre-populated with PI and e.
 ''' </summary>
 Public Property Get Constants() As Collection
     Set Constants = P_SCOPE.Constants
 End Property
 
 ''' <summary>
-''' Gets a string with the variables values used for the last evaluation.
+'''     Gets a string with the variables values used for the last evaluation.
 ''' </summary>
 Public Property Get CurrentVariables() As String
     CurrentVariables = P_SCOPE.CurrentVariables
 End Property
 
 ''' <summary>
-''' Gets a string with the variables values used for the last evaluation.
+'''     Gets a string with the variables values used for the last evaluation.
 ''' </summary>
 Public Property Get CurrentVarValues() As String
     CurrentVarValues = P_SCOPE.CurrentVarValues
 End Property
 
 ''' <summary>
-''' Gets or sets the behavior when calculating trigonometric functions. If True, the program
-''' will assume argument passed in degrees for all trigonometric functions.
+'''     Gets or sets the behavior when calculating trigonometric functions. If True, the program
+'''     will assume argument passed in degrees for all trigonometric functions.
 ''' </summary>
 Public Property Get Degrees() As Boolean
     Degrees = P_DEGREES
@@ -377,21 +379,21 @@ Public Property Let Degrees(aValue As Boolean)
 End Property
 
 ''' <summary>
-''' Returns the last error message generated.
+'''     Returns the last error message generated.
 ''' </summary>
 Public Property Get ErrorDesc() As String
     ErrorDesc = P_ERRORDESC
 End Property
 
 ''' <summary>
-''' Returns the type of the last error message generated.
+'''     Returns the type of the last error message generated.
 ''' </summary>
 Public Property Get ErrorType() As ExpressionErrors
     ErrorType = P_ERRTYPE
 End Property
 
 ''' <summary>
-''' Sets/gets the scope for the current expression.
+'''     Sets/gets the scope for the current expression.
 ''' </summary>
 Public Property Get EvalScope() As VBAexpressionsScope
     Set EvalScope = P_SCOPE
@@ -402,7 +404,7 @@ Public Property Set EvalScope(aObject As VBAexpressionsScope)
 End Property
 
 ''' <summary>
-''' Returns the math expression to be evaluated.
+'''     Returns the math expression to be evaluated.
 ''' </summary>
 Public Property Get expression() As String
     expression = P_EXPRESSION
@@ -413,15 +415,15 @@ Public Property Get ForceBoolean() As Boolean
 End Property
 
 ''' <summary>
-''' When True, a False is returned on evaluation errors.
-''' This can be useful when evaluating piecewise functions.
+'''     When True, a False is returned on evaluation errors.
+'''     This can be useful when evaluating piecewise functions.
 ''' </summary>
 Public Property Let ForceBoolean(aValue As Boolean)
     P_FORCE_BOOLEAN = aValue
 End Property
 
 ''' <summary>
-''' Indicates if the results will be converted to standard VBA strings
+'''     Indicates if the results will be converted to standard VBA strings
 ''' </summary>
 Public Property Get FormatResult() As Boolean
     FormatResult = P_FORMATRESULT
@@ -432,9 +434,9 @@ Public Property Let FormatResult(aValue As Boolean)
 End Property
 
 ''' <summary>
-''' Gets or sets the evaluation in galloping mode. When set
-''' to True, the evaluator will discriminate constant tokens
-''' from variable tokens.
+'''     Gets or sets the evaluation in galloping mode. When set
+'''     to True, the evaluator will discriminate constant tokens
+'''     from variable tokens.
 ''' </summary>
 Public Property Get GallopingMode() As Boolean
     GallopingMode = P_GALLOPING_MODE
@@ -460,14 +462,14 @@ Public Property Let ImplicitVarValue(aVarName As String, aVarValue As String)
 End Property
 
 ''' <summary>
-''' Gets the parsed status of the actual expression.
+'''     Gets the parsed status of the actual expression.
 ''' </summary>
 Public Property Get ReadyToEval() As Boolean
     ReadyToEval = GeneratedTree
 End Property
 
 ''' <summary>
-''' Gets the result aftter evaluate the give  expression.
+'''     Gets the result aftter evaluate the give  expression.
 ''' </summary>
 Public Property Get result() As String
     If P_FORMATRESULT Then
@@ -478,8 +480,8 @@ Public Property Get result() As String
 End Property
 
 ''' <summary>
-''' Gets or sets the character used as functions argumnets, array elements, separator. By
-''' default the char used is the semicolon ";".
+'''     Gets or sets the character used as functions argumnets, array elements, separator. By
+'''     default the char used is the semicolon ";".
 ''' </summary>
 Public Property Get SeparatorChar() As String
     SeparatorChar = P_SEPARATORCHAR
@@ -490,7 +492,7 @@ Public Property Let SeparatorChar(aValue As String)
 End Property
 
 ''' <summary>
-''' Gets or sets the current value from/to the given variable.
+'''     Gets or sets the current value from/to the given variable.
 ''' </summary>
 Public Property Get VarValue(aVarName As String) As String
     VarValue = P_SCOPE.VarValue(aVarName)
@@ -500,6 +502,32 @@ Public Property Let VarValue(aVarName As String, aVarValue As String)
     If GeneratedTree Then
         P_SCOPE.VarValue(aVarName) = aVarValue
     End If
+End Property
+
+''' <summary>
+'''     Gets the current value from an instance for the given variable.
+'''     If 'aVarKey' is numeric, the argument is treated as an index.
+'''
+'''     NOTE: this version use Variant data type to handle arrays.
+'''     The string array representation is retrieved as usual if the
+'''     parameter "treatAsArray" is set to False, an array is returned
+'''     otherwise.
+''' </summary>
+Public Property Get VarValue2(aVarKey As Variant, treatAsArray As Boolean) As Variant
+    VarValue2 = P_SCOPE.VarValue2(aVarKey, treatAsArray)
+End Property
+
+''' <summary>
+'''     Gets or sets the current value from/to the given variable.
+'''     If 'aVarKey' is numeric, the argument is treated as an index.
+'''
+'''     NOTE: this version use variant data type to handle arrays.
+'''     The array string is stored as usual, but a conversion is
+'''     also perfomed to allocate an array created by parsing the
+'''     given string when the parameter "treatAsArray" is set to True.
+''' </summary>
+Public Property Let VarValue2(aVarKey As Variant, treatAsArray As Boolean, aVarValue As Variant)
+    P_SCOPE.VarValue2(aVarKey, treatAsArray) = aVarValue
 End Property
 
 '#
@@ -524,8 +552,8 @@ err_Handler:
 End Function
 
 ''' <summary>
-''' Computes the inverse of CHISQ function
-''' [(c) John C. Pezzullo](https://statpages.info/scicalc.html)
+'''     Computes the inverse of CHISQ function
+'''     [(c) John C. Pezzullo](https://statpages.info/scicalc.html)
 ''' </summary>
 ''' <param name="p">probability.</param>
 ''' <param name="n">Degrees of freedom.</param>
@@ -658,8 +686,8 @@ Private Sub AddVariable(ByRef variable As String, ByRef aKey As String)
 End Sub
 
 ''' <summary>
-''' Computes the inverse of ERF function
-''' [(c) John C. Pezzullo](https://statpages.info/scicalc.html)
+'''     Computes the inverse of ERF function
+'''     [(c) John C. Pezzullo](https://statpages.info/scicalc.html)
 ''' </summary>
 ''' <param name="p">probability.</param>
 Private Function AERF(ByRef expression As String, ByRef fName As String) As String
@@ -694,8 +722,8 @@ Private Function AERF_(p As Double) As Double
 End Function
 
 ''' <summary>
-'''  Computes the inverse of FISHF function
-''' [(c) John C. Pezzullo](https://statpages.info/scicalc.html)
+'''     Computes the inverse of FISHF function
+'''     [(c) John C. Pezzullo](https://statpages.info/scicalc.html)
 ''' </summary>
 ''' <param name="p">P-value.</param>
 ''' <param name="n1">Degrees of freedom 1.</param>
@@ -745,12 +773,17 @@ Private Function AFISHF_(p As Double, N1 As Double, N2 As Double) As Double
 End Function
 
 Private Function aFloor(ByRef expression As String, ByRef fName As String) As Double
+    On Error GoTo err_Handler
     aFloor = Floor(CDbl(expression))
+    Exit Function
+err_Handler:
+    BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
+                                d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
 ''' <summary>
-''' Computes the inverse of GAUSS function
-''' [(c) John C. Pezzullo](https://statpages.info/scicalc.html)
+'''     Computes the inverse of GAUSS function
+'''     [(c) John C. Pezzullo](https://statpages.info/scicalc.html)
 ''' </summary>
 ''' <param name="p">probability.</param>
 Private Function AGAUSS(ByRef expression As String, ByRef fName As String) As String
@@ -789,8 +822,8 @@ Private Function AGAUSS_(p As Double) As Double
 End Function
 
 ''' <summary>
-''' Computes the inverse of NORM function
-''' [(c) John C. Pezzullo](https://statpages.info/scicalc.html)
+'''     Computes the inverse of NORM function
+'''     [(c) John C. Pezzullo](https://statpages.info/scicalc.html)
 ''' </summary>
 ''' <param name="p">probability.</param>
 Private Function anorm(ByRef expression As String, ByRef fName As String) As String
@@ -924,7 +957,7 @@ err_Handler:
 End Function
 
 ''' <summary>
-'''  Computes the remainder of n/d division
+'''     Computes the remainder of n/d division
 ''' </summary>
 ''' <param name="n">Dividend.</param>
 ''' <param name="d">Divisor.</param>
@@ -989,29 +1022,7 @@ err_Handler:
 End Function
 
 ''' <summary>
-''' Turns a two dimensional array into a one dimensional array.
-''' </summary>
-''' <param name="InputArray">The array to operate.</param>
-Private Function ArraySTR1DFrom2DArr(ByRef InputArray() As String) As String()
-    Dim i As Long, LB As Long, UB As Long
-    Dim j As Long, LB2 As Long, UB2 As Long
-    Dim tmpData() As String
-    
-    LB = LBound(InputArray)
-    UB = UBound(InputArray)
-    LB2 = LBound(InputArray, 2)
-    UB2 = UBound(InputArray, 2)
-    ReDim tmpData(0 To (UB - LB + 1) * (UB2 - LB2 + 1) - 1)
-    For i = LB To UB
-        For j = LB2 To UB2
-            tmpData(i * (UB2 - LB2 + 1) + j) = InputArray(i, j)
-        Next j
-    Next i
-    ArraySTR1DFrom2DArr = tmpData
-End Function
-
-''' <summary>
-''' Turns a like Java array string ({{*};{*}}) into a 1D  or 2D VBA array with n rows and m columns.
+'''     Turns a like Java array string ({{*};{*}}) into a 1D  or 2D VBA array with n rows and m columns.
 ''' </summary>
 ''' <param name="StrArray">The string definition used to create the array.</param>
 Public Function ArrayFromString(ByRef strArray As String) As String()
@@ -1030,6 +1041,7 @@ Public Function ArrayFromString(ByRef strArray As String) As String()
     Dim tmpStr() As Variant
     Dim VectorEndPos As Long
     Dim VectorStartPos As Long
+    Dim inputIs2D As Boolean
     
     StrCopy = ReconstructLiteralStrings(strArray, Join$(Split(strArray, d_Space), vbNullString))
     StrLen = LenB(StrCopy)
@@ -1070,7 +1082,8 @@ Public Function ArrayFromString(ByRef strArray As String) As String()
     Loop While boolOpenArray Or (i <= StrLen)
     NumRows = aIndex
     NumCols = UBound(tmpStr(aIndex))
-    OneDarr = (NumRows = 0)
+    inputIs2D = strArray Like "{{*}" & P_SEPARATORCHAR & "{*}*}"
+    OneDarr = (NumRows = 0) And Not inputIs2D
     If OneDarr Then
         ReDim OutStrArray(0 To NumCols)
     Else '2D array
@@ -1089,7 +1102,7 @@ Public Function ArrayFromString(ByRef strArray As String) As String()
 End Function
 
 ''' <summary>
-''' Turns a like Java array string ({{*};{*}}) into VBA jagged array with n rows.
+'''     Turns a like Java array string ({{*};{*}}) into VBA jagged array with n rows.
 ''' </summary>
 ''' <param name="StrArray">The string definition used to create the array.</param>
 Public Function ArrayFromString2(ByRef strArray As String) As Variant()
@@ -1166,7 +1179,29 @@ Public Function ArrayFromString2(ByRef strArray As String) As Variant()
 End Function
 
 ''' <summary>
-''' Turns a mxn array into a like Java array string ({{*};{*}}).
+'''     Turns a two dimensional array into a one dimensional array.
+''' </summary>
+''' <param name="InputArray">The array to operate.</param>
+Private Function ArraySTR1DFrom2DArr(ByRef InputArray() As String) As String()
+    Dim i As Long, LB As Long, UB As Long
+    Dim j As Long, LB2 As Long, UB2 As Long
+    Dim tmpData() As String
+    
+    LB = LBound(InputArray)
+    UB = UBound(InputArray)
+    LB2 = LBound(InputArray, 2)
+    UB2 = UBound(InputArray, 2)
+    ReDim tmpData(0 To (UB - LB + 1) * (UB2 - LB2 + 1) - 1)
+    For i = LB To UB
+        For j = LB2 To UB2
+            tmpData(i * (UB2 - LB2 + 1) + j) = InputArray(i, j)
+        Next j
+    Next i
+    ArraySTR1DFrom2DArr = tmpData
+End Function
+
+''' <summary>
+'''     Turns a mxn array into a like Java array string ({{*};{*}}).
 ''' </summary>
 ''' <param name="InputArray">The array to operate.</param>
 Public Function ArrayToString(ByRef InputArray As Variant) As String
@@ -1252,8 +1287,8 @@ err_Handler:
 End Function
 
 ''' <summary>
-''' Computes the inverse of STUDT function
-''' [(c) John C. Pezzullo](https://statpages.info/scicalc.html)
+'''     Computes the inverse of STUDT function
+'''     [(c) John C. Pezzullo](https://statpages.info/scicalc.html)
 ''' </summary>
 ''' <param name="p">probability.</param>
 ''' <param name="n">Degrees of freedom.</param>
@@ -1361,11 +1396,11 @@ Private Function betacf(x As Double, A As Double, B As Double) As Double
 End Function
 
 ''' <summary>
-''' Returns the inverse cumulative beta inverse probability distribution function.
-''' That is, if probability = BETADIST(x,...), BETAINV(probability,...) = x.
-''' The cumulative beta distribution can be used in project planning to determine
-''' likely completion times given a variability and an expected completion time.
-''' [(c) John C. Pezzullo](https://statpages.info/scicalc.html)
+'''     Returns the inverse cumulative beta inverse probability distribution function.
+'''     That is, if probability = BETADIST(x,...), BETAINV(probability,...) = x.
+'''     The cumulative beta distribution can be used in project planning to determine
+'''     likely completion times given a variability and an expected completion time.
+'''     [(c) John C. Pezzullo](https://statpages.info/scicalc.html)
 ''' </summary>
 ''' <param name="p">Probability.</param>
 ''' <param name="a">Shape parameter alpha.</param>
@@ -1639,10 +1674,10 @@ Private Function CheckVarValues() As Boolean
 End Function
 
 ''' <summary>
-''' Computes the one-tailed (right-tail) probability value for a chi-square test
-''' (i.e., the area under the chi-square distribution from the chi-square value
-''' to positive infinity), given the chi-square value and the degrees of freedom.
-''' [(c) John C. Pezzullo](https://statpages.info/scicalc.html)
+'''     Computes the one-tailed (right-tail) probability value for a chi-square test
+'''     (i.e., the area under the chi-square distribution from the chi-square value
+'''     to positive infinity), given the chi-square value and the degrees of freedom.
+'''     [(c) John C. Pezzullo](https://statpages.info/scicalc.html)
 ''' </summary>
 ''' <param name="x">Chi-square value.</param>
 ''' <param name="n">Degrees of freedom.</param>
@@ -1719,7 +1754,7 @@ Private Function Cholesky(ByRef A() As Double, ByRef el() As Double) As Double()
     Dim i As Long
     Dim j As Long
     Dim k As Long
-    Dim sum As Double
+    Dim pSum As Double
     
     n = UBound(A) - LBound(A) + 1
     m = UBound(A, 2) - LBound(A, 2) + 1
@@ -1727,20 +1762,20 @@ Private Function Cholesky(ByRef A() As Double, ByRef el() As Double) As Double()
     el = A
     For i = 0 To n - 1
         For j = i To n - 1
-            sum = el(i, j)
+            pSum = el(i, j)
             k = i - 1
             Do While k >= 0
-                sum = sum - el(i, k) * el(j, k)
+                pSum = pSum - el(i, k) * el(j, k)
                 k = k - 1
             Loop
             If i = j Then 'Check diagonal elements
-                If sum <= 0 Then 'A, with rounding errors, is not positive-definite.
+                If pSum <= 0 Then 'A, with rounding errors, is not positive-definite.
                     Erase el 'Cholesky failed. Test for not initialized array needed.
                     Exit Function
                 End If
-                el(i, i) = Sqr(sum)
+                el(i, i) = Sqr(pSum)
             Else
-                el(j, i) = sum / el(i, i)
+                el(j, i) = pSum / el(i, i)
             End If
         Next j
     Next i
@@ -1775,7 +1810,7 @@ Private Function CholeskyDecomposition(ByRef expression As String, ByRef fName A
             
             aArray() = ToDblArray(ArrayFromString(tmpData(LB)))
             Cholesky aArray(), cholDec
-            If IsArrayAllocated(Not cholDec) Then
+            If IsArrayAllocated(cholDec) Then
                 tmpEval = ArrayToString(cholDec)
             Else
                 tmpEval = e_ValueError
@@ -1795,7 +1830,7 @@ err_Handler:
 End Function
 
 ''' <summary>
-''' Returns the inverse of a matrix by Cholesky decomposition
+'''     Returns the inverse of a matrix by Cholesky decomposition
 ''' </summary>
 Private Function CholeskyInverseMatrix(ByRef expression As String, ByRef fName As String) As String
     Dim argsCount As Long
@@ -1815,7 +1850,7 @@ Private Function CholeskyInverseMatrix(ByRef expression As String, ByRef fName A
             
             aArray() = ToDblArray(ArrayFromString(tmpData(LB)))
             Cholesky aArray(), cholDec
-            If IsArrayAllocated(Not cholDec) Then
+            If IsArrayAllocated(cholDec) Then
                 tmpEval = ArrayToString(CholeskyInverseMatrix_(cholDec))
             Else
                 tmpEval = e_ValueError
@@ -1835,7 +1870,7 @@ err_Handler:
 End Function
 
 ''' <summary>
-'''     Set ainv[0..n-1][0..n-1] to the matrix inverse of A, the matrix whose Cholesky
+'''     Sets ainv[0..n-1][0..n-1] to the matrix inverse of A, the matrix whose Cholesky
 '''     decomposition has been stored.
 ''' </summary>
 Private Function CholeskyInverseMatrix_(ByRef el() As Double) As Double()
@@ -1843,27 +1878,27 @@ Private Function CholeskyInverseMatrix_(ByRef el() As Double) As Double()
     Dim i As Long
     Dim j As Long
     Dim k As Long
-    Dim sum As Double
+    Dim pSum As Double
     Dim ainv() As Double
     
     n = UBound(el) - LBound(el) + 1
     ReDim ainv(0 To n - 1, 0 To n - 1)
     For i = 0 To n - 1
         For j = 0 To i
-            sum = IIf(i = j, 1, 0)
+            pSum = IIf(i = j, 1, 0)
             For k = i - 1 To j Step -1
-                sum = sum - el(i, k) * ainv(j, k)
+                pSum = pSum - el(i, k) * ainv(j, k)
             Next k
-            ainv(j, i) = sum / el(i, i)
+            ainv(j, i) = pSum / el(i, i)
         Next j
     Next i
     For i = n - 1 To 0 Step -1
         For j = 0 To i
-            sum = IIf(i < j, 0, ainv(j, i))
+            pSum = IIf(i < j, 0, ainv(j, i))
             For k = i + 1 To n - 1
-                sum = sum - el(k, i) * ainv(j, k)
+                pSum = pSum - el(k, i) * ainv(j, k)
             Next k
-            ainv(i, j) = sum / el(i, i)
+            ainv(i, j) = pSum / el(i, i)
             ainv(j, i) = ainv(i, j)
         Next j
     Next i
@@ -1872,8 +1907,8 @@ Private Function CholeskyInverseMatrix_(ByRef el() As Double) As Double()
 End Function
 
 ''' <summary>
-''' Solves the linear system AX = B using Cholesky decomposition. The function
-''' requires that the <expression> argument be composed of the following:
+'''     Solves the linear system AX = B using Cholesky decomposition. The function
+'''     requires that the <expression> argument be composed of the following:
 '''                     1-) An array in text form containing the coefficients of all equations.
 '''                     2-) An one dimentional array containing the name of each variable
 '''                         (the first name will be applied to the first column of coefficients,
@@ -1916,7 +1951,7 @@ Private Function CholeskySolve(ByRef expression As String, ByRef fName As String
             
             eqCount = mUB - mLB + 1
             Cholesky aArray(), cholDec
-            If IsArrayAllocated(Not cholDec) Then
+            If IsArrayAllocated(cholDec) Then
                 CholeskySolve_ cholDec, bArray, xArray
             Else
                 Exit Function 'Error computing Decomposition
@@ -1953,7 +1988,7 @@ err_Handler:
 End Function
 
 ''' <summary>
-'''     Solve the set of n linear equations A.x = b, where a is
+'''     Solves the set of n linear equations A.x = b, where a is
 '''     a positive-definite symmetric matrix. whose Cholesky
 '''     decomposition has been stored. b[0..n-1] is input as the right-hand
 '''     side vector. The solution vector is returned in x[0..n-1].
@@ -1962,7 +1997,7 @@ End Function
 Private Sub CholeskySolve_(ByRef el() As Double, ByRef B() As Double, ByRef x() As Double)
     Dim i As Long
     Dim k As Long
-    Dim sum As Double
+    Dim pSum As Double
     Dim n As Long
     Dim e As Long
     
@@ -1971,22 +2006,22 @@ Private Sub CholeskySolve_(ByRef el() As Double, ByRef B() As Double, ByRef x() 
     If e <> n Then Exit Sub 'bad lengths in Cholesky
     ReDim x(0 To n - 1)
     For i = 0 To n - 1 'Solve L.y = b, storing y in x.
-        sum = B(i)
+        pSum = B(i)
         k = i - 1
         Do While k >= 0
-            sum = sum - el(i, k) * x(k)
+            pSum = pSum - el(i, k) * x(k)
             k = k - 1
         Loop
-        x(i) = sum / el(i, i)
+        x(i) = pSum / el(i, i)
     Next i
     For i = n - 1 To 0 Step -1 'Solve LT.x = y
-        sum = x(i)
+        pSum = x(i)
         k = i + 1
         Do While k < n
-            sum = sum - el(k, i) * x(k)
+            pSum = pSum - el(k, i) * x(k)
             k = k + 1
         Loop
-        x(i) = sum / el(i, i)
+        x(i) = pSum / el(i, i)
     Next i
 End Sub
 
@@ -2022,8 +2057,8 @@ err_Handler:
 End Function
 
 ''' <summary>
-''' Computes the mean for the given column from a 2D array
-''' NOTE: PolyFit helper
+'''     Computes the mean for the given column from a 2D array
+'''     NOTE: PolyFit helper
 ''' </summary>
 Private Function ColumnAvg(vArr() As Double, Optional colIndex As Long) As Double
     Dim i As Long
@@ -2044,7 +2079,7 @@ Private Function ColumnAvg(vArr() As Double, Optional colIndex As Long) As Doubl
 End Function
 
 ''' <summary>
-''' Traverses and evaluates the current parse tree.
+'''     Traverses and evaluates the current parse tree.
 ''' </summary>
 Private Function Compute() As String
     Dim B As Long
@@ -2120,12 +2155,15 @@ Private Function CountParentheses(ByRef expression As String, ByRef ParenthesisC
     CountParentheses = tmpResult
 End Function
 
-Public Function Create(ByRef aExpression As Variant) As VBAexpressions
+Public Function Create(ByRef aExpression As Variant, Optional resetScope As Boolean = True) As VBAexpressions
     If aExpression <> vbNullString Then
         ExprToEval = FormatEntry(CStr(aExpression))
         If ExprToEval <> FormatEntry(P_EXPRESSION) Then
             P_EXPRESSION = aExpression
-            VariablesInit ExprToEval
+            If resetScope Then
+                VariablesInit ExprToEval
+            End If
+            ExprToEval = SBracketsNotationToNominal(ExprToEval)
             Parse ExprToEval
         End If
         AssignedExpression = True
@@ -2134,32 +2172,32 @@ Public Function Create(ByRef aExpression As Variant) As VBAexpressions
 End Function
 
 ''' <summary>
-''' Creates a curve string representation from solver coefficients
-''' NOTE: PolyFit helper
+'''     Creates a curve string representation from solver coefficients
+'''     NOTE: PolyFit helper
 ''' </summary>
 Private Function CurveString(ByRef SolverResult As Variant, cOption As Long) As String
     Select Case cOption
         Case 2 'Exponential [y = a*e^(b*x)]
-            CurveString = CStr(Round(SolverResult(0), 4)) & op_mult & "e" & op_power & _
-                            d_lParenthesis & Round(SolverResult(1), 4) & op_mult & "x" & d_rParenthesis
+            CurveString = CStr(Round(SolverResult(0, 0), 4)) & op_mult & "e" & op_power & _
+                            d_lParenthesis & Round(SolverResult(1, 0), 4) & op_mult & "x" & d_rParenthesis
         Case 3 'Exponential [y = a*b^x]
-            CurveString = CStr(Round(SolverResult(0), 4)) & op_mult & _
-                            d_lParenthesis & Round(SolverResult(1), 4) & op_power & "x" & d_rParenthesis
+            CurveString = CStr(Round(SolverResult(0, 0), 4)) & op_mult & _
+                            d_lParenthesis & Round(SolverResult(1, 0), 4) & op_power & "x" & d_rParenthesis
         Case 4 'Power [y = a*x^b]
-            CurveString = CStr(Round(SolverResult(0), 4)) & op_mult & "x" & op_power & Round(SolverResult(1), 4)
+            CurveString = CStr(Round(SolverResult(0, 0), 4)) & op_mult & "x" & op_power & Round(SolverResult(1, 0), 4)
         Case 5 'Logarithmic [y = a*ln(x) + b]
             Dim sepChr As String
-            If SolverResult(0) > 0 Then
+            If SolverResult(0, 0) > 0 Then
                 sepChr = op_plus
             End If
-            CurveString = CStr(Round(SolverResult(1), 4)) & op_mult & "ln(x)" & sepChr & _
-                                Round(SolverResult(0), 4)
+            CurveString = CStr(Round(SolverResult(1, 0), 4)) & op_mult & "ln(x)" & sepChr & _
+                                Round(SolverResult(0, 0), 4)
     End Select
 End Function
 
 ''' <summary>
-''' Computes linearization for linear like functions
-''' NOTE: CurveFit helper
+'''     Computes linearization for linear like functions
+'''     NOTE: CurveFit helper
 ''' </summary>
 ''' <param name="samplesArr">Data sample containing the observations pairs (x,y).</param>
 ''' <param name="cOption">Curve type ID.</param>
@@ -2364,7 +2402,9 @@ End Function
 
 Private Function Date_(ByRef expression As String, ByRef fName As String) As String
     On Error GoTo err_Handler
-    Date_ = ToLiteralString(Date)
+    If expression <> vbNullString Then
+        Date_ = ToLiteralString(Date)
+    End If
     Exit Function
 err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
@@ -2459,7 +2499,7 @@ Private Function DefineIRRfunction(ByRef strArray() As String) As String
 End Function
 
 ''' <summary>
-''' Returns the determinant for the given matrix
+'''     Returns the determinant for the given matrix
 ''' </summary>
 Private Function Determinant(ByRef expression As String, ByRef fName As String) As String
     Dim argsCount As Long
@@ -2497,7 +2537,7 @@ err_Handler:
 End Function
 
 ''' <summary>
-''' Finds for constant sub-expressions
+'''     Finds for constant sub-expressions
 ''' </summary>
 Private Sub DetermineKtokens()
     Dim BaseIndex As Long
@@ -2514,10 +2554,10 @@ Private Sub DetermineKtokens()
 End Sub
 
 ''' <summary>
-''' Computes the value of the error function (i.e., the area under the
-''' error function from 0 to x), given the limit of integration x. The
-''' error function is also known as the Gauss error function.
-''' [(c) John C. Pezzullo](https://statpages.info/scicalc.html)
+'''     Computes the value of the error function (i.e., the area under the
+'''     error function from 0 to x), given the limit of integration x. The
+'''     error function is also known as the Gauss error function.
+'''     [(c) John C. Pezzullo](https://statpages.info/scicalc.html)
 ''' </summary>
 ''' <param name="x">Limit of integration.</param>
 Private Function ERF(ByRef expression As String, ByRef fName As String) As String
@@ -2556,7 +2596,7 @@ Private Function ERF_(x As Double) As Double
 End Function
 
 ''' <summary>
-''' Evaluate a math expression.
+'''     Evaluates a math expression.
 ''' </summary>
 ''' <param name="ValuesToEvalIn">The values to use for eval the parse tree.</param>
 '@DefaultMember
@@ -2679,6 +2719,8 @@ Private Function EvalFunction(ByRef Argument As String, ByRef FunctionName As St
                 EvalFunction = GAMMALN(Argument, FunctionName)
             Case "GAUSS"
                 EvalFunction = GAUSS(Argument, FunctionName)
+            Case "GET"
+                EvalFunction = GETS(Argument, FunctionName)
             Case "aHour"
                 EvalFunction = Hour_(Argument, FunctionName)
             Case "iBETA"
@@ -2775,6 +2817,8 @@ Private Function EvalFunction(ByRef Argument As String, ByRef FunctionName As St
                 EvalFunction = SLN_(Argument, FunctionName)
             Case "SquareRoot"
                 EvalFunction = SquareRoot(Argument, FunctionName)
+            Case "SUM"
+                EvalFunction = SUM(Argument, FunctionName)
             Case "Tangent"
                 EvalFunction = Tangent(Argument, FunctionName)
             Case "STUDT"
@@ -2803,8 +2847,8 @@ Private Function EvalFunction(ByRef Argument As String, ByRef FunctionName As St
                 EvalFunction = WeekDayName_(Argument, FunctionName)
             Case "aYear"
                 EvalFunction = Year_(Argument, FunctionName)
-            Case Else
-                'Rise an error for not found function
+            Case Else 'Try to overload variable
+                EvalFunction = OverLoadVarName(Argument, FunctionName)
         End Select
     Else
         EvalFunction = EvalUDF(FunctionName, Argument)
@@ -2851,8 +2895,8 @@ err_Handler:
 End Function
 
 ''' <summary>
-''' Computes factorial by recursion.
-''' [(c) John C. Pezzullo](https://statpages.info/scicalc.html)
+'''     Computes factorial by recursion.
+'''     [(c) John C. Pezzullo](https://statpages.info/scicalc.html)
 ''' </summary>
 ''' <param name="n">Value to compute the factorial from.</param>
 Private Function FACT(n As Double) As Double
@@ -2899,7 +2943,8 @@ Private Sub FillTokenArgProps(ByRef TokenArg As Argument, Optional OnlySetIndexe
         TokenArg.NegationFlagOn = (InStrB(1, TokenArg.DefString, op_neg) = 1) '~*
         TokenArg.funcName = GetFunctionName(TokenArg.DefString)
         TokenArg.UDFFunctionIn = IsUDFFunction
-        TokenArg.FunctionIn = (TokenArg.funcName <> vbNullString) Or TokenArg.UDFFunctionIn
+        TokenArg.FunctionIn = (TokenArg.funcName <> vbNullString) _
+                                Or TokenArg.UDFFunctionIn
         TokenArg.LinkedIndex = GetIndex(TokenArg.DefString)
         If Not TokenArg.NegationFlagOn Then
             TokenArg.LinkedVar = P_SCOPE.VarIndex(CastCase(TokenArg.DefString))
@@ -2915,9 +2960,9 @@ Private Sub FillTokenArgProps(ByRef TokenArg As Argument, Optional OnlySetIndexe
 End Sub
 
 ''' <summary>
-''' Computes the probability value of an F-test, given the F-value,
-''' numerator degrees of freedom, and denominator degrees of freedom.
-''' [(c) John C. Pezzullo](https://statpages.info/scicalc.html)
+'''     Computes the probability value of an F-test, given the F-value,
+'''     numerator degrees of freedom, and denominator degrees of freedom.
+'''     [(c) John C. Pezzullo](https://statpages.info/scicalc.html)
 ''' </summary>
 ''' <param name="f">F-value.</param>
 ''' <param name="n1">Degrees of freedom 1.</param>
@@ -2983,8 +3028,8 @@ Private Function FISHF_(f As Double, N1 As Double, N2 As Double) As Double
 End Function
 
 ''' <summary>
-''' Performs a least squares regression curve fitting. The methods requires that the <expression>
-''' argument be composed of the following:
+'''     Performs a least squares regression curve fitting. The methods requires that the <expression>
+'''     argument be composed of the following:
 '''                     1-) An array in text form containing the observations pairs.
 '''                     2-) An integer value representing the fitting curve type:
 '''                             1 --> Polynomial [y = a + b*x + c*x^2 +...+ m*x^n]
@@ -2995,7 +3040,7 @@ End Function
 '''                     3-) An optional integer value representing the polynomial degree
 '''                         only if Polynomial fitting option is selected
 '''
-''' The returned value is an like Java array with the form {{POLYNOMIAL};{R-squared VALUE}}
+'''     The returned value is an like Java array with the form {{POLYNOMIAL};{R-squared VALUE}}
 ''' </summary>
 Private Function Fit(ByRef expression As String, ByRef fName As String) As String
     Dim tmpData() As String
@@ -3028,13 +3073,13 @@ Private Function Fit(ByRef expression As String, ByRef fName As String) As Strin
                 solverCoeff = PolyFit_(DataLinearization(ObservatiosnArray, fittingOption), 1, False)
                 Select Case fittingOption
                     Case 2 'Exponential [y = a*e^(b*x)]
-                        solverCoeff(0) = 10 ^ solverCoeff(0) 'antilog_10 (A)
-                        solverCoeff(1) = solverCoeff(1) / Log10(Exp(1)) 'B/log10(e)
+                        solverCoeff(0, 0) = 10 ^ solverCoeff(0, 0) 'antilog_10 (A)
+                        solverCoeff(1, 0) = solverCoeff(1, 0) / Log10(Exp(1)) 'B/log10(e)
                     Case 3 'Exponential [y = a*b^x]
-                        solverCoeff(0) = 10 ^ solverCoeff(0) 'antilog_10 (A)
-                        solverCoeff(1) = 10 ^ solverCoeff(1) 'antilog_10 (B)
+                        solverCoeff(0, 0) = 10 ^ solverCoeff(0, 0) 'antilog_10 (A)
+                        solverCoeff(1, 0) = 10 ^ solverCoeff(1, 0) 'antilog_10 (B)
                     Case 4 'Power [y = a*x^b]
-                        solverCoeff(0) = 10 ^ solverCoeff(0) 'antilog_10 (A)
+                        solverCoeff(0, 0) = 10 ^ solverCoeff(0, 0) 'antilog_10 (A)
                 End Select
                 fittedPolynomial = CurveString(solverCoeff, fittingOption)
                 tmpEval = d_lCurly & _
@@ -3237,8 +3282,8 @@ err_Handler:
 End Function
 
 ''' <summary>
-''' Find roots of a univariate function ussing the bisection method.
-''' at the interval a <= x <= b.
+'''     Finds roots of a univariate function ussing the bisection method.
+'''     at the interval a <= x <= b.
 ''' </summary>
 ''' <param name="aFunction">Inline function.</param>
 ''' <param name="a">Leftmost interval value.</param>
@@ -3333,8 +3378,8 @@ Public Function fZero(ByRef aFunction As String, ByVal A As Double, _
 End Function
 
 ''' <summary>
-''' Find a zero of a univariate function ussing a modified bisection method.
-''' aFunction must be a continuous function f(x) for the interval a <= x <= b.
+'''     Finds a zero of a univariate function ussing a modified bisection method.
+'''     aFunction must be a continuous function f(x) for the interval a <= x <= b.
 ''' </summary>
 ''' <param name="aFunction">Inline function.</param>
 ''' <param name="a">Leftmost interval value.</param>
@@ -3456,9 +3501,9 @@ fZeroMBM_errHandler:
 End Function
 
 ''' <summary>
-''' Find a zero of a univariate function ussing a modified regula falsi method.
-''' aFunction must be a continuous function f(x) for the interval a <= x <= b.
-''' Credits: A NeamvonK [https://www.ajouronline.com/index.php/AJAS/article/view/2982]
+'''     Finds a zero of a univariate function ussing a modified regula falsi method.
+'''     aFunction must be a continuous function f(x) for the interval a <= x <= b.
+'''     Credits: A NeamvonK [https://www.ajouronline.com/index.php/AJAS/article/view/2982]
 ''' </summary>
 ''' <param name="aFunction">Inline function.</param>
 ''' <param name="a">Leftmost interval value.</param>
@@ -3565,8 +3610,8 @@ fZeroMRF_errHandler:
 End Function
 
 ''' <summary>
-''' Computes the value GAMMA of x from factorial function.
-''' [(c) John C. Pezzullo](https://statpages.info/scicalc.html)
+'''     Computes the value GAMMA of x from factorial function.
+'''     [(c) John C. Pezzullo](https://statpages.info/scicalc.html)
 ''' </summary>
 ''' <param name="x">Value to compute the GAMMA function from.</param>
 Private Function GAMMA(x As Double) As Variant
@@ -3583,8 +3628,8 @@ err_Handler:
 End Function
 
 ''' <summary>
-''' Returns the natural logarithm of the gamma function.
-''' [(c) John C. Pezzullo](https://statpages.info/scicalc.html)
+'''     Returns the natural logarithm of the gamma function.
+'''     [(c) John C. Pezzullo](https://statpages.info/scicalc.html)
 ''' </summary>
 ''' <param name="x">Value to compute the GAMMALN function from.</param>
 Private Function GAMMALN_(x As Double) As Double
@@ -3607,12 +3652,12 @@ Private Function GAMMALN_(x As Double) As Double
 End Function
 
 ''' <summary>
-''' Computes the probability that a member of a standard normal population
-''' will fall between the mean and z standard deviations from the mean.
-''' [(c) John C. Pezzullo](https://statpages.info/scicalc.html) with adjustment specified in
-''' https://support.microsoft.com/en-us/office/gauss-function-069f1b4e-7dee-4d6a-a71f-4b69044a6b33
-''' The result is 0.5 off from the cumulative distribution function (CDF) for the standard normal
-''' given the upper limit of integration z. So CDF (mean:=0, sd:=1, z) = GAUSS(z) + 0.5
+'''     Computes the probability that a member of a standard normal population
+'''     will fall between the mean and z standard deviations from the mean.
+'''     [(c) John C. Pezzullo](https://statpages.info/scicalc.html) with adjustment specified in
+'''     https://support.microsoft.com/en-us/office/gauss-function-069f1b4e-7dee-4d6a-a71f-4b69044a6b33
+'''     The result is 0.5 off from the cumulative distribution function (CDF) for the standard normal
+'''     given the upper limit of integration z. So CDF (mean:=0, sd:=1, z) = GAUSS(z) + 0.5
 ''' </summary>
 ''' <param name="z">Standard deviations from the mean.</param>
 Private Function GAUSS(ByRef expression As String, ByRef fName As String) As String
@@ -3927,12 +3972,15 @@ Private Function GetFunctionName(ByRef expression As String) As String
                 End If
             End If
         Next i
-        If Not GFNbool Then
-            GetFunctionName = vbNullString
-        Else
-            GetFunctionName = UserDefFunctions.Storage(i).name
-        End If
         IsUDFFunction = GFNbool
+        If GFNbool Then
+            GetFunctionName = UserDefFunctions.Storage(i).name
+        Else
+            If expression Like "[A-Zaz]*{*}" Then 'Not defined function bypass
+                tmpPos = InStrB(1, expression, d_lCurly)
+                GetFunctionName = MidB$(expression, 1, tmpPos - 1)
+            End If
+        End If
     End If
 End Function
 
@@ -4180,7 +4228,7 @@ Private Function GetOPeratorSymbolPos(ByRef expression As String, _
 End Function
 
 ''' <summary>
-''' Gets the operator given an operator token.
+'''     Gets the operator given an operator token.
 ''' </summary>
 Private Function GetOpSymbol(ByRef OPtoken As OperatorToken) As String
     Select Case OPtoken
@@ -4320,8 +4368,6 @@ End Function
 ''' </param>
 Private Function GetPredInterNames(ByRef PredInterArr() As Boolean) As String
     Dim tmpResult As String
-    Dim idx1 As Long
-    Dim idx2 As Long
     Dim s As Long
     Dim i As Long
     Dim j As Long
@@ -4419,6 +4465,48 @@ Private Function GetRParentPos(ByRef expression As String, ByRef index As Long) 
     GetRParentPos = SearchIndex - 2
 End Function
 
+''' <summary>
+'''     Assigns the value from VarValue to VarName variable.
+'''     A list of two elements is expected, first the name
+'''     of the variable to be assigned the value and then
+'''     the value to assign. The fucntion returns the VarValue.
+'''
+'''     NOTE: The name need to be pased as literal string.
+'''     If the value parameter is omitted, the variable value
+'''     is returned.
+''' </summary>
+''' <param name="n">VarName.</param>
+''' <param name="d">VarValue.</param>
+Private Function GETS(ByRef expression As String, ByRef fName As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    On Error GoTo err_Handler
+    tmpData() = SplitArgs(expression)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 2
+            tmpEval = tmpData(UB)
+            P_SCOPE.VarValue(FormatLiteralString(tmpData(LB), True)) = tmpData(UB)
+        Case 1
+            Dim varName As String
+            varName = FormatLiteralString(tmpData(LB), True)
+            tmpEval = P_SCOPE.VarValue(varName)
+        Case Else
+            tmpEval = e_ValueError
+              BuildErrMessage errMissingArgsOrTooManyArgs, d_lCurly & fName & d_rCurly
+    End Select
+    GETS = tmpEval: Erase tmpData
+    Exit Function
+err_Handler:
+    BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
+                                    d_lParenthesis & err.Description & d_rParenthesis
+End Function
+
 Private Function GetSubstStr(ByRef aValue As Long) As String
     If aValue >= 0 Then
         LIndexConstruc(1) = aValue
@@ -4427,11 +4515,11 @@ Private Function GetSubstStr(ByRef aValue As Long) As String
 End Function
 
 ''' <summary>
-''' Returns an array with all the sub expressions needed to
-''' evaluate the given expression. A string such as {0}
-''' indicates that the current token should be evaluated using
-''' the value or token residing at index 0 using functions
-''' and arithmetic operators.
+'''     Returns an array with all the sub expressions needed to
+'''     evaluate the given expression. A string such as {0}
+'''     indicates that the current token should be evaluated using
+'''     the value or token residing at index 0 using functions
+'''     and arithmetic operators.
 ''' </summary>
 ''' <param name="Expression">The expression to parse.</param>
 Private Function GetSubTreeData(ByRef expression As String) As String()
@@ -4662,9 +4750,9 @@ Private Function GoBackToOpSymbol(ByRef expression As String, ByRef VarStartPos 
 End Function
 
 ''' <summary>
-''' Computes the googness of a curve fit over The ObserArray must be a 2 columns
-''' array in which the first column contains the X (independent variable) values
-''' and the second column contains the Y (dependent variable) values
+'''     Computes the googness of a curve fit over The ObserArray must be a 2 columns
+'''     array in which the first column contains the X (independent variable) values
+'''     and the second column contains the Y (dependent variable) values
 ''' </summary>
 Private Function GoodnessOfFit_(ByRef Polynomial As String, ByRef ObserArray() As Double) As Double
     Dim exprHelper As VBAexpressions
@@ -4719,10 +4807,10 @@ err_Handler:
 End Function
 
 ''' <summary>
-''' Computes the cumulative distribution function (CDF) for the beta distribution
-''' (i.e., the area under the beta distribution from 0 to x), given values of
-''' the shape parameters, and the point at which to evaluate the function.
-''' [(c) John C. Pezzullo](https://statpages.info/scicalc.html)
+'''     Computes the cumulative distribution function (CDF) for the beta distribution
+'''     (i.e., the area under the beta distribution from 0 to x), given values of
+'''     the shape parameters, and the point at which to evaluate the function.
+'''     [(c) John C. Pezzullo](https://statpages.info/scicalc.html)
 ''' </summary>
 ''' <param name="x">Integration limit point.</param>
 ''' <param name="a">Shape parameter alpha.</param>
@@ -4892,17 +4980,6 @@ Private Sub InitCBbuffer(ByRef aBuffer As ClusterBuffer)
     aBuffer.index = -1
 End Sub
 
-Private Function InitializedArray(ByRef arr As Variant) As Boolean
-    Dim UB As Long
-    
-    On Error GoTo err_Handler
-    UB = UBound(arr)
-    InitializedArray = True
-    Exit Function
-err_Handler:
-    InitializedArray = False
-End Function
-
 Private Sub InitializeErrHandler()
     P_ERRORDESC = vbNullString
     P_ERRTYPE = errNone
@@ -5036,13 +5113,15 @@ Private Function IsAlphaNumeric(ByRef Char As String) As Boolean
     End If
 End Function
 
-''' <summary>
-''' Determines if an array is allocated
-'''
-''' usage: IsArrayAllocated(Not ArrayName)
-''' </summary>
-Public Function IsArrayAllocated(ByVal Not_Array As Variant) As Boolean
-    IsArrayAllocated = Not (Not_Array = -1&)
+Private Function IsArrayAllocated(ByRef arr As Variant) As Boolean
+    Dim UB As Long
+    
+    On Error GoTo err_Handler
+    UB = UBound(arr)
+    IsArrayAllocated = True
+    Exit Function
+err_Handler:
+    IsArrayAllocated = False
 End Function
 
 Private Function IsBoolean(ByRef expression As String) As Boolean
@@ -5057,7 +5136,7 @@ Public Function IsConstant(aVarName As String) As Boolean
 End Function
 
 ''' <summary>
-''' Determines if a token/sub-expressions is constant
+'''     Determines if a token/sub-expressions is constant
 ''' </summary>
 Private Function IsConstantToken(ByRef CurToken As token, ByRef CurTree As ClusterTree, _
                                     ByRef BaseIndex As Long) As Boolean
@@ -5372,12 +5451,12 @@ err_Handler:
 End Function
 
 ''' <summary>
-''' Solves the set of n linear equations A.X = B. Here
-''' a[1,...,n][1,...,n] is input, not as the matrix A but
-''' rather as its LU decomposition, determined by the routine
-''' LUdecomp. indx[1,...,n] is input as the permutation vector
-''' returned from LUdecomp. b[1,...,n] is input as the right-hand
-''' side vector B, and returns with the solution vector X
+'''     Solves the set of n linear equations A.X = B. Here
+'''     a[1,...,n][1,...,n] is input, not as the matrix A but
+'''     rather as its LU decomposition, determined by the routine
+'''     LUdecomp. indx[1,...,n] is input as the permutation vector
+'''     returned from LUdecomp. b[1,...,n] is input as the right-hand
+'''     side vector B, and returns with the solution vector X
 ''' </summary>
 Private Sub LUbkSub(ByRef A() As Double, ByRef indx() As Long, ByRef B() As Double)
 '@----------------------------------------------------------------------------------------
@@ -5389,7 +5468,7 @@ Private Sub LUbkSub(ByRef A() As Double, ByRef indx() As Long, ByRef B() As Doub
     Dim ip As Long
     Dim j As Long
     Dim n As Long
-    Dim sum As Double
+    Dim pSum As Double
     Dim aLB As Long
     Dim aUB As Long
     Dim bLB As Long
@@ -5401,35 +5480,35 @@ Private Sub LUbkSub(ByRef A() As Double, ByRef indx() As Long, ByRef B() As Doub
     ii = 0
     For i = 1 To n
         ip = indx(i)
-        sum = B(ip + bLB - 1)
+        pSum = B(ip + bLB - 1)
         B(ip + bLB - 1) = B(i + bLB - 1)
         If ii Then
             For j = ii To i - 1
-                sum = sum - A(i + aLB - 1, j + aLB - 1) * B(j + bLB - 1)
+                pSum = pSum - A(i + aLB - 1, j + aLB - 1) * B(j + bLB - 1)
             Next j
-        ElseIf sum Then
+        ElseIf pSum Then
             ii = i
         End If
-        B(i + bLB - 1) = sum
+        B(i + bLB - 1) = pSum
     Next i
     For i = n To 1 Step -1
-        sum = B(i + bLB - 1)
+        pSum = B(i + bLB - 1)
         For j = i + 1 To n
-            sum = sum - A(i + aLB - 1, j + aLB - 1) * B(j + bLB - 1)
+            pSum = pSum - A(i + aLB - 1, j + aLB - 1) * B(j + bLB - 1)
         Next j
-        B(i + bLB - 1) = sum / A(i + aLB - 1, i + aLB - 1)
+        B(i + bLB - 1) = pSum / A(i + aLB - 1, i + aLB - 1)
     Next i
 End Sub
 
 ''' <summary>
-''' Given a matrix a[1,...,n][1,...,n], this routine replaces
-''' it by the LU decomposition of a rowwise permutation of
-''' itself. a is input. a is output, indx[1,...,n] is
-''' an output vector that records the rows permutation effected
-''' by the partial pivoting; d is output +-1 depending whether
-''' the number of row interchanges was even or odd, respectively.
-''' This routine is used in combination with LUbkSub to solve
-''' linear equations or invert matrix.
+'''     Given a matrix a[1,...,n][1,...,n], this routine replaces
+'''     it by the LU decomposition of a rowwise permutation of
+'''     itself. a is input. a is output, indx[1,...,n] is
+'''     an output vector that records the rows permutation effected
+'''     by the partial pivoting; d is output +-1 depending whether
+'''     the number of row interchanges was even or odd, respectively.
+'''     This routine is used in combination with LUbkSub to solve
+'''     linear equations or invert matrix.
 ''' </summary>
 Private Sub LUdecomp(ByRef A() As Double, ByRef indx() As Long, _
                         ByRef d As Double)
@@ -5444,7 +5523,7 @@ Private Sub LUdecomp(ByRef A() As Double, ByRef indx() As Long, _
     Dim k As Long
     Dim big As Double
     Dim dum As Double
-    Dim sum As Double
+    Dim pSum As Double
     Dim temp As Double
     Dim vv() As Double         'vv stores the implicit scaling of each row
     Dim aLB As Long
@@ -5470,20 +5549,20 @@ Private Sub LUdecomp(ByRef A() As Double, ByRef indx() As Long, _
     Next i
     For j = 1 To n               'Loop over columns of Crout's method
         For i = 1 To j - 1
-            sum = A(i + aLB - 1, j + aLB - 1)
+            pSum = A(i + aLB - 1, j + aLB - 1)
             For k = 1 To i - 1
-                sum = sum - A(i + aLB - 1, k + aLB - 1) * A(k + aLB - 1, j + aLB - 1)
+                pSum = pSum - A(i + aLB - 1, k + aLB - 1) * A(k + aLB - 1, j + aLB - 1)
             Next k
-            A(i + aLB - 1, j + aLB - 1) = sum
+            A(i + aLB - 1, j + aLB - 1) = pSum
         Next i
         big = 0                  'Initialize for search the largest pivot element
         For i = j To n
-            sum = A(i + aLB - 1, j + aLB - 1)
+            pSum = A(i + aLB - 1, j + aLB - 1)
             For k = 1 To j - 1
-                sum = sum - A(i + aLB - 1, k + aLB - 1) * A(k + aLB - 1, j + aLB - 1)
+                pSum = pSum - A(i + aLB - 1, k + aLB - 1) * A(k + aLB - 1, j + aLB - 1)
             Next k
-            A(i + aLB - 1, j + aLB - 1) = sum
-            dum = vv(i) * Abs(sum)
+            A(i + aLB - 1, j + aLB - 1) = pSum
+            dum = vv(i) * Abs(pSum)
             If dum >= big Then
                 big = dum
                 imax = i
@@ -5513,7 +5592,7 @@ Private Sub LUdecomp(ByRef A() As Double, ByRef indx() As Long, _
 End Sub
 
 ''' <summary>
-''' Return the LU decomposition for the given matrix
+'''     Returns the LU decomposition for the given matrix
 ''' </summary>
 Private Function LUdecomposition(ByRef expression As String, ByRef fName As String) As String
     Dim argsCount As Long
@@ -5547,8 +5626,8 @@ err_Handler:
 End Function
 
 ''' <summary>
-''' Solves the linear system AX = B using LU decomposition. The function
-''' requires that the <expression> argument be composed of the following:
+'''     Solves the linear system AX = B using LU decomposition. The function
+'''     requires that the <expression> argument be composed of the following:
 '''                     1-) An array in text form containing the coefficients of all equations.
 '''                     2-) An one dimentional array containing the name of each variable
 '''                         (the first name will be applied to the first column of coefficients,
@@ -5726,8 +5805,8 @@ err_Handler:
 End Function
 
 ''' <summary>
-''' Takes a list of values of type Long and
-''' returns the minimum non-zero value.
+'''     Takes a list of values of type Long and
+'''     returns the minimum non-zero value.
 ''' </summary>
 ''' <param name="Values">The list of values.</param>
 Private Function MinNonZero(ParamArray values() As Variant) As Long
@@ -5794,7 +5873,7 @@ Private Function MInverse_(ByRef A() As Double, ByRef indx() As Long, _
     aUB = UBound(A)
     aLB = LBound(A)
     n = aUB - aLB + 1
-    ReDim y(1 To n, 1 To n)
+    ReDim y(0 To n - 1, 0 To n - 1)
     ReDim col(1 To n)
     LUdecomp A, indx, d
     For j = 1 To n
@@ -5805,7 +5884,7 @@ Private Function MInverse_(ByRef A() As Double, ByRef indx() As Long, _
         LUbkSub A, indx, col
         For i = 1 To n
             If Abs(col(i)) = 0 Then col(i) = 0      'Avoid VBA -0 value
-            y(i, j) = col(i)
+            y(i - 1, j - 1) = col(i)
         Next i
     Next j
     MInverse_ = y
@@ -5914,7 +5993,8 @@ Private Function MLR(ByRef expression As String, ByRef fName As String) As Strin
                 AddPredictorsRelations x, PredInteractions
             End If
             k = UBound(x, 2) - LBound(x, 2) 'Total number of predictors on model
-            tmpResult = MLR_(x, y, k, Rsquared, Rsquared_adj:=Rsquared_adj) 'Saves goodness of fit to the Rsquared and Rsquared_adj parameters
+             'Saves goodness of fit to the Rsquared and Rsquared_adj parameters
+            tmpResult = MLR_(x, y, k, Rsquared, Rsquared_adj:=Rsquared_adj)
             If formatOutput Then
                 If argsCount > 3 Then
                     If argsCount = 5 Then
@@ -5968,10 +6048,16 @@ Private Function MLR_(x() As Double, y() As Double, Optional k As Long = -1, _
     Dim SSE As Double
     Dim SST As Double
     Dim i As Long
+    Dim tmpY() As Double
     
+    If Not Is2Darray(y) Then
+        tmpY = RowColVectTransform(y)
+    Else
+        tmpY = y
+    End If
     Xt = MTranspose_(x) 'Transpose of X
     XtX = ToDblArray(MMULT_(Xt, x)) 'Transpose of X multiplied by X
-    XtY = ToDblArray(MMULT_(Xt, y)) 'Transpose of X multiplied by Y
+    XtY = ToDblArray(MMULT_(Xt, tmpY)) 'Transpose of X multiplied by Y column vector
     XtXInv = MInverse_(XtX, indx, d)
     Betahat = ToDblArray(MMULT_(XtXInv, XtY))
     If k > 0 Then
@@ -5979,10 +6065,10 @@ Private Function MLR_(x() As Double, y() As Double, Optional k As Long = -1, _
         n = UBound(y) - LBound(y) + 1 'Number of observations in the model
         p = k + 1 'Number of parameters in the model
         yhat = ToDblArray(MMULT_(x, Betahat)) 'Predictions
-        e = MSum_(y, yhat, True)    'Residuals
+        e = MSum_(tmpY, yhat, True)    'Residuals
         ymean = ColumnAvg(y)
         For i = 0 To n - 1
-            SSE = SSE + e(i) ^ 2
+            SSE = SSE + e(i, 0) ^ 2
             SST = SST + (y(i) - ymean) ^ 2
         Next i
         If n > p Then
@@ -5995,11 +6081,12 @@ Private Function MLR_(x() As Double, y() As Double, Optional k As Long = -1, _
         Rsquared_adj = Round(1 - (1 - Rsquared) * (n - 1) / (n - k - 1), 4)
     End If
     MLR_ = Betahat
+    Erase Xt, XtX, XtY, XtXInv, indx, Betahat, yhat, e, tmpY
 End Function
 
 ''' <summary>
-''' Multiplies 2 matrices A and B. Matrix B can be a column vector or
-''' an scalar number.
+'''     Multiplies 2 matrices A and B. Matrix B can be a column vector or
+'''     an scalar number.
 ''' </summary>
 Private Function MMult(ByRef expression As String, ByRef fName As String) As String
     Dim argsCount As Long
@@ -6055,7 +6142,7 @@ Private Function MMULT_(ByRef A() As Double, ByRef B As Variant) As Variant
     Dim m As Long
     Dim n As Long
     Dim OutputIsArray As Boolean
-    Dim sum As Double
+    Dim pSum As Double
     
     aIsVector = Not Is2Darray(A) And IsArray(A)
     bIsVector = Not Is2Darray(B) And IsArray(B)
@@ -6067,7 +6154,7 @@ Private Function MMULT_(ByRef A() As Double, ByRef B As Variant) As Variant
         m = bUB2 - bLB2 + 1
         If m = n Then   'Require equal columns count
             For i = 0 To n - 1 'Loop a() rows
-                sum = sum + A(aLB2 + i) * B(bLB2 + i)
+                pSum = pSum + A(aLB2 + i) * B(bLB2 + i)
             Next i
             OutputIsArray = False
         End If
@@ -6095,76 +6182,56 @@ Private Function MMULT_(ByRef A() As Double, ByRef B As Variant) As Variant
             End If
         End If
     ElseIf aIsVector And IsArray(B) Then '1D array x 2D array
-        aLB = 0: aUB = 0
-        aLB2 = LBound(A): aUB2 = UBound(A)
-        bLB = LBound(B): bUB = UBound(B)
-        bLB2 = LBound(B, 2): bUB2 = UBound(B, 2)
-        n = aUB - aLB + 1
-        m = bUB2 - bLB2 + 1
-        If Not (aUB2 - aLB2 + 1) <> (bUB - bLB + 1) Then
-            ReDim c(0 To n - 1, 0 To m - 1)
-            For i = 0 To n - 1
-                For j = 0 To m - 1
-                    sum = 0
-                    For jj = 0 To aUB2 - aLB2 'Loop a() columns
-                        sum = sum + A(aLB + jj) * B(bLB + jj, bLB2 + j)
-                    Next jj
-                    c(i, j) = sum
-                Next j
-            Next i
-        End If
+        VM_DOT_ A, B, aLB, aLB2, aUB, _
+                aUB2, bLB2, bUB2, c, i, j, _
+                m, n, pSum, bLB, bUB, jj
     ElseIf Not aIsVector And Not bIsVector Then '2D array x 2D array
-        aLB = LBound(A): aUB = UBound(A)
-        aLB2 = LBound(A, 2): aUB2 = UBound(A, 2)
-        bLB = LBound(B): bUB = UBound(B)
-        bLB2 = LBound(B, 2): bUB2 = UBound(B, 2)
-        n = aUB - aLB + 1
-        m = bUB2 - bLB2 + 1
-        If Not (aUB2 - aLB2 + 1) <> (bUB - bLB + 1) Then
-            ReDim c(0 To n - 1, 0 To m - 1)
-            For i = 0 To n - 1
-                For j = 0 To m - 1
-                    sum = 0
-                    For jj = 0 To aUB2 - aLB2
-                        sum = sum + A(aLB + i, aLB2 + jj) * B(bLB + jj, bLB2 + j)
-                    Next jj
-                    c(i, j) = sum
-                Next j
-            Next i
-        End If
+        MM_DOT_ A, B, aLB, aLB2, aUB, _
+                aUB2, bLB, bLB2, bUB, _
+                bUB2, c, i, j, jj, m, n, pSum
     ElseIf Not aIsVector And bIsVector Then '2D array x 1D array
-        aLB = LBound(A): aUB = UBound(A)
-        aLB2 = LBound(A, 2): aUB2 = UBound(A, 2)
-        bLB = 0: bUB = 0
-        bLB2 = LBound(B): bUB2 = UBound(B)
-        n = aUB - aLB + 1
-        m = bUB - bLB + 1
-        If Not (aUB2 - aLB2 + 1) <> (bUB2 - bLB2 + 1) Then
-            ReDim c(0 To n - 1, 0 To m - 1)
-            For i = 0 To n - 1
-                For j = 0 To m - 1
-                    sum = 0
-                    For jj = 0 To aUB2 - aLB2
-                        sum = sum + A(aLB + i, aLB2 + jj) * B(bLB2 + jj)
-                    Next jj
-                    c(i, j) = sum
-                Next j
-            Next i
-        End If
+        MV_DOT_ A, B, aLB, aLB2, aUB, _
+                aUB2, bLB, bLB2, bUB, _
+                bUB2, c, i, j, jj, m, n, pSum
     End If
     If OutputIsArray Then
-        If InitializedArray(c) Then
+        If IsArrayAllocated(c) Then
             MMULT_ = c
         Else
             MMULT_ = e_ValueError
         End If
     Else
-        MMULT_ = sum
+        MMULT_ = pSum
     End If
 End Function
 
+Private Sub MM_DOT_(ByRef A() As Double, ByRef B As Variant, ByRef aLB As Long, ByRef aLB2 As Long, ByRef aUB As Long, _
+                    ByRef aUB2 As Long, ByRef bLB As Long, ByRef bLB2 As Long, ByRef bUB As Long, ByRef bUB2 As Long, _
+                    ByRef c() As Double, ByRef i As Long, ByRef j As Long, ByRef jj As Long, ByRef m As Long, _
+                    ByRef n As Long, ByRef pSum As Double)
+                    
+    aLB = LBound(A): aUB = UBound(A)
+    aLB2 = LBound(A, 2): aUB2 = UBound(A, 2)
+    bLB = LBound(B): bUB = UBound(B)
+    bLB2 = LBound(B, 2): bUB2 = UBound(B, 2)
+    n = aUB - aLB + 1
+    m = bUB2 - bLB2 + 1
+    If Not (aUB2 - aLB2 + 1) <> (bUB - bLB + 1) Then
+        ReDim c(0 To n - 1, 0 To m - 1)
+        For i = 0 To n - 1
+            For j = 0 To m - 1
+                pSum = 0
+                For jj = 0 To aUB2 - aLB2
+                    pSum = pSum + A(aLB + i, aLB2 + jj) * B(bLB + jj, bLB2 + j)
+                Next jj
+                c(i, j) = pSum
+            Next j
+        Next i
+    End If
+End Sub
+
 ''' <summary>
-''' Returns the negation of the given matrix.
+'''     Returns the negation of the given matrix.
 ''' </summary>
 ''' <param name="aMatrix">The matrix to negate.</param>
 Private Function MNEG(ByRef expression As String, ByRef fName As String) As String
@@ -6345,9 +6412,9 @@ Private Function MROUND_(ByRef aArray() As Double, Optional nDigits As Long = 0)
 End Function
 
 ''' <summary>
-''' Sum 2 matrices A and B when A and B has same number of
-''' rows and columns. With the last argument set to True
-''' A - B is computed instead of A + B
+'''     Sum 2 matrices A and B when A and B has same number of
+'''     rows and columns. With the last argument set to True
+'''     A - B is computed instead of A + B
 ''' </summary>
 Private Function MSum(ByRef expression As String, ByRef fName As String) As String
     Dim argsCount As Long
@@ -6394,7 +6461,7 @@ Private Function MSum_(ByRef A() As Double, ByRef B() As Double, _
     Dim n As Long
     Dim i As Long
     Dim j As Long
-    Dim sum As Double
+    Dim pSum As Double
     Dim aFlag As Boolean
     Dim bFlag As Boolean
     
@@ -6414,11 +6481,11 @@ Private Function MSum_(ByRef A() As Double, ByRef B() As Double, _
         For i = 0 To n - 1
             For j = 0 To m - 1
                 If Not Difference Then
-                    sum = A(i + LBa, j + LBa2) + B(i + LBb, j + LBb2)
+                    pSum = A(i + LBa, j + LBa2) + B(i + LBb, j + LBb2)
                 Else
-                    sum = A(i + LBa, j + LBa2) - B(i + LBb, j + LBb2)
+                    pSum = A(i + LBa, j + LBa2) - B(i + LBb, j + LBb2)
                 End If
-                c(i, j) = sum
+                c(i, j) = pSum
             Next j
         Next i
     Else
@@ -6428,11 +6495,11 @@ Private Function MSum_(ByRef A() As Double, ByRef B() As Double, _
             ReDim c(0 To n - 1)
             For i = 0 To n - 1
                 If Not Difference Then
-                    sum = A(i + LBa) + B(i + LBb)
+                    pSum = A(i + LBa) + B(i + LBb)
                 Else
-                    sum = A(i + LBa) - B(i + LBb)
+                    pSum = A(i + LBa) - B(i + LBb)
                 End If
-                c(i) = sum
+                c(i) = pSum
             Next i
         Else 'One vector and one 2D matrix
             Dim M2D() As Double
@@ -6470,15 +6537,15 @@ Private Function MSum_(ByRef A() As Double, ByRef B() As Double, _
                 ReDim c(0 To n - 1)
                 For i = 0 To n - 1
                     If Not Difference Then
-                        sum = M2D(i + lbM2D, lb2M2D) + VECT1D(i + lbV1D)
+                        pSum = M2D(i + lbM2D, lb2M2D) + VECT1D(i + lbV1D)
                     Else 'Always compute A-B
                         If Not invertedSumFlag Then
-                            sum = M2D(i + lbM2D, lb2M2D) - VECT1D(i + lbV1D)
+                            pSum = M2D(i + lbM2D, lb2M2D) - VECT1D(i + lbV1D)
                         Else
-                            sum = VECT1D(i + lbV1D) - M2D(i + lbM2D, lb2M2D)
+                            pSum = VECT1D(i + lbV1D) - M2D(i + lbM2D, lb2M2D)
                         End If
                     End If
-                    c(i) = sum
+                    c(i) = pSum
                 Next i
             End If
         End If
@@ -6487,7 +6554,7 @@ Private Function MSum_(ByRef A() As Double, ByRef B() As Double, _
 End Function
 
 ''' <summary>
-''' Compute an array transposition
+'''     Computes an array transposition
 ''' </summary>
 Private Function MTranspose(ByRef expression As String, ByRef fName As String) As String
     Dim argsCount As Long
@@ -6519,28 +6586,70 @@ Private Function MTranspose_(ByRef A() As Double) As Double()
     Dim c() As Double
     Dim LBa As Long
     Dim LBa2 As Long
+    Dim UBa As Long
+    Dim UBa2 As Long
     Dim m As Long
     Dim n As Long
     Dim i As Long
     Dim j As Long
+    Dim Is1Darray As Boolean
     
-    LBa = LBound(A)
-    LBa2 = LBound(A, 2)
+    Is1Darray = Not Is2Darray(A)
+    If Not Is1Darray Then
+        LBa = LBound(A)
+        UBa = UBound(A)
+        LBa2 = LBound(A, 2)
+        UBa2 = UBound(A, 2)
+    Else
+        LBa = 0
+        UBa = LBa
+        LBa2 = LBound(A)
+        UBa2 = UBound(A)
+    End If
 
-    n = UBound(A) - LBa + 1
-    m = UBound(A, 2) - LBa2 + 1
+    n = UBa - LBa + 1
+    m = UBa2 - LBa2 + 1
     ReDim c(0 To m - 1, 0 To n - 1)
     For i = 0 To n - 1
         For j = 0 To m - 1
-            c(j, i) = A(LBa + i, LBa2 + j)
+            If Not Is1Darray Then
+                c(j, i) = A(LBa + i, LBa2 + j)
+            Else
+                c(j, i) = A(LBa + j)
+            End If
         Next j
     Next i
     MTranspose_ = c
 End Function
 
+Private Sub MV_DOT_(ByRef A() As Double, ByVal B As Variant, ByVal aLB As Long, ByVal aLB2 As Long, _
+                    ByVal aUB As Long, ByVal aUB2 As Long, ByVal bLB As Long, ByVal bLB2 As Long, _
+                    ByVal bUB As Long, ByVal bUB2 As Long, ByRef c() As Double, ByVal i As Long, _
+                    ByVal j As Long, ByVal jj As Long, ByVal m As Long, ByVal n As Long, ByRef pSum As Double)
+                    
+    aLB = LBound(A): aUB = UBound(A)
+    aLB2 = LBound(A, 2): aUB2 = UBound(A, 2)
+    bLB = 0: bUB = 0
+    bLB2 = LBound(B): bUB2 = UBound(B)
+    n = aUB - aLB + 1
+    m = bUB2 - bLB2 + 1
+    If Not (aUB2 - aLB2 + 1) <> (bUB - bLB + 1) Then
+        ReDim c(0 To n - 1, 0 To m - 1)
+        For i = 0 To n - 1
+            For j = 0 To m - 1
+                pSum = 0
+                For jj = 0 To aUB2 - aLB2
+                    pSum = pSum + A(aLB + i, aLB2 + jj) * B(bLB2 + j)
+                Next jj
+                c(i, j) = pSum
+            Next j
+        Next i
+    End If
+End Sub
+
 ''' <summary>
-''' Takes a list of values of type Long and
-''' returns true if one of then is a non-zero value.
+'''     Takes a list of values of type Long and
+'''     returns true if one of then is a non-zero value.
 ''' </summary>
 ''' <param name="Values">The list of values.</param>
 Private Function NonZero(ParamArray values() As Variant) As Boolean
@@ -6558,10 +6667,10 @@ Private Function NonZero(ParamArray values() As Variant) As Boolean
 End Function
 
 ''' <summary>
-''' Computes the two-tailed probability value forstandard normal curve,
-''' given a Z-score (i.e., the two-tailed probability from +/- the
-''' Z-score to infinity on both tails of the distribution).
-''' [(c) John C. Pezzullo](https://statpages.info/scicalc.html)
+'''     Computes the two-tailed probability value forstandard normal curve,
+'''     given a Z-score (i.e., the two-tailed probability from +/- the
+'''     Z-score to infinity on both tails of the distribution).
+'''     [(c) John C. Pezzullo](https://statpages.info/scicalc.html)
 ''' </summary>
 ''' <param name="z">Z-score.</param>
 Private Function NORM(ByRef expression As String, ByRef fName As String) As String
@@ -6601,13 +6710,15 @@ Private Function NORM_(z As Double) As Double
     End If
 End Function
 
-Private Function NotIsPI(ByRef VarName As String) As Boolean
-    NotIsPI = Not VarName Like "[Pp][Ii]"
+Private Function NotIsPI(ByRef varName As String) As Boolean
+    NotIsPI = Not varName Like "[Pp][Ii]"
 End Function
 
 Private Function Now_(ByRef expression As String, ByRef fName As String) As String
     On Error GoTo err_Handler
-    Now_ = ToLiteralString(Now)
+    If expression <> vbNullString Then
+        Now_ = ToLiteralString(Now)
+    End If
     Exit Function
 err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
@@ -6702,8 +6813,47 @@ Private Function OPsymbolInArgument(ByRef ArgDefStr As String, ByRef Pattrn As S
 End Function
 
 ''' <summary>
-''' Parses an expression and builds a parse tree. The
-''' computed data is ready for traverse and evaluate.
+'''     Tries to retrieve a value from a given array name
+'''     Expected one or two indexes for the operation.
+''' </summary>
+Private Function OverLoadVarName(ByRef expression As String, ByRef fName As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    On Error GoTo err_Handler
+    tmpData() = Split(expression, P_SEPARATORCHAR) 'Expected simple integers list
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 1, 2
+            Dim vIdx As Long
+            
+            vIdx = P_SCOPE.VarIndex(fName)
+            If Not P_SCOPE.AssignedArray(vIdx) Or Not P_SCOPE.AssignedArray(vIdx) Then
+                P_SCOPE.VarValue2(fName, True) = P_SCOPE.VarValue(fName)
+            End If
+            If argsCount = 1 Then
+                tmpEval = CStr(P_SCOPE.VarValue2(fName, True)(CLng(tmpData(LB))))
+            Else
+                tmpEval = CStr(P_SCOPE.VarValue2(fName, True)(CLng(tmpData(LB)), CLng(tmpData(UB))))
+            End If
+        Case Else
+            tmpEval = e_ValueError
+              BuildErrMessage errMissingArgsOrTooManyArgs, d_lCurly & fName & d_rCurly
+    End Select
+    OverLoadVarName = tmpEval: Erase tmpData
+    Exit Function
+err_Handler:
+    BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
+                                    d_lParenthesis & err.Description & d_rParenthesis
+End Function
+
+''' <summary>
+'''     Parses an expression and builds a parse tree. The
+'''     computed data is ready for traverse and evaluate.
 ''' </summary>
 ''' <param name="Expression">The expression to parse.</param>
 Private Sub Parse(ByRef expression As String)
@@ -6765,7 +6915,7 @@ Parse_errHandler:
 End Sub
 
 ''' <summary>
-''' Parses variables in an expression and resolves implicit multiplications.
+'''     Parses variables in an expression and resolves implicit multiplications.
 ''' </summary>
 ''' <param name="Expression">The expression to parse.</param>
 Private Sub ParseVariables(ByRef expression As String)
@@ -6945,8 +7095,8 @@ Private Function PolyFit_(ByRef samplesArr() As Double, pDegree As Long, _
 End Function
 
 ''' <summary>
-''' Creates a polynomial string representation from solver coefficients
-''' NOTE: PolyFit helper
+'''     Creates a polynomial string representation from solver coefficients
+'''     NOTE: PolyFit helper
 ''' </summary>
 Private Function PolyString(ByRef SolverResult() As Double, ByRef pDegree As Long) As String
     Dim i As Long
@@ -6954,13 +7104,13 @@ Private Function PolyString(ByRef SolverResult() As Double, ByRef pDegree As Lon
     
     For i = 0 To pDegree
         If i = 0 Then
-            tmpResult = CStr(Round(SolverResult(i), 4))
+            tmpResult = CStr(Round(SolverResult(i, 0), 4))
         Else
-            If CDbl(SolverResult(i)) > 0 Then
+            If CDbl(SolverResult(i, 0)) > 0 Then
                 tmpResult = tmpResult & d_Space & op_plus _
-                            & d_Space & Round(SolverResult(i), 4)
+                            & d_Space & Round(SolverResult(i, 0), 4)
             Else
-                tmpResult = tmpResult & d_Space & Round(SolverResult(i), 4)
+                tmpResult = tmpResult & d_Space & Round(SolverResult(i, 0), 4)
             End If
             If i > 1 Then
                 tmpResult = tmpResult & "*x^" & i
@@ -7412,8 +7562,8 @@ Reconstruct_errHandler:
 End Function
 
 ''' <summary>
-''' Creates a polynomial string representation from regression coefficients
-''' NOTE: MLR helper
+'''     Creates a polynomial string representation from regression coefficients
+'''     NOTE: MLR helper
 ''' </summary>
 Private Function RegressionString(ByRef SolverResult() As Double, Optional ByRef PredNames As Variant = -1, _
                                     Optional ByRef PredInteractions As Variant = -1) As String
@@ -7453,13 +7603,13 @@ Private Function RegressionString(ByRef SolverResult() As Double, Optional ByRef
     Next i
     For i = 0 To o
         If i = 0 Then
-            tmpResult = CStr(Round(SolverResult(i), 4))
+            tmpResult = CStr(Round(SolverResult(i, 0), 4))
         Else
-            If CDbl(SolverResult(i)) > 0 Then
+            If CDbl(SolverResult(i, 0)) > 0 Then
                 tmpResult = tmpResult & d_Space & op_plus _
-                            & d_Space & Round(SolverResult(i), 4)
+                            & d_Space & Round(SolverResult(i, 0), 4)
             Else
-                tmpResult = tmpResult & d_Space & Round(SolverResult(i), 4)
+                tmpResult = tmpResult & d_Space & Round(SolverResult(i, 0), 4)
             End If
             tmpResult = tmpResult & op_mult & tmpNames(i - 1)
         End If
@@ -7586,17 +7736,17 @@ err_Handler:
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
-Private Function ReservedToken(ByRef VarName As String) As Boolean
+Private Function ReservedToken(ByRef varName As String) As Boolean
     ReservedToken = True
-    If Not IsBoolean(LCase$(VarName)) Then 'Exclude logical values
-        If IsLikeSciNot(VarName) Then ' Like "E#*"
-            If Not IsDigit(MidB$(VarName, LenB(VarName) - 1)) Then 'Exclude Sci notation exp
-                If Not AscW(VarName) = 69 Then  'Exclude Sci notation token E
+    If Not IsBoolean(LCase$(varName)) Then 'Exclude logical values
+        If IsLikeSciNot(varName) Then ' Like "E#*"
+            If Not IsDigit(MidB$(varName, LenB(varName) - 1)) Then 'Exclude Sci notation exp
+                If Not AscW(varName) = 69 Then  'Exclude Sci notation token E
                     ReservedToken = False
                 End If
             End If
         Else
-            If Not AscW(VarName) = 69 Then  'Exclude Sci notation token E
+            If Not AscW(varName) = 69 Then  'Exclude Sci notation token E
                 ReservedToken = False
             End If
         End If
@@ -7647,9 +7797,51 @@ Private Function ROUND_(aNumber As Double, Optional aDigits As Double = 0) As Do
 End Function
 
 ''' <summary>
-''' Returns an implicit string containing the order in which arithmetic operations
-''' should be evaluated. The string can point to any part of the source expression
-''' using syntax such as {1}*{3}+{0} to represent it.
+'''     Turns a row vector into a column vector and viceversa.
+''' </summary>
+''' <param name="tVector">The vertor to transform.</param>
+Private Function RowColVectTransform(ByRef tVector As Variant) As Double()
+    Dim vLB As Long
+    Dim vLB2 As Long
+    Dim vUB As Long
+    Dim fromRowToCol As Boolean
+    Dim i As Long, j As Long
+    Dim tmpResult() As Double
+    
+    If Not IsArray(tVector) Then Exit Function
+    vLB = LBound(tVector)
+    vUB = UBound(tVector)
+    fromRowToCol = Not Is2Darray(tVector)
+    If fromRowToCol Then    'Transform row vector to column vector
+        ReDim tmpResult(0 To vUB - vLB, 0 To 0)
+        For i = vLB To vUB
+            tmpResult(j, 0) = CDbl(tVector(i))
+            j = j + 1
+        Next i
+    Else    'Transform column vector to row vector
+        vLB2 = LBound(tVector, 2)
+        ReDim tmpResult(0 To vUB - vLB)
+        For i = vLB To vUB
+            tmpResult(j) = CDbl(tVector(i, vLB2))
+            j = j + 1
+        Next i
+    End If
+    RowColVectTransform = tmpResult
+End Function
+
+''' <summary>
+'''     Replaces square brackets with parentheses
+''' </summary>
+Private Function SBracketsNotationToNominal(ByRef aExpression As String) As String
+    SBracketsNotationToNominal = Replace(Replace( _
+                                        aExpression, d_lSquareB, d_lParenthesis), _
+                                        d_rSquareB, d_rParenthesis)
+End Function
+
+''' <summary>
+'''     Returns an implicit string containing the order in which arithmetic operations
+'''     should be evaluated. The string can point to any part of the source expression
+'''     using syntax such as {1}*{3}+{0} to represent it.
 ''' </summary>
 ''' <param name="Expression">The target expression of the lambda operation.</param>
 ''' <param name="SubExpressionsData">A set of expressions to derive the lambda string.</param>
@@ -7735,9 +7927,9 @@ err_Handler:
 End Function
 
 ''' <summary>
-''' Solves the linear system AX = B using Over Relaxation (SOR)
-''' iteration. The function requires that the <expression> argument be composed
-''' of the following:
+'''     Solves the linear system AX = B using Over Relaxation (SOR)
+'''     iteration. The function requires that the <expression> argument be composed
+'''     of the following:
 '''                     1-) An array in text form containing the coefficients of all equations.
 '''                     2-) An one dimentional array containing the name of each variable
 '''                         (the first name will be applied to the first column of coefficients,
@@ -7747,7 +7939,7 @@ End Function
 '''                         the second name to the second column and so on).
 '''                     4-) A True or False parameter to decide when to include the variable names
 '''                         in the result set.
-''' The program will iterate until the solution is approximated to 9
+'''     The program will iterate until the solution is approximated to 9
 ''' significant digits or until 500 iterations are completed, whichever comes first.
 ''' </summary>
 Private Function solve(ByRef expression As String, ByRef fName As String) As String
@@ -7898,10 +8090,10 @@ Private Function SplitArgs(ByRef args As String) As String()
 End Function
 
 ''' <summary>
-''' Splits an array function argument and returns an array with the bounds
-''' of the passed string array. In the returned array, the lower index
-''' indicates the argument max row index and the upper index indicates the
-''' argument max column index.
+'''     Splits an array function argument and returns an array with the bounds
+'''     of the passed string array. In the returned array, the lower index
+'''     indicates the argument max row index and the upper index indicates the
+'''     argument max column index.
 ''' </summary>
 ''' <param name="Argument">The array function argumnet ("*{{*}}*").</param>
 ''' <param name="outArr">Array to be scanned and overwritten.</param>
@@ -7910,7 +8102,7 @@ Private Function SplitArrBranch(ByRef Argument As String, ByRef outArr() As Stri
     Dim tmpResult(0 To 1) As Long
     
     tmpArr() = ArrayFromString(Argument)
-    If InitializedArray(tmpArr) Then 'Transform success
+    If IsArrayAllocated(tmpArr) Then 'Transform success
         If Is2Darray(tmpArr) Then
             outArr = ArraySTR1DFrom2DArr(tmpArr)
             tmpResult(0) = UBound(tmpArr)   'Rows in the array
@@ -7989,12 +8181,12 @@ Private Sub StoreUDF(ByRef targetBuffer As ClusterBuffer, _
 End Sub
 
 ''' <summary>
-''' Computes the two-tailed probability values of a t-test, given the
-''' t-value and the degrees of freedom. The one-tailed probabilities
-''' can be computed as:
+'''     Computes the two-tailed probability values of a t-test, given the
+'''     t-value and the degrees of freedom. The one-tailed probabilities
+'''     can be computed as:
 '''                      One-tailed probability (right tail) = STUDT / 2
 '''                      One-tailed probability (left tail) = 1 - STUDT / 2
-''' [(c) John C. Pezzullo](https://statpages.info/scicalc.html)
+'''     [(c) John C. Pezzullo](https://statpages.info/scicalc.html)
 ''' </summary>
 ''' <param name="t">t-value.</param>
 ''' <param name="n">Degrees of freedom.</param>
@@ -8133,6 +8325,24 @@ Private Function subu_(p3 As Double) As Double
         e = -e
     End If
     subu_ = e
+End Function
+
+Private Function SUM(ByRef expression As String, ByRef fName As String) As Double
+    Dim g As Long
+    Dim tmpData() As String
+    Dim tmpEval As Double
+    
+    On Error GoTo err_Handler
+    tmpEval = 0
+    tmpData() = Split(expression, P_SEPARATORCHAR)
+    For g = LBound(tmpData) To UBound(tmpData)
+        tmpEval = tmpEval + CDbl(tmpData(g))
+    Next g
+    SUM = tmpEval: Erase tmpData
+    Exit Function
+err_Handler:
+    BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
+                                    d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
 Private Function Switch_(ByRef expression As String, ByRef fName As String) As String
@@ -8280,11 +8490,11 @@ err_Handler:
 End Function
 
 ''' <summary>
-''' Receives the degrees of freedom and the confidence level to
-''' compute the one-tailed or two-tailed t-value (Student t-value)
-''' with up to 6 significant digits accuracy. Use the tOption
-''' parameter to select from two and right one-tailed computation.
-''' [(c) iCalculator™](https://www.icalculator.com/)
+'''     Receives the degrees of freedom and the confidence level to
+'''     compute the one-tailed or two-tailed t-value (Student t-value)
+'''     with up to 6 significant digits accuracy. Use the tOption
+'''     parameter to select from two and right one-tailed computation.
+'''     [(c) iCalculator™](https://www.icalculator.com/)
 ''' </summary>
 ''' <param name="confidence">Confidence level.</param>
 ''' <param name="dof">Shape parameter alpha.</param>
@@ -8336,10 +8546,10 @@ Private Function TINV_(confidence As Double, dof As Double, _
 End Function
 
 ''' <summary>
-''' Receives the degrees of freedom and the Probability to
-''' compute the one-tailed t-value (Student t-value) with up
-''' to 6 significant digits accuracy. Parameter p can be passed
-''' as 0 < p < 1, or 1 < p < 100
+'''     Receives the degrees of freedom and the Probability to
+'''     compute the one-tailed t-value (Student t-value) with up
+'''     to 6 significant digits accuracy. Parameter p can be passed
+'''     as 0 < p < 1, or 1 < p < 100
 ''' </summary>
 ''' <param name="p">Probability.</param>
 ''' <param name="dof">Degrees of freedom.</param>
@@ -8383,10 +8593,10 @@ Private Function TINV_1T_(p As Double, dof As Double) As Double
 End Function
 
 ''' <summary>
-''' Receives the degrees of freedom and the Probability to
-''' compute the two-tailed t-value (Student t-value) with full
-''' significant digits accuracy. Parameter p can be passed
-''' as 0 < p < 1, or 1 < p < 100
+'''     Receives the degrees of freedom and the Probability to
+'''     compute the two-tailed t-value (Student t-value) with full
+'''     significant digits accuracy. Parameter p can be passed
+'''     as 0 < p < 1, or 1 < p < 100
 ''' </summary>
 ''' <param name="p">Probability.</param>
 ''' <param name="dof">Degrees of freedom.</param>
@@ -8438,7 +8648,6 @@ Public Function ToDblArray(ByRef aArray As Variant) As Double()
     Dim j As Long, LB2 As Long, UB2 As Long
     Dim tmpResult() As Double
     Dim IsVector As Boolean
-    Dim vectorAs2Darr As Boolean
     
     LB = LBound(aArray)
     UB = UBound(aArray)
@@ -8446,12 +8655,7 @@ Public Function ToDblArray(ByRef aArray As Variant) As Double()
     If Not IsVector Then
         LB2 = LBound(aArray, 2)
         UB2 = UBound(aArray, 2)
-        vectorAs2Darr = (UB2 = LB2)
-        If vectorAs2Darr Then 'Vector as a single column array
-            ReDim tmpResult(0 To UB - LB)
-        Else
-            ReDim tmpResult(0 To UB - LB, 0 To UB2 - LB2)
-        End If
+        ReDim tmpResult(0 To UB - LB, 0 To UB2 - LB2)
     Else
         ReDim tmpResult(0 To UB - LB)
     End If
@@ -8460,11 +8664,7 @@ Public Function ToDblArray(ByRef aArray As Variant) As Double()
             tmpResult(i - LB) = CDbl(aArray(i))
         Else
             For j = LB2 To UB2
-                If vectorAs2Darr Then
-                    tmpResult(i - LB) = CDbl(aArray(i, j))
-                Else
-                    tmpResult(i - LB, j - LB2) = CDbl(aArray(i, j))
-                End If
+                tmpResult(i - LB, j - LB2) = CDbl(aArray(i, j))
             Next j
         End If
     Next i
@@ -8599,9 +8799,9 @@ Private Function ValidTree() As Boolean
 End Function
 
 ''' <summary>
-''' Assigns values to the variables defined in the given expression.
-''' An expression such as "x = 5; y = -20.5" will assign 5 to the x
-''' variable and -20.5 to the y variable. Used by the eval method.
+'''     Assigns values to the variables defined in the given expression.
+'''     An expression such as "x = 5; y = -20.5" will assign 5 to the x
+'''     variable and -20.5 to the y variable. Used by the eval method.
 ''' </summary>
 ''' <param name="vString">The list of variables to assign.</param>
 Private Sub VariableAssignment(ByRef vString As String)
@@ -8646,30 +8846,30 @@ Private Sub VariablesInit(ByRef expression As String)
     P_SCOPE.FillPredefinedVars
 End Sub
 
-''' <summary>
-''' Turns a row vector into a proper 2D array.
-''' </summary>
-''' <param name="tVector">The vertor to transform.</param>
-Private Function VectorFormat(ByRef tVector As Variant) As Double()
-    Dim vLB As Long
-    Dim vUB As Long
-    Dim i As Long, j As Long
-    Dim tmpResult() As Double
-    
-    If Not IsArray(tVector) Then Exit Function
-    vLB = LBound(tVector)
-    vUB = UBound(tVector)
-    If Is2Darray(tVector) Then
-        tmpResult = tVector
-    Else
-        ReDim tmpResult(0 To 0, 0 To vUB - vLB)
-        For i = vLB To vUB
-            tmpResult(0, j) = tVector(i)
-            j = j + 1
+Private Sub VM_DOT_(ByRef A() As Double, ByRef B As Variant, ByRef aLB As Long, ByRef aLB2 As Long, _
+                    ByRef aUB As Long, ByRef aUB2 As Long, ByRef bLB2 As Long, ByRef bUB2 As Long, _
+                    ByRef c() As Double, ByRef i As Long, ByRef j As Long, ByRef m As Long, _
+                    ByRef n As Long, ByRef pSum As Double, ByRef bLB As Long, ByRef bUB As Long, ByRef jj As Long)
+                    
+    aLB = 0: aUB = 0
+    aLB2 = LBound(A): aUB2 = UBound(A)
+    bLB = LBound(B): bUB = UBound(B)
+    bLB2 = LBound(B, 2): bUB2 = UBound(B, 2)
+    n = aUB - aLB + 1
+    m = bUB2 - bLB2 + 1
+    If Not (aUB2 - aLB2 + 1) <> (bUB - bLB + 1) Then
+        ReDim c(0 To n - 1, 0 To m - 1)
+        For i = 0 To n - 1
+            For j = 0 To m - 1
+                pSum = 0
+                For jj = 0 To aUB2 - aLB2        'Loop a() columns
+                    pSum = pSum + A(aLB + jj) * B(bLB + jj, bLB2 + j)
+                Next jj
+                c(i, j) = pSum
+            Next j
         Next i
     End If
-    VectorFormat = tmpResult
-End Function
+End Sub
 
 Private Function WeekDayName_(ByRef expression As String, ByRef fName As String) As String
     Dim argsCount As Long

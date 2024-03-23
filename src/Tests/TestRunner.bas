@@ -426,7 +426,7 @@ TestFail:
     Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
-'@TestMethod("Array Arguments And Variables")
+'@TestMethod("Matrices")
 Private Sub VectorsMultiplication()
     On Error GoTo TestFail
     
@@ -441,6 +441,71 @@ TestFail:
     Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
+
+'@TestMethod("Matrices")
+Private Sub VectorByNxMmatrix()
+    On Error GoTo TestFail
+    
+    actual = GetResult( _
+                        "MMULT(A;B)" _
+                        , "A={{1;-2;4}};B={{2};{1};{3}}")
+    expected = "{{12}}"
+    Assert.AreEqual expected, actual
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
+    Resume TestExit
+End Sub
+
+'@TestMethod("Matrices")
+Private Sub NxMmatrixByVector()
+    On Error GoTo TestFail
+    
+    actual = GetResult( _
+                        "MMULT(A;B)" _
+                        , "A={{2};{1};{3}};B={{1;-2;4}}")
+    expected = "{{2;-4;8};{1;-2;4};{3;-6;12}}"
+    Assert.AreEqual expected, actual
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
+    Resume TestExit
+End Sub
+
+'@TestMethod("Matrices")
+Private Sub NxMmatrixByColumnVector()
+    On Error GoTo TestFail
+    
+    actual = GetResult( _
+                        "MMULT(A;B)" _
+                        , "A={{2;1;4};{1;5;-3};{5;-2;3}};B={{1};{-2};{4}}")
+    expected = "{{16};{-21};{21}}"
+    Assert.AreEqual expected, actual
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
+    Resume TestExit
+End Sub
+
+'@TestMethod("Matrices")
+Private Sub NxMmatrixByMxNmatrix()
+    On Error GoTo TestFail
+    
+    actual = GetResult( _
+                        "MMULT(A;B)" _
+                        , "A={{2;1;3};{3;-2;-1}};B={{2;3};{1;-5};{-2;4}}")
+    expected = "{{-1;13};{6;15}}"
+    Assert.AreEqual expected, actual
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
+    Resume TestExit
+End Sub
+
 '@TestMethod("Statistical Functions")
 Private Sub NORM()
     On Error GoTo TestFail
@@ -729,7 +794,7 @@ Private Sub LSQRsolve()
     actual = GetResult( _
                         "MROUND(LSQRSOLVE(A;b);4)" _
                         , "A={{2;4};{-5;1};{3;-8}};b={{10;-9.5;12}}")
-    expected = "{{2.6576;-0.1196}}"
+    expected = "{{2.6576};{-0.1196}}"
     Assert.AreEqual expected, actual
 TestExit:
     Exit Sub
@@ -872,7 +937,7 @@ Private Sub testMLR_CFNominal()
     actual = GetResult( _
                         "MLR(X;Y;False)" _
                         , "X={{1;1};{2;2};{3;3};{4;4};{5;1};{6;2};{7;3};{8;4}};Y={{2;4.1;5.8;7.8;5.5;5.2;8.2;11.1}}")
-    expected = "{{{{0.0625;0.6438;1.3013}}};{0.9415;0.9181}}"
+    expected = "{{{{0.0625};{0.6438};{1.3013}}};{0.9415;0.9181}}"
     Assert.AreEqual expected, actual
 TestExit:
     Exit Sub
@@ -904,7 +969,7 @@ Private Sub testMLR_CFNominal_Interactions()
     actual = GetResult( _
                         "MLR(X;Y;False;'X1:X2')" _
                         , "X={{1;1};{2;2};{3;3};{4;4};{5;1};{6;2};{7;3};{8;4}};Y={{2;4.1;5.8;7.8;5.5;5.2;8.2;11.1}}")
-    expected = "{{{{0.8542;0.4458;0.945;0.0792}}};{0.947;0.9072}}"
+    expected = "{{{{0.8542};{0.4458};{0.945};{0.0792}}};{0.947;0.9072}}"
     Assert.AreEqual expected, actual
 TestExit:
     Exit Sub
@@ -936,7 +1001,7 @@ Private Sub testMLR_CFNamed_Interactions()
     actual = GetResult( _
                         "MLR(X;Y;False;'Height:Width';'Height;Width')" _
                         , "X={{1;1};{2;2};{3;3};{4;4};{5;1};{6;2};{7;3};{8;4}};Y={{2;4.1;5.8;7.8;5.5;5.2;8.2;11.1}}")
-    expected = "{{{{0.8542;0.4458;0.945;0.0792}}};{0.947;0.9072}}"
+    expected = "{{{{0.8542};{0.4458};{0.945};{0.0792}}};{0.947;0.9072}}"
     Assert.AreEqual expected, actual
 TestExit:
     Exit Sub
@@ -968,7 +1033,7 @@ Private Sub testMLR_CFname_MultiInteractions()
     actual = GetResult( _
                         "MLR(X;Y;False;'Height:Width;Height:Height';'Height;Width')" _
                         , "X={{1;1};{2;2};{3;3};{4;4};{5;1};{6;2};{7;3};{8;4}};Y={{2;4.1;5.8;7.8;5.5;5.2;8.2;11.1}}")
-    expected = "{{{{2.0875;2.08;-2.1075;-0.37;0.7575}}};{0.9638;0.9155}}"
+    expected = "{{{{2.0875};{2.08};{-2.1075};{-0.37};{0.7575}}};{0.9638;0.9155}}"
     Assert.AreEqual expected, actual
 TestExit:
     Exit Sub
@@ -976,3 +1041,21 @@ TestFail:
     Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
     Resume TestExit
 End Sub
+
+
+'@TestMethod("Array elements retrieval")
+Private Sub RetrieveArrayElement()
+    On Error GoTo TestFail
+
+    actual = GetResult( _
+                        "SUM(C[0;0];C[1;1])" _
+                        , "C = {{-1;13};{6;15}}")
+    expected = "14"
+    Assert.AreEqual expected, actual
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & err.Number & " - " & err.Description
+    Resume TestExit
+End Sub
+

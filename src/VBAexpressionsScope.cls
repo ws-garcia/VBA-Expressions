@@ -25,9 +25,10 @@ Option Base 0
 '///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ' VARIABLES:
 Private e As Double
-Private PI As Double
+Private pi As Double
 Private P_CONSTANTS As ClusterBuffer
 Private P_EXPR_VARIABLES As ClusterBuffer
+Private arrHelper As VBAexpressions
 '///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 '#
 '///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -36,6 +37,8 @@ Private Type ClusterItem
     index As Long
     name As String
     value As String
+    value2 As Variant 'Array representation for the value
+    IsArray As Boolean
     Assigned As Boolean
 End Type
 Private Type ClusterBuffer
@@ -49,6 +52,21 @@ End Type
 '///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ' PROPERTIES:
 
+''' <summary>
+''' Returns True if the given variable has an array assigned
+''' </summary>
+Public Property Get AssignedArray(aVarKey As Variant) As Boolean
+    If Not IsNumeric(aVarKey) Then
+        Dim ValueIdx As Long
+    
+        ValueIdx = GetCBItemIdx(P_EXPR_VARIABLES, CStr(aVarKey))
+        If ValueIdx > -1 Then
+            AssignedArray = P_EXPR_VARIABLES.Storage(ValueIdx).IsArray
+        End If
+    Else
+        AssignedArray = P_EXPR_VARIABLES.Storage(CLng(aVarKey)).IsArray
+    End If
+End Property
 
 ''' <summary>
 ''' Gets the constants collection. By default this is pre-populated with PI and e.
@@ -164,6 +182,82 @@ Public Property Let VarValue(aVarKey As Variant, aVarValue As String)
     End If
 End Property
 
+''' <summary>
+''' Gets the current value from an instance for the given variable.
+''' If 'aVarKey' is numeric, the argument is treated as an index.
+'''
+''' NOTE: this version use Variant data type to handle arrays.
+''' The string array representation is retrieved as usual if the
+''' parameter "treatAsArray" is set to False, an array is returned
+''' otherwise.
+''' </summary>
+Public Property Get VarValue2(aVarKey As Variant, treatAsArray As Boolean) As Variant
+    If Not IsNumeric(aVarKey) Then
+        Dim ValueIdx As Long
+    
+        ValueIdx = GetCBItemIdx(P_EXPR_VARIABLES, CStr(aVarKey))
+        If ValueIdx > -1 Then
+            If treatAsArray Then
+                If P_EXPR_VARIABLES.Storage(ValueIdx).IsArray Then
+                    VarValue2 = P_EXPR_VARIABLES.Storage(ValueIdx).value2
+                End If
+            Else
+                VarValue2 = P_EXPR_VARIABLES.Storage(ValueIdx).value
+            End If
+        End If
+    Else
+        If treatAsArray Then
+            If P_EXPR_VARIABLES.Storage(CLng(aVarKey)).IsArray Then
+                VarValue2 = P_EXPR_VARIABLES.Storage(CLng(aVarKey)).value2
+            End If
+        Else
+            VarValue2 = P_EXPR_VARIABLES.Storage(CLng(aVarKey)).value
+        End If
+    End If
+End Property
+
+''' <summary>
+''' Gets or sets the current value from/to the given variable.
+''' If 'aVarKey' is numeric, the argument is treated as an index.
+'''
+''' NOTE: this version use variant data type to handle arrays.
+''' The array string is stored as usual, but a conversion is
+''' also perfomed to allocate an array created by parsing the
+''' given string when the parameter "treatAsArray" is set to True.
+''' </summary>
+Public Property Let VarValue2(aVarKey As Variant, treatAsArray As Boolean, aVarValue As Variant)
+    If arrHelper Is Nothing Then Set arrHelper = New VBAexpressions
+    If Not IsNumeric(aVarKey) Then
+        Dim ValueIdx As Long
+        Dim ConstKey As String
+        
+        ValueIdx = GetCBItemIdx(P_EXPR_VARIABLES, CStr(aVarKey))
+        If ValueIdx > -1 Then
+            P_EXPR_VARIABLES.Storage(ValueIdx).IsArray = treatAsArray
+            P_EXPR_VARIABLES.Storage(ValueIdx).value = aVarValue
+            P_EXPR_VARIABLES.Storage(ValueIdx).Assigned = True
+            If treatAsArray Then
+                P_EXPR_VARIABLES.Storage(ValueIdx). _
+                                    value2 = arrHelper.ArrayFromString(CStr(aVarValue))
+            End If
+        Else
+            AddVariable CStr(aVarKey), ConstKey
+            Me.VarValue2(aVarKey, treatAsArray) = aVarValue
+        End If
+    Else
+        ValueIdx = CLng(aVarKey)
+        If ValueIdx > -1 And ValueIdx <= P_EXPR_VARIABLES.index Then
+            P_EXPR_VARIABLES.Storage(ValueIdx).IsArray = treatAsArray
+            P_EXPR_VARIABLES.Storage(ValueIdx).value = aVarValue
+            P_EXPR_VARIABLES.Storage(ValueIdx).Assigned = True
+            If treatAsArray Then
+                P_EXPR_VARIABLES.Storage(ValueIdx). _
+                                    value2 = arrHelper.ArrayFromString(CStr(aVarValue))
+            End If
+        End If
+    End If
+End Property
+
 '///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 '#
 '///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -222,7 +316,7 @@ Public Sub ConstantsInit()
     InitCBbuffer P_CONSTANTS
     '@--------------------------------------------------------------------
     ' Save predefined constants
-    AppendToCBbuffer P_CONSTANTS, "pi", CStr(PI)
+    AppendToCBbuffer P_CONSTANTS, "pi", CStr(pi)
     AppendToCBbuffer P_CONSTANTS, "e", CStr(e)
 End Sub
 
@@ -298,8 +392,8 @@ Public Function IsConstant(aVarName As String) As Boolean
     IsConstant = GetCBItemIdx(P_CONSTANTS, aVarName) > -1
 End Function
 
-Private Function IsPI(ByRef VarName As String) As Boolean
-    IsPI = VarName Like "[Pp][Ii]"
+Private Function IsPI(ByRef varName As String) As Boolean
+    IsPI = varName Like "[Pp][Ii]"
 End Function
 
 Public Sub VariablesInit()
@@ -324,8 +418,12 @@ End Function
 ''' Initializes this instance.
 ''' </summary>
 Private Sub Class_Initialize()
-    PI = 4 * Atn(1)
+    pi = 4 * Atn(1)
     e = Exp(1)
     ConstantsInit
     VariablesInit
+End Sub
+
+Private Sub Class_Terminate()
+    Set arrHelper = Nothing
 End Sub
