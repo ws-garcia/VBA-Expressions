@@ -42,17 +42,18 @@ Option Base 0
 '
 ' Allowed expressions must follow the following grammar:
 '
-' Expression    =     ([{"("}]  SubExpr [{Operator [{"("}] SubExpr [{")"}]}] [{")"}] | {["("] ["{"] List [{";" List}] ["}"] [")"]}
+' Expression    =     ([{"("}]  SubExpr [{Operator [{"("}] SubExpr [{")"}]}] [{")"}] | {["("] ["{"] List [{";" List}] ["}"] [")"]})
 ' SubExpr       =     Token [{Operator Token}]
 ' Token         =     [{Unary}] Argument [(Operator | Function) ["("] [{Unary}] [Argument] [")"]]
-' Argument      =     (List | Variable | Operand)
-' List          =     "{" ["{"] SubExpr [{";" SubExpr}] ["}"] "}"
+' Argument      =     (List | Variable | Operand | Literal)
+' List          =     ["{"] ["{"] SubExpr [{";" SubExpr}] ["}"] ["}"]
 ' Unary         =     "-" | "+" | ~
-' Operand       =     ({Digit} ["."] [{Digit}] ["E"("-" | "+"){Digit}] | (True | False) | "'"Alphabet"'")
+' Literal       =     (Operand | "'"Alphabet"'")
+' Operand       =     ({Digit} ["."] [{Digit}] ["E"("-" | "+"){Digit}] | (True | False))
 ' Variable      =     Alphabet [{Decimal}] [{(Digit | Alphabet)}]
 ' Alphabet      =     "A-Z" | "a-z"
 ' Decimal       =     "."
-' Digit         =     "0-9"
+' Digit = "0-9"
 ' Operator      =     "+" | "-" | "*" | "/" | "\" | "^" | "%" | "!" | "<" | "<=" | "<>" | ">" | ">=" | "=" | "$" | "&" | "|" | "||"
 ' Function      =     "abs" | "sin" | "cos" | "min" |...|[UDF]
 '
@@ -5416,9 +5417,9 @@ err_Handler:
 End Function
 
 ''' <summary: Least squares solution of A*X = B>
-''' Returns X that minimizes the two norm of Q*R*X-B
-''' @exception  IllegalArgumentException  Matrix row dimensions must agree.
-''' @exception  RuntimeException  Matrix is rank deficient.
+'''     Returns X that minimizes the two norm of Q*R*X-B
+'''     @exception  IllegalArgumentException  Matrix row dimensions must agree.
+'''     @exception  RuntimeException  Matrix is rank deficient.
 ''' </summary>
 ''' <param name="A">Matrix of coefficients of the system variables.</param>
 ''' <param name="b">Right side vector.</param>
