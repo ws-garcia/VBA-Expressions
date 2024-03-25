@@ -12,7 +12,7 @@ Although the main development goal of the class was the integration with [CSV In
 * __Logical expressions__: `&` (AND), `|` (OR), `||` (XOR)
 * __Binary relations__: `<`, `<=`, `<>`, `>=`, `=`, `>`, `$` (LIKE)
 * __Outstanding matrix and statistical functions__: `CHOLESKY`, `MLR` (Multivariate Linear Regression), `FIT` (Curve fitting), `INVERSE`, and a lot more!
-* __More than 90 built-in functions__: `Max`, `Sin`, `IRR`, `GAUSS`, `LSQRSOLVE`, `Switch`, `Iff`, `DateDiff`, `Solve`, `fZero`, `Format`...
+* __More than 100 built-in functions__: `Max`, `Sin`, `IRR`, `GAUSS`, `LSQRSOLVE`, `Switch`, `Iff`, `DateDiff`, `Solve`, `fZero`, `Format`...
 * __Very flexible and powerful__: variables, constants and user-defined functions (UDFs) support.
 * __Implied multiplication for variables, constants and functions__: `5avg(2;abs(-3-7tan(5));9)`, `5(x)` and `x(2)(3)` are valid expressions.
 * __Evaluation of arrays of expressions given as text strings, as in Java__: curly brackets must be used to define arrays`{{...};{...}}`
