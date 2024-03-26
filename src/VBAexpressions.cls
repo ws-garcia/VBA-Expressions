@@ -171,7 +171,7 @@ Private P_DEGREES As Boolean
 Private P_ERRORDESC As String
 Private P_ERRTYPE As ExpressionErrors
 Private P_EXPRESSION As String
-Private P_FORCE_BOOLEAN As Boolean
+Private P_ENFORCE_BOOLEAN As Boolean
 Private P_FORMATRESULT As Boolean
 Private P_GALLOPING_MODE As Boolean
 Private P_RESULT As Variant
@@ -323,7 +323,7 @@ Private Sub Class_Initialize()
     FunctionsId() = Split(BuildinFunctIDList, ";")
     FunctionsName() = Split(BuildinFunctNameList, ";")
     Set P_SCOPE = New VBAexpressionsScope
-    P_FORCE_BOOLEAN = False
+    P_ENFORCE_BOOLEAN = False
     InitCBbuffer UserDefFunctions
     '@--------------------------------------------------------------------
     ' Populate linked index constructor
@@ -411,16 +411,16 @@ Public Property Get expression() As String
     expression = P_EXPRESSION
 End Property
 
-Public Property Get ForceBoolean() As Boolean
-    ForceBoolean = P_FORCE_BOOLEAN
+Public Property Get EnforceBoolean() As Boolean
+    EnforceBoolean = P_ENFORCE_BOOLEAN
 End Property
 
 ''' <summary>
 '''     When True, a False is returned on evaluation errors.
 '''     This can be useful when evaluating piecewise functions.
 ''' </summary>
-Public Property Let ForceBoolean(aValue As Boolean)
-    P_FORCE_BOOLEAN = aValue
+Public Property Let EnforceBoolean(aValue As Boolean)
+    P_ENFORCE_BOOLEAN = aValue
 End Property
 
 ''' <summary>
@@ -1583,7 +1583,7 @@ Private Sub BottomLevelEval(ByRef aToken As token)
     End If
     Exit Sub
 BLevelEval_errHanlder:
-    If Not P_FORCE_BOOLEAN Then
+    If Not P_ENFORCE_BOOLEAN Then
         aToken.EvalResult = e_ValueError
     Else
         aToken.EvalResult = False
@@ -2856,7 +2856,7 @@ Private Function EvalFunction(ByRef Argument As String, ByRef FunctionName As St
     End If
     Exit Function
 EvalFunction_errHandler:
-    If Not P_FORCE_BOOLEAN Then
+    If Not P_ENFORCE_BOOLEAN Then
         EvalFunction = e_ValueError
     Else
         EvalFunction = False
