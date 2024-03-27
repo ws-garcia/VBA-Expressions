@@ -368,7 +368,7 @@ Public Property Get CurrentVarValues() As String
 End Property
 
 ''' <summary>
-'''     Gets or sets the behavior when calculating trigonometric functions. If True, the program
+'''     Gets or sets the behaviour when calculating trigonometric functions. If True, the program
 '''     will assume argument passed in degrees for all trigonometric functions.
 ''' </summary>
 Public Property Get Degrees() As Boolean
@@ -447,6 +447,9 @@ Public Property Let GallopingMode(aValue As Boolean)
     P_GALLOPING_MODE = aValue
 End Property
 
+''' <summary>
+'''     Sets the value for a variable in terms of previously defined variables.
+''' </summary>
 Public Property Let ImplicitVarValue(aVarName As String, aVarValue As String)
     If GeneratedTree Then
         Dim exprHelper As VBAexpressions
@@ -470,7 +473,7 @@ Public Property Get ReadyToEval() As Boolean
 End Property
 
 ''' <summary>
-'''     Gets the result aftter evaluate the give  expression.
+'''     Gets the result for latest evaluated expression.
 ''' </summary>
 Public Property Get result() As String
     If P_FORMATRESULT Then
@@ -506,7 +509,7 @@ Public Property Let VarValue(aVarName As String, aVarValue As String)
 End Property
 
 ''' <summary>
-'''     Gets the current value from an instance for the given variable.
+'''     Gets or sets the current value from an instance for the given variable.
 '''     If 'aVarKey' is numeric, the argument is treated as an index.
 '''
 '''     NOTE: this version use Variant data type to handle arrays.
@@ -534,20 +537,22 @@ End Property
 '#
 '///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ' METHODS:
-Private Function Absolute(ByRef expression As String, ByRef fName As String) As Double
+Private Function Absolute(ByRef expression As String, ByRef fName As String) As String
     On Error GoTo err_Handler
-    Absolute = Abs(CDbl(expression))
+    Absolute = CStr(Abs(CDbl(expression)))
     Exit Function
 err_Handler:
+    Absolute = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
-Private Function aCeiling(ByRef expression As String, ByRef fName As String) As Double
+Private Function aCeiling(ByRef expression As String, ByRef fName As String) As String
     On Error GoTo err_Handler
-    aCeiling = Ceiling(CDbl(expression))
+    aCeiling = CStr(Ceiling(CDbl(expression)))
     Exit Function
 err_Handler:
+    aCeiling = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -582,6 +587,7 @@ Private Function ACHISQ(ByRef expression As String, ByRef fName As String) As St
     ACHISQ = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    ACHISQ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -714,6 +720,7 @@ Private Function AERF(ByRef expression As String, ByRef fName As String) As Stri
     AERF = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    AERF = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -754,6 +761,7 @@ Private Function AFISHF(ByRef expression As String, ByRef fName As String) As St
     AFISHF = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    AFISHF = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -773,11 +781,12 @@ Private Function AFISHF_(p As Double, N1 As Double, N2 As Double) As Double
     AFISHF_ = f
 End Function
 
-Private Function aFloor(ByRef expression As String, ByRef fName As String) As Double
+Private Function aFloor(ByRef expression As String, ByRef fName As String) As String
     On Error GoTo err_Handler
-    aFloor = Floor(CDbl(expression))
+    aFloor = CStr(Floor(CDbl(expression)))
     Exit Function
 err_Handler:
+    aFloor = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                 d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -810,6 +819,7 @@ Private Function AGAUSS(ByRef expression As String, ByRef fName As String) As St
     AGAUSS = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    AGAUSS = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -850,6 +860,7 @@ Private Function anorm(ByRef expression As String, ByRef fName As String) As Str
     anorm = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    anorm = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -909,7 +920,7 @@ Private Function ApplyLawOfSigns(ByRef expression As String) As String
     ApplyLawOfSigns = tmpResult
 End Function
 
-Private Function ArcCos(ByRef expression As String, ByRef fName As String) As Double
+Private Function ArcCos(ByRef expression As String, ByRef fName As String) As String
     Dim tmpEval As Double
     
     On Error GoTo err_Handler
@@ -918,14 +929,15 @@ Private Function ArcCos(ByRef expression As String, ByRef fName As String) As Do
     If P_DEGREES Then
         tmpEval = tmpEval * 180 / pi
     End If
-    ArcCos = tmpEval
+    ArcCos = CStr(tmpEval)
     Exit Function
 err_Handler:
+    ArcCos = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
-Private Function ArcSin(ByRef expression As String, ByRef fName As String) As Double
+Private Function ArcSin(ByRef expression As String, ByRef fName As String) As String
     Dim tmpEval As Double
     
     On Error GoTo err_Handler
@@ -934,14 +946,15 @@ Private Function ArcSin(ByRef expression As String, ByRef fName As String) As Do
     If P_DEGREES Then
         tmpEval = tmpEval * 180 / pi
     End If
-    ArcSin = tmpEval
+    ArcSin = CStr(tmpEval)
     Exit Function
 err_Handler:
+    ArcSin = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
-Private Function ArcTan(ByRef expression As String, ByRef fName As String) As Double
+Private Function ArcTan(ByRef expression As String, ByRef fName As String) As String
     Dim tmpEval As Double
     
     On Error GoTo err_Handler
@@ -950,9 +963,10 @@ Private Function ArcTan(ByRef expression As String, ByRef fName As String) As Do
     If P_DEGREES Then
         tmpEval = tmpEval * 180 / pi
     End If
-    ArcTan = tmpEval
+    ArcTan = CStr(tmpEval)
     Exit Function
 err_Handler:
+    ArcTan = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -986,6 +1000,7 @@ Private Function aREM(ByRef expression As String, ByRef fName As String) As Stri
     aREM = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    aREM = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -1018,6 +1033,7 @@ Private Function aROUND(ByRef expression As String, ByRef fName As String) As St
     aROUND = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    aROUND = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -1278,11 +1294,12 @@ err_Handler:
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
-Private Function Asc_(ByRef expression As String, ByRef fName As String) As Long
+Private Function Asc_(ByRef expression As String, ByRef fName As String) As String
     On Error GoTo err_Handler
-    Asc_ = AscW(FormatLiteralString(expression, True))
+    Asc_ = CStr(AscW(FormatLiteralString(expression, True)))
     Exit Function
 err_Handler:
+    Asc_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -1317,6 +1334,7 @@ Private Function ASTUDT(ByRef expression As String, ByRef fName As String) As St
     ASTUDT = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    ASTUDT = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -1336,7 +1354,7 @@ Private Function ASTUDT_(p As Double, n As Double) As Double
     ASTUDT_ = t
 End Function
 
-Private Function average(ByRef expression As String, ByRef fName As String) As Double
+Private Function average(ByRef expression As String, ByRef fName As String) As String
     Dim g As Long
     Dim tmpData() As String
     Dim tmpEval As Double
@@ -1348,9 +1366,10 @@ Private Function average(ByRef expression As String, ByRef fName As String) As D
         tmpEval = tmpEval + CDbl(tmpData(g))
     Next g
     tmpEval = tmpEval / (UBound(tmpData) - LBound(tmpData) + 1)
-    average = tmpEval: Erase tmpData
+    average = CStr(tmpEval): Erase tmpData
     Exit Function
 err_Handler:
+    average = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -1430,6 +1449,7 @@ Private Function BETAINV(ByRef expression As String, ByRef fName As String) As S
     BETAINV = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    BETAINV = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -1581,16 +1601,18 @@ Private Sub BottomLevelEval(ByRef aToken As token)
             End Select
         End If
     End If
-    Exit Sub
+    EvalResultSwithc False, aToken
+Exit Sub
 BLevelEval_errHanlder:
-    If Not P_ENFORCE_BOOLEAN Then
-        aToken.EvalResult = e_ValueError
-    Else
-        aToken.EvalResult = False
-    End If
-    P_ERRTYPE = errEvalError
+    EvalResultSwithc True, aToken
 End Sub
-
+Private Sub EvalResultSwithc(exitedWithErr As Boolean, ByRef aToken As token)
+    If exitedWithErr Or aToken.EvalResult = e_ValueError Then
+        If P_ENFORCE_BOOLEAN Then
+            aToken.EvalResult = False
+        End If
+    End If
+End Sub
 Private Sub BuildErrMessage(ErrorType As ExpressionErrors, Optional AditionalContext As String)
     P_ERRTYPE = ErrorType
     Select Case P_ERRTYPE
@@ -1706,6 +1728,7 @@ Private Function CHISQ(ByRef expression As String, ByRef fName As String) As Str
     CHISQ = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    CHISQ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -1826,6 +1849,7 @@ Private Function CholeskyDecomposition(ByRef expression As String, ByRef fName A
     CholeskyDecomposition = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    CholeskyDecomposition = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -1866,6 +1890,7 @@ Private Function CholeskyInverseMatrix(ByRef expression As String, ByRef fName A
     CholeskyInverseMatrix = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    CholeskyInverseMatrix = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -1984,6 +2009,7 @@ Private Function CholeskySolve(ByRef expression As String, ByRef fName As String
     CholeskySolve = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    CholeskySolve = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -2044,6 +2070,7 @@ Private Function Choose(ByRef expression As String, ByRef fName As String) As St
     End If
     Exit Function
 err_Handler:
+    Choose = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -2053,6 +2080,7 @@ Private Function Chr_(ByRef expression As String, ByRef fName As String) As Stri
     Chr_ = ToLiteralString(ChrW(CLng(expression))) 'Expected numeric value
     Exit Function
 err_Handler:
+    Chr_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -2127,7 +2155,7 @@ Private Function Compute() As String
     ComputedTree = True
 End Function
 
-Private Function Cosin(ByRef expression As String, ByRef fName As String) As Double
+Private Function Cosin(ByRef expression As String, ByRef fName As String) As String
     Dim tmpEval As Double
     
     On Error GoTo err_Handler
@@ -2135,9 +2163,10 @@ Private Function Cosin(ByRef expression As String, ByRef fName As String) As Dou
     If P_DEGREES Then
         tmpEval = tmpEval * pi / 180
     End If
-    Cosin = Cos(tmpEval)
+    Cosin = CStr(Cos(tmpEval))
     Exit Function
 err_Handler:
+    Cosin = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -2256,6 +2285,7 @@ Private Function DateAdd_(ByRef expression As String, ByRef fName As String) As 
     DateAdd_ = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    DateAdd_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -2300,6 +2330,7 @@ Private Function DateDiff_(ByRef expression As String, ByRef fName As String) As
     DateDiff_ = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    DateDiff_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -2341,6 +2372,7 @@ Private Function DatePart_(ByRef expression As String, ByRef fName As String) As
     DatePart_ = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    DatePart_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -2370,6 +2402,7 @@ Private Function DateSerial_(ByRef expression As String, ByRef fName As String) 
     DateSerial_ = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    DateSerial_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -2397,6 +2430,7 @@ Private Function DateValue_(ByRef expression As String, ByRef fName As String) A
     DateValue_ = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    DateValue_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -2408,6 +2442,7 @@ Private Function Date_(ByRef expression As String, ByRef fName As String) As Str
     End If
     Exit Function
 err_Handler:
+    Date_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -2435,6 +2470,7 @@ Private Function Day_(ByRef expression As String, ByRef fName As String) As Stri
     Day_ = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    Day_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -2469,6 +2505,7 @@ Private Function DDB_(ByRef expression As String, ByRef fName As String) As Stri
     DDB_ = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    DDB_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -2533,6 +2570,7 @@ Private Function Determinant(ByRef expression As String, ByRef fName As String) 
     Determinant = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    Determinant = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -2584,6 +2622,7 @@ Private Function ERF(ByRef expression As String, ByRef fName As String) As Strin
     ERF = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    ERF = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -2886,11 +2925,12 @@ Private Sub ExpandCBbuffer(ByRef aBuffer As ClusterBuffer)
     ReDim Preserve aBuffer.Storage(0 To aBuffer.Capacity - 1)
 End Sub
 
-Private Function ExpEuler(ByRef expression As String, ByRef fName As String) As Double
+Private Function ExpEuler(ByRef expression As String, ByRef fName As String) As String
     On Error GoTo err_Handler
-    ExpEuler = Exp(CDbl(expression))
+    ExpEuler = CStr(Exp(CDbl(expression)))
     Exit Function
 err_Handler:
+    ExpEuler = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -2932,9 +2972,10 @@ End Function
 
 Private Function Factorial(ByRef expression As String) As String
     On Error GoTo err_Handler
-    Factorial = FACT(CDbl(expression))
+    Factorial = CStr(FACT(CDbl(expression)))
     Exit Function
 err_Handler:
+    Factorial = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & "Factorial" & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -2993,6 +3034,7 @@ Private Function FISHF(ByRef expression As String, ByRef fName As String) As Str
     FISHF = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    FISHF = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -3108,6 +3150,7 @@ Private Function Fit(ByRef expression As String, ByRef fName As String) As Strin
     Fit = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    Fit = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -3278,6 +3321,7 @@ Private Function Format_(ByRef expression As String, ByRef fName As String) As S
     Format_ = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    Format_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -3362,11 +3406,12 @@ Private Function FV_(ByRef expression As String, ByRef fName As String) As Strin
     FV_ = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    FV_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
-Public Function fZero(ByRef aFunction As String, ByVal A As Double, _
+Private Function fZero(ByRef aFunction As String, ByVal A As Double, _
                         ByVal B As Double, Optional epsilon As Double = 0.0000000001, _
                         Optional includeVarNames As Boolean = True, _
                         Optional useBisectionMethod As Boolean = False, _
@@ -3624,6 +3669,7 @@ Private Function GAMMALN(ByRef expression As String, ByRef fName As String) As S
     GAMMALN = GAMMALN_(CDbl(expression))
     Exit Function
 err_Handler:
+    GAMMALN = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -3684,6 +3730,7 @@ Private Function GAUSS(ByRef expression As String, ByRef fName As String) As Str
     GAUSS = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    GAUSS = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -4504,6 +4551,7 @@ Private Function GETS(ByRef expression As String, ByRef fName As String) As Stri
     GETS = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    GETS = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -4803,6 +4851,7 @@ Private Function Hour_(ByRef expression As String, ByRef fName As String) As Str
     Hour_ = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    Hour_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -4840,6 +4889,7 @@ Private Function iBETA(ByRef expression As String, ByRef fName As String) As Str
     iBETA = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    iBETA = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -4954,6 +5004,7 @@ Private Function Iff_(ByRef expression As String, ByRef fName As String) As Stri
     End If
     Exit Function
 err_Handler:
+    Iff_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -5012,6 +5063,7 @@ Private Function InverseMatrix(ByRef expression As String, ByRef fName As String
     InverseMatrix = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    InverseMatrix = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -5053,6 +5105,7 @@ Private Function IPMT_(ByRef expression As String, ByRef fName As String) As Str
     IPMT_ = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    IPMT_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -5088,6 +5141,7 @@ Private Function IRR_(ByRef expression As String, ByRef fName As String) As Stri
     IRR_ = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    IRR_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -5321,6 +5375,7 @@ Private Function LCase_(ByRef expression As String, ByRef fName As String) As St
     LCase_ = ToLiteralString(LCase(expression))
     Exit Function
 err_Handler:
+    LCase_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -5353,24 +5408,29 @@ Private Function Left_(ByRef expression As String, ByRef fName As String) As Str
     Left_ = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    Left_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
-Private Function Len_(ByRef expression As String, ByRef fName As String) As Long
+Private Function Len_(ByRef expression As String, ByRef fName As String) As String
+    Dim tmpResult As Long
+    
     On Error GoTo err_Handler
     If IsLiteralString(expression) Then
-        Len_ = Len(FormatLiteralString(expression))
+        tmpResult = Len(FormatLiteralString(expression))
     Else
-        Len_ = Len(expression)
+        tmpResult = Len(expression)
     End If
+    Len_ = CStr(tmpResult)
     Exit Function
 err_Handler:
+    Len_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
-Private Function LgN(ByRef expression As String, ByRef fName As String) As Double
+Private Function LgN(ByRef expression As String, ByRef fName As String) As String
     Dim tmpData() As String
     Dim tmpEval As Double
     Dim LB As Long, UB As Long
@@ -5387,18 +5447,20 @@ Private Function LgN(ByRef expression As String, ByRef fName As String) As Doubl
         tmpEval = e_ValueError
               BuildErrMessage errMissingArgsOrTooManyArgs, d_lCurly & fName & d_rCurly
     End If
-    LgN = tmpEval: Erase tmpData
+    LgN = CStr(tmpEval): Erase tmpData
     Exit Function
 err_Handler:
+    LgN = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
-Private Function LN(ByRef expression As String, ByRef fName As String) As Double
+Private Function LN(ByRef expression As String, ByRef fName As String) As String
     On Error GoTo err_Handler
-    LN = Log(CDbl(expression))
+    LN = CStr(Log(CDbl(expression)))
     Exit Function
 err_Handler:
+    LN = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -5407,11 +5469,12 @@ Private Function Log10(aValue As Double) As Double
     Log10 = Log(aValue) / Log(10)
 End Function
 
-Private Function Logarithm(ByRef expression As String, ByRef fName As String) As Double
+Private Function Logarithm(ByRef expression As String, ByRef fName As String) As String
     On Error GoTo err_Handler
-    Logarithm = Log(CDbl(expression)) / Log(10)
+    Logarithm = CStr(Log(CDbl(expression)) / Log(10))
     Exit Function
 err_Handler:
+    Logarithm = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -5447,6 +5510,7 @@ Private Function LSQRsolve(ByRef expression As String, ByRef fName As String) As
     LSQRsolve = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    LSQRsolve = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -5622,6 +5686,7 @@ Private Function LUdecomposition(ByRef expression As String, ByRef fName As Stri
     LUdecomposition = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    LUdecomposition = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -5696,6 +5761,7 @@ Private Function LUsolve(ByRef expression As String, ByRef fName As String) As S
     LUsolve = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    LUsolve = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -5709,7 +5775,7 @@ Private Function LUsolve_(ByRef aArray() As Double, ByRef bArray() As Double) As
     LUsolve_ = bArray
 End Function
 
-Private Function Max(ByRef expression As String, ByRef fName As String) As Double
+Private Function Max(ByRef expression As String, ByRef fName As String) As String
     Dim g As Long
     Dim tmpData() As String
     Dim tmpEval As Double
@@ -5724,9 +5790,10 @@ Private Function Max(ByRef expression As String, ByRef fName As String) As Doubl
             tmpEval = compEval
         End If
     Next g
-    Max = tmpEval: Erase tmpData
+    Max = CStr(tmpEval): Erase tmpData
     Exit Function
 err_Handler:
+    Max = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -5779,11 +5846,12 @@ Private Function Mid_(ByRef expression As String, ByRef fName As String) As Stri
     Mid_ = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    Mid_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
-Private Function Min(ByRef expression As String, ByRef fName As String) As Double
+Private Function Min(ByRef expression As String, ByRef fName As String) As String
     Dim g As Long
     Dim tmpData() As String
     Dim tmpEval As Double
@@ -5798,9 +5866,10 @@ Private Function Min(ByRef expression As String, ByRef fName As String) As Doubl
             tmpEval = compEval
         End If
     Next g
-    Min = tmpEval: Erase tmpData
+    Min = CStr(tmpEval): Erase tmpData
     Exit Function
 err_Handler:
+    Min = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -5853,6 +5922,7 @@ Private Function Minute_(ByRef expression As String, ByRef fName As String) As S
     Minute_ = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    Minute_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -5936,6 +6006,7 @@ Private Function MIRR_(ByRef expression As String, ByRef fName As String) As Str
     MIRR_ = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    MIRR_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -6025,6 +6096,7 @@ Private Function MLR(ByRef expression As String, ByRef fName As String) As Strin
     MLR = tmpEval: Erase tmpData, tmpResult
     Exit Function
 err_Handler:
+    MLR = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -6126,6 +6198,7 @@ Private Function MMult(ByRef expression As String, ByRef fName As String) As Str
     MMult = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    MMult = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -6258,6 +6331,7 @@ Private Function MNEG(ByRef expression As String, ByRef fName As String) As Stri
     MNEG = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    MNEG = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -6324,6 +6398,7 @@ Private Function MonthName_(ByRef expression As String, ByRef fName As String) A
     MonthName_ = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    MonthName_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -6351,6 +6426,7 @@ Private Function Month_(ByRef expression As String, ByRef fName As String) As St
     Month_ = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    Month_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -6383,6 +6459,7 @@ Private Function MROUND(ByRef expression As String, ByRef fName As String) As St
     MROUND = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    MROUND = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -6446,6 +6523,7 @@ Private Function MSum(ByRef expression As String, ByRef fName As String) As Stri
     MSum = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    MSum = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -6579,6 +6657,7 @@ Private Function MTranspose(ByRef expression As String, ByRef fName As String) A
     MTranspose = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    MTranspose = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -6697,6 +6776,7 @@ Private Function NORM(ByRef expression As String, ByRef fName As String) As Stri
     NORM = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    NORM = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -6722,6 +6802,7 @@ Private Function Now_(ByRef expression As String, ByRef fName As String) As Stri
     End If
     Exit Function
 err_Handler:
+    Now_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -6760,6 +6841,7 @@ Private Function NPER_(ByRef expression As String, ByRef fName As String) As Str
     NPER_ = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    NPER_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -6795,6 +6877,7 @@ Private Function NPV_(ByRef expression As String, ByRef fName As String) As Stri
     NPV_ = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    NPV_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -6848,6 +6931,7 @@ Private Function OverLoadVarName(ByRef expression As String, ByRef fName As Stri
     OverLoadVarName = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    OverLoadVarName = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -6997,11 +7081,12 @@ Private Function PatternToCheckOn(ByRef ArgDefStr As String) As String
     End If
 End Function
 
-Private Function Percent(ByRef expression As String, ByRef fName As String) As Double
+Private Function Percent(ByRef expression As String, ByRef fName As String) As String
     On Error GoTo err_Handler
     Percent = CDbl(expression) / 100
     Exit Function
 err_Handler:
+    Percent = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -7040,6 +7125,7 @@ Private Function PMT_(ByRef expression As String, ByRef fName As String) As Stri
     PMT_ = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    PMT_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -7123,7 +7209,7 @@ Private Function PolyString(ByRef SolverResult() As Double, ByRef pDegree As Lon
     PolyString = tmpResult
 End Function
 
-Private Function Power(ByRef expression As String, ByRef fName As String) As Double
+Private Function Power(ByRef expression As String, ByRef fName As String) As String
     Dim tmpData() As String
     Dim tmpEval As Double
     Dim LB As Long, UB As Long
@@ -7139,9 +7225,10 @@ Private Function Power(ByRef expression As String, ByRef fName As String) As Dou
         tmpEval = e_ValueError
               BuildErrMessage errMissingArgsOrTooManyArgs, d_lCurly & fName & d_rCurly
     End If
-    Power = tmpEval: Erase tmpData
+    Power = CStr(tmpEval): Erase tmpData
     Exit Function
 err_Handler:
+    Power = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -7183,6 +7270,7 @@ Private Function PPMT_(ByRef expression As String, ByRef fName As String) As Str
     PPMT_ = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    PPMT_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -7225,6 +7313,7 @@ Private Function PV_(ByRef expression As String, ByRef fName As String) As Strin
     PV_ = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    PV_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -7276,11 +7365,10 @@ Private Function QRdec(ByRef expression As String, ByRef fName As String) As Str
     QRdec = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    QRdec = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
-'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-'#
 
 '# QR DECOMPOSITION
 '///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -7527,6 +7615,7 @@ Private Function RATE_(ByRef expression As String, ByRef fName As String) As Str
     RATE_ = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    RATE_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -7733,6 +7822,7 @@ Private Function Replace_(ByRef expression As String, ByRef fName As String) As 
     Replace_ = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    Replace_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -7782,6 +7872,7 @@ Private Function Right_(ByRef expression As String, ByRef fName As String) As St
     Right_ = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    Right_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -7870,11 +7961,12 @@ Private Sub ShrinkBuffer(ByRef aBuffer As ClusterTree)
     End If
 End Sub
 
-Private Function Sign(ByRef expression As String, ByRef fName As String) As Double
+Private Function Sign(ByRef expression As String, ByRef fName As String) As String
     On Error GoTo err_Handler
-    Sign = (Sgn(CDbl(expression)))
+    Sign = CStr(Sgn(CDbl(expression)))
     Exit Function
 err_Handler:
+    Sign = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -7885,7 +7977,7 @@ Private Sub SignSubstitution(ByRef expression As String, FindStr As String, Repl
     End If
 End Sub
 
-Private Function Sine(ByRef expression As String, ByRef fName As String) As Double
+Private Function Sine(ByRef expression As String, ByRef fName As String) As String
     Dim tmpEval As Double
     
     On Error GoTo err_Handler
@@ -7893,9 +7985,10 @@ Private Function Sine(ByRef expression As String, ByRef fName As String) As Doub
     If P_DEGREES Then
         tmpEval = tmpEval * pi / 180
     End If
-    Sine = Sin(tmpEval)
+    Sine = CStr(Sin(tmpEval))
     Exit Function
 err_Handler:
+    Sine = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -7923,6 +8016,7 @@ Private Function SLN_(ByRef expression As String, ByRef fName As String) As Stri
     SLN_ = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    SLN_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -8006,6 +8100,7 @@ Private Function solve(ByRef expression As String, ByRef fName As String) As Str
     solve = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    solve = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -8144,11 +8239,12 @@ Private Sub SplitToken(ByRef expression As String, ByRef oArray() As String, ByR
     End If
 End Sub
 
-Private Function SquareRoot(ByRef expression As String, ByRef fName As String) As Double
+Private Function SquareRoot(ByRef expression As String, ByRef fName As String) As String
     On Error GoTo err_Handler
-    SquareRoot = Sqr(CDbl(expression))
+    SquareRoot = CStr(Sqr(CDbl(expression)))
     Exit Function
 err_Handler:
+    SquareRoot = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -8215,6 +8311,7 @@ Private Function STUDT(ByRef expression As String, ByRef fName As String) As Str
     STUDT = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    STUDT = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -8328,7 +8425,7 @@ Private Function subu_(p3 As Double) As Double
     subu_ = e
 End Function
 
-Private Function SUM(ByRef expression As String, ByRef fName As String) As Double
+Private Function SUM(ByRef expression As String, ByRef fName As String) As String
     Dim g As Long
     Dim tmpData() As String
     Dim tmpEval As Double
@@ -8339,9 +8436,10 @@ Private Function SUM(ByRef expression As String, ByRef fName As String) As Doubl
     For g = LBound(tmpData) To UBound(tmpData)
         tmpEval = tmpEval + CDbl(tmpData(g))
     Next g
-    SUM = tmpEval: Erase tmpData
+    SUM = CStr(tmpEval): Erase tmpData
     Exit Function
 err_Handler:
+    SUM = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -8378,6 +8476,7 @@ Private Function Switch_(ByRef expression As String, ByRef fName As String) As S
     End If
     Exit Function
 err_Handler:
+    Switch_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -8406,11 +8505,12 @@ Private Function SYD_(ByRef expression As String, ByRef fName As String) As Stri
     SYD_ = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    SYD_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
-Private Function Tangent(ByRef expression As String, ByRef fName As String) As Double
+Private Function Tangent(ByRef expression As String, ByRef fName As String) As String
     Dim tmpEval As Double
     
     On Error GoTo err_Handler
@@ -8418,18 +8518,20 @@ Private Function Tangent(ByRef expression As String, ByRef fName As String) As D
     If P_DEGREES Then
         tmpEval = tmpEval * pi / 180
     End If
-    Tangent = Tan(tmpEval)
+    Tangent = CStr(Tan(tmpEval))
     Exit Function
 err_Handler:
+    Tangent = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
-Private Function tGamma(ByRef expression As String, ByRef fName As String) As Double
+Private Function tGamma(ByRef expression As String, ByRef fName As String) As String
     On Error GoTo err_Handler
-    tGamma = GAMMA(CDbl(expression))
+    tGamma = CStr(GAMMA(CDbl(expression)))
     Exit Function
 err_Handler:
+    tGamma = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -8459,6 +8561,7 @@ Private Function TimeSerial_(ByRef expression As String, ByRef fName As String) 
     TimeSerial_ = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    TimeSerial_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -8486,6 +8589,7 @@ Private Function TimeValue_(ByRef expression As String, ByRef fName As String) A
     TimeValue_ = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    TimeValue_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -8525,6 +8629,7 @@ Private Function TINV(ByRef expression As String, ByRef fName As String) As Stri
     TINV = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    TINV = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -8579,6 +8684,7 @@ Private Function TINV_1T(ByRef expression As String, ByRef fName As String) As S
     TINV_1T = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    TINV_1T = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -8625,6 +8731,7 @@ Private Function TINV_2T(ByRef expression As String, ByRef fName As String) As S
     TINV_2T = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    TINV_2T = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -8726,6 +8833,7 @@ Private Function Trim_(ByRef expression As String, ByRef fName As String) As Str
     Trim_ = ToLiteralString(Trim(FormatLiteralString(expression, True)))
     Exit Function
 err_Handler:
+    Trim_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -8735,6 +8843,7 @@ Private Function UCase_(ByRef expression As String, ByRef fName As String) As St
     UCase_ = ToLiteralString(UCase(expression))
     Exit Function
 err_Handler:
+    UCase_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -8906,6 +9015,7 @@ Private Function WeekDayName_(ByRef expression As String, ByRef fName As String)
     WeekDayName_ = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    WeekDayName_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -8938,6 +9048,7 @@ Private Function WeekDay_(ByRef expression As String, ByRef fName As String) As 
     WeekDay_ = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    WeekDay_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -8965,6 +9076,7 @@ Private Function Year_(ByRef expression As String, ByRef fName As String) As Str
     Year_ = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    Year_ = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -8999,6 +9111,7 @@ Private Function Zero(ByRef expression As String, ByRef fName As String) As Stri
     Zero = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
+    Zero = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
