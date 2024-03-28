@@ -41,10 +41,10 @@ Argument      =     (List | Variable | Operand | Literal)
 List          =     ["{"] ["{"] SubExpr [{";" SubExpr}] ["}"] ["}"]
 Unary         =     "-" | "+" | ~
 Literal       =     (Operand | "'"Alphabet"'")
-Operand       =     ({Digit} ["."] [{Digit}] ["E"("-" | "+"){Digit}] | (True | False))
+Operand       =     ({Digit} [Decimal] [{Digit}] ["E"("-" | "+"){Digit}] | (True | False))
 Variable      =     Alphabet [{Decimal}] [{(Digit | Alphabet)}]
 Alphabet      =     "A-Z" | "a-z"
-Decimal       =     "."
+Decimal       =     "." | ","
 Digit         =     "0-9"
 Operator      =     "+" | "-" | "*" | "/" | "\" | "^" | "%" | "!" | "<" | "<=" | "<>" | ">" | ">=" | "=" | "$" | "&" | "|" | "||"
 Function      =     "abs" | "sin" | "cos" | "min" |...|[UDF]

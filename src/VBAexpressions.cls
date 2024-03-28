@@ -156,6 +156,7 @@ Private Const Tiny As Double = 1E-20
 '#
 '///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ' VARIABLES:
+Private AscDecSymbol As Long
 Private AssignedExpression As Boolean
 Private BuildinFunctIDList As String
 Private BuildinFunctNameList As String
@@ -167,6 +168,7 @@ Private FunctionsName() As String
 Private GeneratedTree As Boolean
 Private IsUDFFunction As Boolean
 Private LIndexConstruc(0 To 2) As String
+Private P_DEC_SYMBOL As DecimalSymbol
 Private P_DEGREES As Boolean
 Private P_ERRORDESC As String
 Private P_ERRTYPE As ExpressionErrors
@@ -233,6 +235,10 @@ Public Enum ExpressionErrors
     errVariableNotAssigned = 4
     errMissingArgsOrTooManyArgs = 5
 End Enum
+Public Enum DecimalSymbol
+    dsDot = 0
+    dsComma = 1
+End Enum
 '///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 '#
 '///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -297,6 +303,8 @@ Private Sub Class_Initialize()
     PID2 = pi / 2
     e = Exp(1)
     P_SEPARATORCHAR = ";"
+    P_DEC_SYMBOL = dsDot
+    AscDecSymbol = 46
     P_GALLOPING_MODE = True
     P_FORMATRESULT = False
     BuildinFunctIDList = "abs;floor;achisq;asin;acos;aerf;afishf;agauss;asc;anorm;atn;astudt;array;avg" & _
@@ -365,6 +373,38 @@ End Property
 ''' </summary>
 Public Property Get CurrentVarValues() As String
     CurrentVarValues = P_SCOPE.CurrentVarValues
+End Property
+
+''' <summary>
+'''     Gets or sets the decimal symbol. The allowed options are
+'''     the dot or comma, if another character is specified
+'''     dot will be used which is the default value.
+''' </summary>
+Public Property Get DecimalSymbol() As String
+    Select Case P_DEC_SYMBOL
+        Case 0
+            DecimalSymbol = "."
+        Case 1
+            DecimalSymbol = ","
+    End Select
+End Property
+
+Public Property Let DecimalSymbol(aValue As String)
+    If LenB(aValue) > 2 Then
+        P_DEC_SYMBOL = 0
+    Else
+        Dim tmpLng As Long
+        
+        tmpLng = AscW(aValue)
+        If tmpLng = 44 Or tmpLng = 46 Then
+            AscDecSymbol = tmpLng
+            If tmpLng = 46 Then
+                P_DEC_SYMBOL = 0
+            Else
+                P_DEC_SYMBOL = 1
+            End If
+        End If
+    End If
 End Property
 
 ''' <summary>
@@ -492,7 +532,13 @@ Public Property Get SeparatorChar() As String
 End Property
 
 Public Property Let SeparatorChar(aValue As String)
-    P_SEPARATORCHAR = aValue
+    If LenB(aValue) = 2 Then
+        Select Case AscW(aValue)
+            Case 44, 46 'Reject reserved decimal symbols
+            Case Else
+                P_SEPARATORCHAR = aValue
+        End Select
+    End If
 End Property
 
 ''' <summary>
@@ -1646,7 +1692,7 @@ Private Function CastOPtype(ByRef strOperand As String, ByRef Negate As Boolean)
         Dim OpAscw As Long
         OpAscw = AscW(strOperand)
         Select Case OpAscw
-            Case 48 To 57, 43, 45, 46
+            Case 48 To 57, 43, 45, AscDecSymbol
                 CastOPtype = CDbl(strOperand)
             Case Else
                 If IsLiteralString(strOperand) Then 'Literal strings like ['string']
@@ -4741,7 +4787,7 @@ Private Sub GetTokenStart(ByRef expression As String, ByRef startIndex As Long, 
     Do While (InStrB(1, op_AllItems, curChar) = 0) And outLng > 1
         outLng = outLng - 2
         curChar = MidB$(expression, outLng, 2)
-        If AscW(curChar) = 46 Then  'Dot "."
+        If AscW(curChar) = AscDecSymbol Then  'Decimal symbol: [.][,]
             outLng = outLng - 2
             If outLng > 0 Then
                 curChar = MidB$(expression, outLng, 2)
@@ -5012,7 +5058,7 @@ End Function
 Private Function ImplicitMultFlag(ByRef Char As String) As Boolean
     If LenB(Char) Then
         Select Case AscW(Char)
-            Case 46, 48 To 57
+            Case AscDecSymbol, 48 To 57
                 ImplicitMultFlag = True
             Case Else
                 ImplicitMultFlag = False
@@ -5255,7 +5301,7 @@ End Function
 Private Function IsExtAlphaNumeric(ByRef Char As String) As Boolean
     If LenB(Char) Then
         Select Case AscW(Char)
-            Case 46, 48 To 57, 65 To 90, 95, 97 To 122
+            Case AscDecSymbol, 48 To 57, 65 To 90, 95, 97 To 122
                 IsExtAlphaNumeric = True
             Case Else
                 IsExtAlphaNumeric = False
