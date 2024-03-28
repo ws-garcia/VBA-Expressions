@@ -49,10 +49,10 @@ Option Base 0
 ' List          =     ["{"] ["{"] SubExpr [{";" SubExpr}] ["}"] ["}"]
 ' Unary         =     "-" | "+" | ~
 ' Literal       =     (Operand | "'"Alphabet"'")
-' Operand       =     ({Digit} ["."] [{Digit}] ["E"("-" | "+"){Digit}] | (True | False))
+' Operand       =     ({Digit} [Decimal] [{Digit}] ["E"("-" | "+"){Digit}] | (True | False))
 ' Variable      =     Alphabet [{Decimal}] [{(Digit | Alphabet)}]
 ' Alphabet      =     "A-Z" | "a-z"
-' Decimal       =     "."
+' Decimal       =     "." | ","
 ' Digit = "0-9"
 ' Operator      =     "+" | "-" | "*" | "/" | "\" | "^" | "%" | "!" | "<" | "<=" | "<>" | ">" | ">=" | "=" | "$" | "&" | "|" | "||"
 ' Function      =     "abs" | "sin" | "cos" | "min" |...|[UDF]
@@ -3372,52 +3372,6 @@ err_Handler:
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
-''' <summary>
-'''     Finds roots of a univariate function ussing the bisection method.
-'''     at the interval a <= x <= b.
-''' </summary>
-''' <param name="aFunction">Inline function.</param>
-''' <param name="a">Leftmost interval value.</param>
-''' <param name="b">Rightmost interval value.</param>
-''' <param name="inc">Increment used in calculations.</param>
-''' <param name="epsilon">Tolerance (relative error limit).</param>
-Public Function fRoots(ByRef aFunction As String, A As Double, _
-                        B As Double, Optional inc As Double = 1, _
-                        Optional epsilon As Double = 0.0000000001) As String
-    Dim tmpRoot As String
-    Dim tmpResult As String
-    Dim lx As Double, ux As Double
-    
-    If inc <> 1 Then
-        inc = Abs(inc)
-    End If
-    If A > B Then
-        fRoots = e_ValueError
-        Exit Function
-    End If
-    tmpRoot = fZero(aFunction, A, B, epsilon, False)
-    If tmpRoot <> e_ValueError Then      'Function with at least one root
-        lx = A
-        ux = A + inc
-        Do While ux <= B
-            On Error Resume Next
-            tmpRoot = fZeroMBM(aFunction, lx, ux, epsilon, False)
-            If tmpRoot <> e_ValueError Then
-                If tmpResult <> vbNullString Then
-                    tmpResult = tmpResult & "; " & tmpRoot
-                Else
-                    tmpResult = tmpRoot
-                End If
-            End If
-            lx = lx + inc
-            ux = ux + inc
-        Loop
-        fRoots = d_lCurly & tmpResult & d_rCurly
-    Else
-        fRoots = tmpRoot
-    End If
-End Function
-
 Private Function FV_(ByRef expression As String, ByRef fName As String) As String
     Dim argsCount As Long
     Dim tmpData() As String
@@ -4940,7 +4894,7 @@ err_Handler:
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
-Public Function iBETAINV(p As Double, A As Double, B As Double) As Double
+Private Function iBETAINV(p As Double, A As Double, B As Double) As Double
     Const EPS As Double = 0.00000001
     Dim aL As Double
     Dim a1, b1 As Double
