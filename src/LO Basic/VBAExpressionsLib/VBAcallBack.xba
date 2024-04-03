@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE script:module PUBLIC "-//OpenOffice.org//DTD OfficeDocument 1.0//EN" "module.dtd">
+<script:module xmlns:script="http://openoffice.org/2000/script" script:name="VBAcallBack" script:language="StarBasic">Option Explicit
+option Compatible
+option ClassModule
+&apos;#
+&apos;////////////////////////////////////////////////////////////////////////////////////////////
+&apos; Copyright © 2024 W. García
+&apos; GPL-3.0 license | https://www.gnu.org/licenses/gpl-3.0.html/
+&apos; https://github.com/ws-garcia
+&apos;////////////////////////////////////////////////////////////////////////////////////////////
+&apos;#
+&apos; GENERAL INFO:
+&apos; Class module developed to provide a way to extend the VBAexpression.cls and allow methods
+&apos; call back for user defined functions. See: https://stackoverflow.com/a/48372415
+&apos;
+&apos; Users can register custom modules to expose and use their functions for throght the
+&apos; VBAcallBack.cls module. All UDFs must have a single Variant argument that will receive a
+&apos; one-dimensional array of strings (one element for each function argument).
+&apos;
+&apos; For example, if the functions to be used are in a class module called UDFunctions.cls, the
+&apos; line [&apos;Public UserDefFunctions As New UDFunctions&apos;] will be sufficient to expose all its
+&apos; internal functions.
+&apos;
+&apos; After doing this, the user must &quot;bind&quot; a procedure to the desired methods through the
+&apos; DeclareUDF method of the VBAexpression.cls:
+&apos;
+&apos;                                               DeclareUDF UDFname, UDFlib
+&apos;
+&apos; In the above expression, the UDFname parameter can be an array of function names or a
+&apos; string function name. The UDFlib is a string with the name of the class module to be linked.
+&apos;////////////////////////////////////////////////////////////////////////////////////////////
+&apos;@--------------------------------------------------------------------
+&apos; Expose functions defined in the UDFunctions.cls
+Public UserDefFunctions As New UDFunctions
+
+</script:module>

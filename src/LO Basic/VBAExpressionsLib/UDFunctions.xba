@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE script:module PUBLIC "-//OpenOffice.org//DTD OfficeDocument 1.0//EN" "module.dtd">
+<script:module xmlns:script="http://openoffice.org/2000/script" script:name="UDFunctions" script:language="StarBasic">Option Explicit
+option Compatible
+Option VBASupport 1 
+option ClassModule
+&apos;#
+&apos;////////////////////////////////////////////////////////////////////////////////////////////
+&apos; Copyright © 2024 W. García
+&apos; GPL-3.0 license | https://www.gnu.org/licenses/gpl-3.0.html/
+&apos; https://github.com/ws-garcia
+&apos;////////////////////////////////////////////////////////////////////////////////////////////
+&apos;#
+&apos; GENERAL INFO:
+&apos; Class module developed to provide samples of user defined functions (UDF).
+&apos;///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+&apos;#
+Private Const Apostrophe As String = &quot;&apos;&quot;
+Private strVBA As New VBAstrHelper
+
+Public Function GCD(ByRef aValues As Variant) As Long &apos;Expected an array
+	Dim i As Long
+	Dim tmpResult As Long
+	
+	tmpResult = 0
+	For i = LBound(aValues) To UBound(aValues)
+		tmpResult = getGCD(tmpResult, CLng(aValues(i)))
+	Next i
+	GCD = tmpResult
+End Function
+
+Private Function getGCD(a As Long, b As Long) As Long
+	Do while (a &gt; 0 And b &gt; 0)
+		If (a &gt; b) Then
+			a = a Mod b
+		Else
+			b = b Mod a
+		End If
+	Loop
+	If a = 0 Then
+		getGCD = b: Exit Function
+	End If
+	getGCD = a
+End Sub
+
+&apos;&apos;&apos; &lt;summary&gt;
+&apos;&apos;&apos; List is expected to be an array. The last element will be used as
+&apos;&apos;&apos; the concatenation string.
+&apos;&apos;&apos; &lt;/summary&gt;
+Public Function Concat(List As Variant) As String
+    Dim startIdx As Long
+    Dim endIdx As Long
+    Dim i As Long
+    Dim tmpResult As String
+    Dim joinString As String
+    
+    startIdx = LBound(List)
+    endIdx = UBound(List)
+    joinString = strVBA.MidB(List(endIdx), 3, strVBA.LenB2(List(endIdx)) - 4)
+    tmpResult = strVBA.MidB(List(startIdx), 3, strVBA.LenB2(List(startIdx)) - 4)
+    For i = startIdx + 1 To endIdx - 1
+        If AscW(List(i)) = 39 Then  &apos; [&apos;]
+            tmpResult = tmpResult &amp; _
+            joinString &amp; _
+            strVBA.MidB(List(i), 3, strVBA.LenB2(List(i)) - 4)
+        Else
+            tmpResult = tmpResult &amp; _
+            joinString &amp; _
+            List(i)
+        End If
+    Next i
+    Concat = Apostrophe &amp; tmpResult &amp; Apostrophe
+End Function
+</script:module>

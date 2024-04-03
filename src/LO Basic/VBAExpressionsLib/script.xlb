@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE library:library PUBLIC "-//OpenOffice.org//DTD OfficeDocument 1.0//EN" "library.dtd">
+<library:library xmlns:library="http://openoffice.org/2000/library" library:name="VBAExpressionsLib" library:readonly="false" library:passwordprotected="false">
+ <library:element library:name="VBAexpressionsScope"/>
+ <library:element library:name="VBAstrHelper"/>
+ <library:element library:name="TestVBAExpr"/>
+ <library:element library:name="VBAexpressions"/>
+ <library:element library:name="VBAcallBack"/>
+ <library:element library:name="UDFunctions"/>
+</library:library>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE script:module PUBLIC "-//OpenOffice.org//DTD OfficeDocument 1.0//EN" "module.dtd">
+<script:module xmlns:script="http://openoffice.org/2000/script" script:name="VBAstrHelper" script:language="StarBasic" script:moduleType="normal">Option Explicit
+option Compatible
+Option VBASupport 1
+option ClassModule
+Option Base 0
+&apos;#
+&apos;///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+&apos; Copyright © 2024 W. García
+&apos; GPL-3.0 license | https://www.gnu.org/licenses/gpl-3.0.html/
+&apos; https://github.com/ws-garcia
+&apos;///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+&apos;#
+&apos; INFO:
+&apos; Class module developed to define string functions missing in LO BASIC.
+&apos;
+&apos;///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+&apos;#
+&apos;///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+&apos; VBA STRING HELPERS:
+Public Function InStrB(aStart As Long, aString1 As String, aString2 As String) As Long
+    Dim tmpResult As Long
+    Dim fStart As Long
+    
+    If aStart And 1 Then
+        fStart = (aStart + 1) / 2
+    Else
+        fStart = aStart / 2 + 1
+    End If
+    tmpResult = InStr(fStart, aString1, aString2) * 2
+    If tmpResult &gt; 0 Then
+        InStrB = tmpResult - 1
+    Else
+        InStrB = tmpResult
+    End If
+End Function
+Public Function MidB(aString As String, aStart As Long, Optional aLength As Long = -1) As String
+    If aLength &gt;= 0 Then
+        MidB = Mid(aString, (aStart + 1) / 2, aLength / 2)
+    Else
+        MidB = Mid(aString, (aStart + 1) / 2)
+    End If
+End Function
+Public Function LenB2(aString As String) As Long
+    LenB2 = Len(aString)*2
+End Function
+</script:module>

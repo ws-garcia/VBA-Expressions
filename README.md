@@ -2,7 +2,7 @@
 [![GitHub](https://img.shields.io/github/license/ws-garcia/VBA-Expressions?style=plastic)](https://github.com/ws-garcia/VBA-Expressions/blob/master/LICENSE) [![GitHub release (latest by date)](https://img.shields.io/github/v/release/ws-garcia/VBA-Expressions?style=plastic)](https://github.com/ws-garcia/VBA-Expressions/releases/latest)
 
 ## Introductory words
-VBA Expressions is a powerful string expression evaluator for VBA, which puts more than 100 mathematical, statistical, financial, date-time, logic and text manipulation functions at the user's fingertips. The `VBAexpressions.cls` class mediates almost all VBA functions as well as custom functions exposed through it. 
+VBA Expressions is a powerful string expression evaluator for VBA and LO Basic, which puts more than 100 mathematical, statistical, financial, date-time, logic and text manipulation functions at the user's fingertips. The `VBAexpressions.cls` class mediates almost all VBA functions as well as custom functions exposed through it. 
 
 Although the main development goal of the class was the integration with [CSV Interface](https://github.com/ws-garcia/VBA-CSV-interface), VBA Expressions has evolved to become a support tool for students and teachers of science, accounting, statistics and engineering; this due to the added capability to solve systems of equations and non-linear equations in one variable.
 
@@ -104,6 +104,9 @@ However, user-defined array functions need to take care of creating arrays from 
 
 ## Using the code
 VBA Expressions is an easy-to-use library, this section shows some examples of how to use the most common properties and methods
+
+$\color{#D29922}\textsf{\Large\&#x26A0;\kern{0.2cm}\normalsize Warning:}$  
+>The library only works on LibreOffice version 7.5 or higher and, since there is no 1-1 compatibility between VBA and LO Basic, users must be aware of certain changes required to recover some properties functionality. This applies mainly to those properties related to accessing variables, which were converted into functions to overcome the one-parameter limitation imposed by LO Basic when accessing them, as well as to other properties deprecated due to LO Basic's behaviour in handling class modules. An example of this is the `VarValue` property which was split into two procedures: `GetVarValue` and `LetVarValue`. The rest of the syntax is shared between the two implementations.
 
 ```
 Sub SimpleMathEval()

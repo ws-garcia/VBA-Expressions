@@ -1,0 +1,448 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE script:module PUBLIC "-//OpenOffice.org//DTD OfficeDocument 1.0//EN" "module.dtd">
+<script:module xmlns:script="http://openoffice.org/2000/script" script:name="TestVBAExpr" script:language="StarBasic">Option Explicit
+Private Evaluator As Object
+Private actual As String
+Private sAcum As Long
+Private tTotal As Long
+
+&apos;#
+&apos;////////////////////////////////////////////////////////////////////////////////////////////
+&apos; Copyright © 2024 W. García
+&apos; GPL-3.0 license | https://www.gnu.org/licenses/gpl-3.0.html/
+&apos; https://github.com/ws-garcia
+&apos;////////////////////////////////////////////////////////////////////////////////////////////
+&apos;#
+&apos; GENERAL INFO:
+&apos; Class module developed for testing the library.
+&apos;///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+&apos;#
+Private Function GetResult(expression As String _
+                        , Optional VariablesValues As String) As String
+    On Error Resume Next
+    Set Evaluator = New VBAexpressions
+    
+    With Evaluator
+        .Create expression
+        GetResult = .Eval(VariablesValues)
+    End With
+End Function
+
+Sub RunAllTests
+	GlobalScope.BasicLibraries.loadLibrary(&quot;ScriptForge&quot;)
+	createscriptservice(&quot;Exception&quot;)
+	SF_Exception.consoleClear()
+	&apos;CODE HERE
+	Run( _
+			&quot;Parentheses&quot;, _
+			&quot;(((((((((((-123.456-654.321)*1.1)*2.2)*3.3)+4.4)+5.5)+6.6)*7.7)*8.8)+9.9)+10.10)&quot;, _
+			&quot;-419741.48578672&quot; _
+		) 
+	Run( _
+			&quot;Parentheses and Single Function&quot;, _
+			&quot;(1+(2-5)*3+8/(5+3)^2)/sqr(4^2+3^2)&quot;, _
+			&quot;-1.575&quot; _
+		)
+	Run( _
+			&quot;Functions with More than One Argument&quot;, _
+			&quot;min(5;6;max(-0.6;-3))&quot;, _
+			&quot;-0.6&quot; _
+		)
+	Run( _
+			&quot;Nested Functions&quot;, _
+			&quot;tan(sqr(abs(ln(x))))&quot;, _
+			&quot;1.5574077246549&quot;, _
+			&quot;x = &quot; &amp; Exp(1) _
+		)
+	Run( _
+			&quot;Floating Point Arithmetic&quot;, _
+			&quot;(1.434E3+1000)*2/3.235E-5&quot;, _
+			&quot;150479134.46677&quot; _
+		)
+	Run( _
+			&quot;Exponentiation Precedence&quot;, _
+			&quot;4^3^2&quot;, _
+			&quot;262144&quot; _
+		)
+	Run( _
+			&quot;Factorials&quot;, _
+			&quot;25!/(24!)&quot;, _
+			&quot;25&quot; _
+		)
+	Run( _
+			&quot;Precedence&quot;, _
+			&quot;5avg(2;abs(-3-7tan(5));9)-12pi-e+(7/sin(30)-4!)*min(cos(30);cos(150))&quot;, _
+			&quot;7.56040693890688&quot; _
+		)
+	Run( _
+			&quot;Variables&quot;, _
+			&quot;Pi.e * 5.2Pie.1 + 3.1Pie&quot;, _
+			&quot;19.7&quot;, _
+			&quot;Pi.e = 1; Pie.1 = 2; Pie = 3&quot; _
+		)	
+	Run( _
+			&quot;UDFs and Basic Array Functions&quot;, _
+			&quot;GCD(1280;240;100;30*cos(0);10*DET({{sin(atn(1)*2); 0; 0}; {0; 2; 0}; {0; 0; 3}}))&quot;, _
+			&quot;10&quot; _
+		)
+	Run( _
+			&quot;Logical Operators with Numeric Output&quot;, _
+			&quot;(x&lt;=0)* x^2 + (x&gt;0 &amp; x&lt;=1)* Ln(x+1) + (x&gt;1)* Sqr(x-Ln(2))&quot;, _
+			&quot;2.30366074313039&quot;, _
+			&quot;x = 6&quot; _
+		)	
+	Run( _
+			&quot;Logical Operators with Boolean Output&quot;, _
+			&quot;x&gt;0 &amp; Sqr(x-Ln(2))&gt;=3 | tan(x)&lt;0&quot;, _
+			&quot;True&quot;, _
+			&quot;x = 6&quot; _
+		)
+	Run( _
+			&quot;Trig Functions&quot;, _
+			&quot;ROUND(tan(pi/4)^3-((3*sin(pi/4)-sin(3*pi/4))/(3*cos(pi/4)+cos(3*pi/4)));14)&quot;, _
+			&quot;0&quot; _
+		)
+	Run( _
+			&quot;Mod Function&quot;, _
+			&quot;- (-1) + (+1) + 1.000 / 1.000 + 1 * (1) * (0.2) * (5) * (-1) * (--1) + 4 % 5 % 45   % 1 &quot;, _
+			&quot;2&quot; _
+		)
+	Run( _
+			&quot;String Arguments and Parameters&quot;, _
+			&quot;Region = &apos;Central America&apos;&quot;, _
+			&quot;False&quot;, _
+			&quot;Region = &apos;Asia&apos;&quot; _
+		)
+	Run( _
+			&quot;String Arguments and Parameters-2&quot;, _
+			&quot;REPLACE(x;&apos;a&apos;;&apos;A&apos;;1;2)&quot;, _
+			&quot;&apos;CApitAl&apos;&quot;, _
+			&quot;x = &apos;Capital&apos;&quot; _
+		)
+	Run( _
+			&quot;Implied Multiplication&quot;, _
+			&quot;5(2)(3)(4)&quot;, _
+			&quot;120&quot; _
+		)
+	ArrayConstructorsAndParsers (&quot;Array Constructors And Parsers&quot;)
+	Run( _
+			&quot;Matrices: sum&quot;, _
+			&quot;MSUM(f;g)&quot;, _
+			&quot;{{-2;0;-6};{3;4;10}}&quot;, _
+			&quot;f = {{1;0;4};{1;1;6}}; g = {{-3;0;-10};{2;3;4}}&quot; _
+		)
+	Run( _
+			&quot;Matrices: sum-2&quot;, _
+			&quot;MSUM({{1;0;4};{1;1;6}};{{-3;0;-10};{2;3;4}})&quot;, _
+			&quot;{{-2;0;-6};{3;4;10}}&quot; _
+		)
+	Run( _
+			&quot;Matrices: multiplication&quot;, _
+			&quot;MMULT({{1;0;4}};{{1;1;6}})&quot;, _
+			&quot;25&quot; _
+		)
+	Run( _
+			&quot;Matrices: multiplication 2&quot;, _
+			&quot;MMULT(A;B)&quot;, _
+			&quot;{{12}}&quot;, _
+			&quot;A={{1;-2;4}};B={{2};{1};{3}}&quot; _
+		)
+	Run( _
+			&quot;Matrices: multiplication-3&quot;, _
+			&quot;MMULT(A;B)&quot;, _
+			&quot;{{2;-4;8};{1;-2;4};{3;-6;12}}&quot;, _
+			&quot;A={{2};{1};{3}};B={{1;-2;4}}&quot; _
+		)
+	Run( _
+			&quot;Matrices: multiplication-4&quot;, _
+			&quot;MMULT(A;B)&quot;, _
+			&quot;{{16};{-21};{21}}&quot;, _
+			&quot;A={{2;1;4};{1;5;-3};{5;-2;3}};B={{1};{-2};{4}}&quot; _
+		)
+	Run( _
+			&quot;Matrices: multiplication-5&quot;, _
+			&quot;MMULT(A;B)&quot;, _
+			&quot;{{-1;13};{6;15}}&quot;, _
+			&quot;A={{2;1;3};{3;-2;-1}};B={{2;3};{1;-5};{-2;4}}&quot; _
+		)
+	Run( _
+			&quot;Statistical Functions: NORM&quot;, _
+			&quot;ROUND(NORM(0.05);8)&quot;, _
+			&quot;0.96012239&quot; _
+		)
+	Run( _
+			&quot;Statistical Functions: CHISQ&quot;, _
+			&quot;ROUND(CHISQ(4;15);8)&quot;, _
+			&quot;0.99773734&quot; _
+		)
+	Run( _
+			&quot;Statistical Functions: GAUSS&quot;, _
+			&quot;ROUND(GAUSS(0.05);8)&quot;, _
+			&quot;0.01993881&quot; _
+		)
+	Run( _
+			&quot;Statistical Functions: ERF&quot;, _
+			&quot;ROUND(ERF(0.05);8)&quot;, _
+			&quot;0.05637198&quot; _
+		)
+	Run( _
+			&quot;Statistical Functions: STUDT&quot;, _
+			&quot;ROUND(STUDT(0.8;15);8)&quot;, _
+			&quot;0.43619794&quot; _
+		)
+	Run( _
+			&quot;Statistical Functions: ANORM&quot;, _
+			&quot;ROUND(ANORM(0.75);8)&quot;, _
+			&quot;0.31863936&quot; _
+		)
+	Run( _
+			&quot;Statistical Functions: AGAUSS&quot;, _
+			&quot;ROUND(AGAUSS(0.75);8)&quot;, _
+			&quot;0.67448975&quot; _
+		)
+	Run( _
+			&quot;Statistical Functions: AERF&quot;, _
+			&quot;ROUND(AERF(0.95);8)&quot;, _
+			&quot;1.38590382&quot; _
+		)
+	Run( _
+			&quot;Statistical Functions: ACHISQ&quot;, _
+			&quot;ROUND(ACHISQ(0.75;15);8)&quot;, _
+			&quot;11.03653766&quot; _
+		)
+	Run( _
+			&quot;Statistical Functions: FISHF&quot;, _
+			&quot;ROUND(FISHF(5.5;1.5;3);8)&quot;, _
+			&quot;0.21407698&quot; _
+		)
+	Run( _
+			&quot;Statistical Functions: ASTUDT&quot;, _
+			&quot;ROUND(ASTUDT(0.05;15);8)&quot;, _
+			&quot;2.13144955&quot; _
+		)
+	Run( _
+			&quot;Statistical Functions: AFISHF&quot;, _
+			&quot;ROUND(AFISHF(0.05;1.5;3);8)&quot;, _
+			&quot;18.55325631&quot; _
+		)
+	Run( _
+			&quot;Statistical Functions: iBETA&quot;, _
+			&quot;ROUND(iBETA(0.5;1;3);8)&quot;, _
+			&quot;0.875&quot; _
+		)
+	Run( _
+			&quot;Statistical Functions: BETAINV&quot;, _
+			&quot;ROUND(BETAINV(0.5;1;3);8)&quot;, _
+			&quot;0.20629947&quot; _
+		)
+	QRdec(&quot;Linear Algebra Functions: QR decomposition&quot;)
+	Run( _
+			&quot;Linear Algebra Functions: Cholesky&quot;, _
+			&quot;MROUND(MTRANSPOSE(CHOLESKY({{2.5;1.1;0.3};{2.2;1.9;0.4};{1.8;0.1;0.3}}));4)&quot;, _
+			&quot;{{1.5811;0.6957;0.1897};{0;1.19;0.2252};{0;0;0.4618}}&quot; _
+		)
+	Run( _
+			&quot;Linear Algebra Functions: Cholesky solve&quot;, _
+			&quot;MROUND(CHOLSOLVE(ARRAY(a;b;c);{{&apos;x&apos;;&apos;y&apos;;&apos;z&apos;}};{{76;295;1259}};False);4)&quot;, _
+			&quot;{{1;1;1}}&quot;, _
+			&quot;a={6;15;55};b={15;55;225};c={55;225;979}&quot; _
+		)
+	Run( _
+			&quot;Linear Algebra Functions: Cholesky Inverse&quot;, _
+			&quot;MROUND(CHOLINVERSE(ARRAY(a;b;c));4)&quot;, _
+			&quot;{{0.8214;-0.5893;0.0893};{-0.5893;0.7268;-0.1339};{0.0893;-0.1339;0.0268}}&quot;, _
+			&quot;a={6;15;55};b={15;55;225};c={55;225;979}&quot; _
+		)
+	Run( _
+			&quot;Linear Algebra Functions: Least Square Solve&quot;, _
+			&quot;MROUND(LSQRSOLVE(A;b);4)&quot;, _
+			&quot;{{2.6576};{-0.1196}}&quot;, _
+			&quot;A={{2;4};{-5;1};{3;-8}};b={{10;-9.5;12}}&quot; _
+		)
+	Run( _
+			&quot;Linear Algebra Functions: LU Solve&quot;, _
+			&quot;LUSOLVE(ARRAY(a;b;c);{{&apos;x&apos;;&apos;y&apos;;&apos;z&apos;}};{{2;3;4}};True)&quot;, _
+			&quot;x = -18; y = -9; z = 5&quot;, _
+			&quot;a={1;0;4};b={1;1;6};c={-3;0;-10}&quot; _
+		) REM: Fail by machine rounding error.
+	Run( _
+			&quot;Curve fitting: lineal fit&quot;, _
+			&quot;FIT(A;1)&quot;, _
+			&quot;{{54 + 4.8*x};{0.7024}}&quot;, _
+			&quot;A={{-2;40};{-1;50};{0;62};{1;58};{2;60}}&quot; _
+		)
+	Run( _
+			&quot;Curve fitting: polynomial fit&quot;, _
+			&quot;FIT(A;1;4)&quot;, _
+			&quot;{{62 + 3.6667*x -9.6667*x^2 + 0.3333*x^3 + 1.6667*x^4};{1}}&quot;, _
+			&quot;A={{-2;40};{-1;50};{0;62};{1;58};{2;60}}&quot; _
+		)
+	Run( _
+			&quot;Curve fitting: exponential fit&quot;, _
+			&quot;FIT(A;2)&quot;, _
+			&quot;{{0.102*e^(2.9963*x)};{0.9998}}&quot;, _
+			&quot;A={{0;0.1};{0.5;0.45};{1;2.15};{1.5;9.15};{2;40.35};{2.5;180.75}}&quot; _
+		)
+	Run( _
+			&quot;Curve fitting: exponential fit-2&quot;, _
+			&quot;FIT(A;3)&quot;, _
+			&quot;{{10.4992*(1.7959^x)};{0.9906}}&quot;, _
+			&quot;A={{0;10};{1;21};{2;35};{3;59};{4;92};{5;200};{6;400};{7;610}}&quot; _
+		)
+	Run( _
+			&quot;Curve fitting: power fit&quot;, _
+			&quot;FIT(A;4)&quot;, _
+			&quot;{{7.3799*x^1.9302};{0.9977}}&quot;, _
+			&quot;A={{2;27.8};{3;62.1};{4;110};{5;161}}&quot; _
+		)
+	Run( _
+			&quot;Curve fitting: logarithmic fit&quot;, _
+			&quot;FIT(A;5)&quot;, _
+			&quot;{{0.9521*ln(x)+0.1049};{0.9752}}&quot;, _
+			&quot;A={{1;0.01};{2;1};{3;1.15};{4;1.3};{5;1.52};{6;1.84};{7;2.01};{8;2.05};{9;2.3};{10;2.25}}&quot; _
+		)
+	Run( _
+			&quot;Multi-variate Linear Regression: nominal predictors with interactions&quot;, _
+			&quot;MLR(X;Y;True;&apos;X1:X2&apos;)&quot;, _
+			&quot;{{0.8542 + 0.4458*X1 + 0.945*X2 + 0.0792*X1*X2};{0.947;0.9072}}&quot;, _
+			&quot;X={{1;1};{2;2};{3;3};{4;4};{5;1};{6;2};{7;3};{8;4}};Y={{2;4.1;5.8;7.8;5.5;5.2;8.2;11.1}}&quot; _
+		)
+	Run( _
+			&quot;Multi-variate Linear Regression: nominal predictors with interactions-2&quot;, _
+			&quot;MLR(X;Y;False;&apos;X1:X2&apos;)&quot;, _
+			&quot;{{{{0.8542};{0.4458};{0.945};{0.0792}}};{0.947;0.9072}}&quot;, _
+			&quot;X={{1;1};{2;2};{3;3};{4;4};{5;1};{6;2};{7;3};{8;4}};Y={{2;4.1;5.8;7.8;5.5;5.2;8.2;11.1}}&quot; _
+		)
+	Run( _
+			&quot;Multi-variate Linear Regression: named predictors with interactions&quot;, _
+			&quot;MLR(X;Y;True;&apos;Height:Width;Height:Height&apos;;&apos;Height;Width&apos;)&quot;, _
+			&quot;{{2.0875 + 2.08*Height -2.1075*Width -0.37*Height*Height + 0.7575*Height*Width};{0.9638;0.9155}}&quot;, _
+			&quot;X={{1;1};{2;2};{3;3};{4;4};{5;1};{6;2};{7;3};{8;4}};Y={{2;4.1;5.8;7.8;5.5;5.2;8.2;11.1}}&quot; _
+		)
+	Run( _
+			&quot;Multi-variate Linear Regression: named predictors with interactions-2&quot;, _
+			&quot;MLR(X;Y;False;&apos;Height:Width;Height:Height&apos;;&apos;Height;Width&apos;)&quot;, _
+			&quot;{{{{2.0875};{2.08};{-2.1075};{-0.37};{0.7575}}};{0.9638;0.9155}}&quot;, _
+			&quot;X={{1;1};{2;2};{3;3};{4;4};{5;1};{6;2};{7;3};{8;4}};Y={{2;4.1;5.8;7.8;5.5;5.2;8.2;11.1}}&quot; _
+		)
+	Run( _
+			&quot;Variables overloading&quot;, _
+			&quot;SUM(C[0;0];C[1;1])&quot;, _
+			&quot;14&quot;, _
+			&quot;C = {{-1;13};{6;15}}&quot; _
+		)
+	VarOverload(&quot;Variables overloading: indirect assignment&quot;)
+	
+	SF_Exception.debugprint(&quot;Passed tests:&quot;,sAcum)	
+	SF_Exception.debugprint(&quot;Failed tests:&quot;,tTotal - sAcum)	
+	SF_Exception.debugprint(&quot;Passed tests Ratio:&quot;,Round(100*sAcum/tTotal,2) &amp;&quot;%&quot;)
+	SF_Exception.console()
+End Sub
+
+Private Sub Run(testName As String,expr As String, _
+				expect As String, Optional varval As String)
+    On Error GoTo TestFail
+    
+    tTotal=tTotal+1
+    actual = GetResult( _
+                        expr, varval _
+                        )
+    If expect &lt;&gt; actual Then 
+    	SF_Exception.debugprint(&quot;x Failed test &quot; &amp; testName, expect,&quot;&lt;&gt;&quot;,actual)
+    Else
+    	sAcum=sAcum+1
+    	SF_Exception.debugprint(&quot;+ Success test &quot; &amp; testName)
+    End If
+
+TestExit:
+    Exit Sub
+TestFail:
+    SF_Exception.debugprint(&quot;Test &quot; &amp; testName &amp; &quot; raised an error: #&quot; &amp; err.Number &amp; &quot; - &quot; &amp; err.Description)
+    Resume TestExit			
+End Sub
+
+Private Sub QRdec(testName As String)
+    On Error GoTo TestFail
+    Dim expect As String
+    Dim QRstr As String
+    Dim QRarr As Variant
+    Dim oHelper As Object 
+    
+    tTotal=tTotal+1
+    
+    QRstr = GetResult(&quot;QR({{12;-51;4};{6;167;-68};{-4;24;-41}})&quot;)
+    Set oHelper = New VBAexpressions
+    With oHelper
+        QRarr = .ArrayFromString2(QRstr)
+        actual = GetResult(&quot;MROUND(MMULT(A;B);0)&quot;, &quot;A=&quot; &amp; .ArrayToString(QRarr(0)) &amp; &quot;;&quot; &amp; &quot;B=&quot; &amp; .ArrayToString(QRarr(1)))
+    End With
+    Set oHelper = Nothing
+    expect = &quot;{{12;-51;4};{6;167;-68};{-4;24;-41}}&quot;
+    
+    If expect &lt;&gt; actual Then 
+    	SF_Exception.debugprint(&quot;x Failed test &quot; &amp; testName, expect,&quot;&lt;&gt;&quot;,actual)
+    Else
+    	sAcum=sAcum+1
+    	SF_Exception.debugprint(&quot;+ Success test &quot; &amp; testName)
+    End If
+
+TestExit:
+    Exit Sub
+TestFail:
+    SF_Exception.debugprint(&quot;Test &quot; &amp; testName &amp; &quot; raised an error: #&quot; &amp; err.Number &amp; &quot; - &quot; &amp; err.Description)
+    Resume TestExit			
+End Sub
+Private Sub VarOverload(testName As String)
+    On Error GoTo TestFail
+    Dim expect As String
+    
+    tTotal=tTotal+1
+    Set Evaluator = New VBAexpressions
+    With Evaluator
+        .Create &quot;GET(&apos;A&apos;;{{2;1;3};{3;-2;-1}}); GET(&apos;B&apos;;{{2;3};{1;-5};{-2;4}})&quot;: .Eval
+        .Create &quot;GET(&apos;C&apos;;MMULT(A;B))&quot;, False: .Eval
+        .Create &quot;ROUND(SUM(SIN(C[0;0]);SIN(C[1;1]));4)&quot;, False: .Eval
+        actual = .Result
+    End With
+    expect = &quot;-0.1912&quot;
+    
+    If expect &lt;&gt; actual Then 
+    	SF_Exception.debugprint(&quot;x Failed test &quot; &amp; testName, expect,&quot;&lt;&gt;&quot;,actual)
+    Else
+    	sAcum=sAcum+1
+    	SF_Exception.debugprint(&quot;+ Success test &quot; &amp; testName)
+    End If
+
+TestExit:
+    Exit Sub
+TestFail:
+    SF_Exception.debugprint(&quot;Test &quot; &amp; testName &amp; &quot; raised an error: #&quot; &amp; err.Number &amp; &quot; - &quot; &amp; err.Description)
+    Resume TestExit			
+End Sub
+Private Sub ArrayConstructorsAndParsers(testName As String)
+    On Error GoTo TestFail
+    Dim expect As String
+    Dim jaggedArr() As Variant
+    
+    tTotal=tTotal+1
+    Set Evaluator = New VBAexpressions
+    With Evaluator
+        jaggedArr() = .ArrayFromString2(&quot;{{1;0;4};{{1;1;6};{2;3}};{3};{2;5}}&quot;)
+        actual = .ArrayToString(jaggedArr)
+    End With
+    expect = &quot;{{1;0;4};{{1;1;6};{2;3}};{3};{2;5}}&quot;
+    
+    If expect &lt;&gt; actual Then 
+    	SF_Exception.debugprint(&quot;x Failed test &quot; &amp; testName, expect,&quot;&lt;&gt;&quot;,actual)
+    Else
+    	sAcum=sAcum+1
+    	SF_Exception.debugprint(&quot;+ Success test &quot; &amp; testName)
+    End If
+
+TestExit:
+    Exit Sub
+TestFail:
+    SF_Exception.debugprint(&quot;Test &quot; &amp; testName &amp; &quot; raised an error: #&quot; &amp; err.Number &amp; &quot; - &quot; &amp; err.Description)
+    Resume TestExit			
+End Sub
+</script:module>
