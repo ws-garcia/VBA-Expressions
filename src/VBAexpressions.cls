@@ -515,11 +515,11 @@ End Property
 ''' <summary>
 '''     Gets the result for latest evaluated expression.
 ''' </summary>
-Public Property Get result() As String
+Public Property Get Result() As String
     If P_FORMATRESULT Then
-        result = FormatLiteralString(CStr(P_RESULT), True)
+        Result = FormatLiteralString(CStr(P_RESULT), True)
     Else
-        result = P_RESULT
+        Result = P_RESULT
     End If
 End Property
 
@@ -2898,7 +2898,7 @@ Private Function EvalFunction(ByRef Argument As String, ByRef FunctionName As St
             Case "Sine"
                 EvalFunction = Sine(Argument, FunctionName)
             Case "SolveLinearSystem"
-                EvalFunction = solve(Argument, FunctionName)
+                EvalFunction = Solve(Argument, FunctionName)
             Case "aSLN"
                 EvalFunction = SLN_(Argument, FunctionName)
             Case "SquareRoot"
@@ -3411,18 +3411,6 @@ err_Handler:
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
-Private Function fZero(ByRef aFunction As String, ByVal A As Double, _
-                        ByVal B As Double, Optional epsilon As Double = 0.0000000001, _
-                        Optional includeVarNames As Boolean = True, _
-                        Optional useBisectionMethod As Boolean = False, _
-                        Optional printDebugINFO As Boolean = False) As String
-    If Not useBisectionMethod Then
-        fZero = fZeroMRF(aFunction, A, B, epsilon, includeVarNames, printDebugINFO)
-    Else
-        fZero = fZeroMBM(aFunction, A, B, epsilon, includeVarNames, printDebugINFO)
-    End If
-End Function
-
 ''' <summary>
 '''     Finds a zero of a univariate function ussing a modified bisection method.
 '''     aFunction must be a continuous function f(x) for the interval a <= x <= b.
@@ -3430,13 +3418,11 @@ End Function
 ''' <param name="aFunction">Inline function.</param>
 ''' <param name="a">Leftmost interval value.</param>
 ''' <param name="b">Rightmost interval value.</param>
-''' <param name="epsilon">Tolerance (relative error limit).</param>
 ''' <param name="IncludeVarNames">Include variable name in result.</param>
-''' <param name="printDebugINFO">Print information like iteraction count.</param>
+''' <param name="epsilon">Tolerance (relative error limit).</param>
 Private Function fZeroMBM(ByRef aFunction As String, ByVal A As Double, _
-                        ByVal B As Double, Optional epsilon As Double = 0.0000000001, _
-                        Optional includeVarNames As Boolean = True, _
-                        Optional printDebugINFO As Boolean = False) As String
+                        ByVal B As Double, Optional includeVarNames As Boolean = True, _
+                        Optional epsilon As Double = 0.0000000001) As String
     Dim absFC As Double, absFD As Double
     Dim aZero As Double
     Dim c As Double, d As Double   'Intermediate points |a---:c:----:d:---b|
@@ -3528,7 +3514,7 @@ Private Function fZeroMBM(ByRef aFunction As String, ByVal A As Double, _
         .VarValue(tmpVar(varIdx)) = tmpResult
         If Round(tmpFzeroEval, Len(CStr(1 / aZero)) - 1) = 0 Then
             If includeVarNames Then
-                fZeroMBM = .CurrentVarValues
+                fZeroMBM = ToLiteralString(.CurrentVarValues)
             Else
                 fZeroMBM = tmpResult
             End If
@@ -3538,9 +3524,6 @@ Private Function fZeroMBM(ByRef aFunction As String, ByVal A As Double, _
     End With
 fZeroMBM_terminate:
     Set fEvalHelper = Nothing
-    If printDebugINFO Then
-        Debug.Print "fZeroMBM: " & vbCrLf & vbTab & vbTab & "Evaluations:"; evalCounter; "; Iteractions:"; k
-    End If
     Exit Function
 fZeroMBM_errHandler:
     fZeroMBM = e_ValueError
@@ -4819,7 +4802,7 @@ Private Function GoodnessOfFit_(ByRef Polynomial As String, ByRef ObserArray() A
         averageY = ColumnAvg(ObserArray, 1) 'Mean
         For i = 0 To n - 1
             .Eval "x=" & CStr(ObserArray(i, 0))
-            seSquare = seSquare + (ObserArray(i, 1) - CDbl(.result)) ^ 2 'Partial sum squared regression
+            seSquare = seSquare + (ObserArray(i, 1) - CDbl(.Result)) ^ 2 'Partial sum squared regression
             stSquare = stSquare + (averageY - ObserArray(i, 1)) ^ 2 'Partial total sum of squares
         Next i
         Rsquared = Round(1 - seSquare / stSquare, 4)
@@ -8037,7 +8020,7 @@ End Function
 '''     The program will iterate until the solution is approximated to 9
 ''' significant digits or until 500 iterations are completed, whichever comes first.
 ''' </summary>
-Private Function solve(ByRef expression As String, ByRef fName As String) As String
+Private Function Solve(ByRef expression As String, ByRef fName As String) As String
     Dim argsCount As Long
     Dim tmpData() As String
     Dim tmpEval As String
@@ -8097,10 +8080,10 @@ Private Function solve(ByRef expression As String, ByRef fName As String) As Str
             tmpEval = e_ValueError
               BuildErrMessage errMissingArgsOrTooManyArgs, d_lCurly & fName & d_rCurly
     End Select
-    solve = tmpEval: Erase tmpData
+    Solve = tmpEval: Erase tmpData
     Exit Function
 err_Handler:
-    solve = e_ValueError
+    Solve = e_ValueError
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
@@ -9088,7 +9071,7 @@ Private Function Zero(ByRef expression As String, ByRef fName As String) As Stri
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
