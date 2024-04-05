@@ -2723,218 +2723,112 @@ Private Function EvalFunction(ByRef Argument As String, ByRef FunctionName As St
     On Error GoTo EvalFunction_errHandler
     If Not IsUDF Then
         Select Case FunctionName
-            Case "Absolute"
-                EvalFunction = Absolute(Argument, FunctionName)
-            Case "ACHISQ"
-                EvalFunction = ACHISQ(Argument, FunctionName)
-            Case "AERF"
-                EvalFunction = AERF(Argument, FunctionName)
-            Case "AGAUSS"
-                EvalFunction = AGAUSS(Argument, FunctionName)
-            Case "AFISHF"
-                EvalFunction = AFISHF(Argument, FunctionName)
-            Case "ANORM"
-                EvalFunction = anorm(Argument, FunctionName)
-            Case "ArcSin"
-                EvalFunction = ArcSin(Argument, FunctionName)
-            Case "ArcCos"
-                EvalFunction = ArcCos(Argument, FunctionName)
-            Case "ArcTan"
-                EvalFunction = ArcTan(Argument, FunctionName)
-            Case "ASTUDT"
-                EvalFunction = ASTUDT(Argument, FunctionName)
-            Case "strArray"
-                EvalFunction = Array_(Argument, FunctionName)
-            Case "ASCII"
-                EvalFunction = Asc_(Argument, FunctionName)
-            Case "Average"
-                EvalFunction = average(Argument, FunctionName)
-            Case "BETAINV"
-                EvalFunction = BETAINV(Argument, FunctionName)
-            Case "Cosin"
-                EvalFunction = Cosin(Argument, FunctionName)
-            Case "CHISQ"
-                EvalFunction = CHISQ(Argument, FunctionName)
-            Case "CholeskyDec"
-                EvalFunction = CholeskyDecomposition(Argument, FunctionName)
-            Case "CholeskyInverseMatrix"
-                EvalFunction = CholeskyInverseMatrix(Argument, FunctionName)
-            Case "CholeskySolve"
-                EvalFunction = CholeskySolve(Argument, FunctionName)
-            Case "aChoose"
-                EvalFunction = Choose(Argument, FunctionName)
-            Case "ASCIIchr"
-                EvalFunction = Chr_(Argument, FunctionName)
-            Case "aCeiling"
-                EvalFunction = aCeiling(Argument, FunctionName)
-            Case "aDate"
-                EvalFunction = Date_(Argument, FunctionName)
-            Case "aDateAdd"
-                EvalFunction = DateAdd_(Argument, FunctionName)
-            Case "aDateDiff"
-                EvalFunction = DateDiff_(Argument, FunctionName)
-            Case "aDatePart"
-                EvalFunction = DatePart_(Argument, FunctionName)
-            Case "aDateSerial"
-                EvalFunction = DateSerial_(Argument, FunctionName)
-            Case "aDateValue"
-                EvalFunction = DateValue_(Argument, FunctionName)
-            Case "aDay"
-                EvalFunction = Day_(Argument, FunctionName)
-            Case "aDDB"
-                EvalFunction = DDB_(Argument, FunctionName)
-            Case "MatrixDeterminant"
-                EvalFunction = Determinant(Argument, FunctionName)
-            Case "ERF"
-                EvalFunction = ERF(Argument, FunctionName)
-            Case "ExpEuler"
-                EvalFunction = ExpEuler(Argument, FunctionName)
-            Case "FISHF"
-                EvalFunction = FISHF(Argument, FunctionName)
-            Case "CurveFit"
-                EvalFunction = Fit(Argument, FunctionName)
-            Case "aFloor"
-                EvalFunction = aFloor(Argument, FunctionName)
-            Case "aFormat"
-                EvalFunction = Format_(Argument, FunctionName)
-            Case "aFV"
-                EvalFunction = FV_(Argument, FunctionName)
-            Case "FunctionZero"
-                EvalFunction = Zero(Argument, FunctionName)
-            Case "Gamma"
-                EvalFunction = tGamma(Argument, FunctionName)
-            Case "GammaLN"
-                EvalFunction = GAMMALN(Argument, FunctionName)
-            Case "GAUSS"
-                EvalFunction = GAUSS(Argument, FunctionName)
-            Case "GET"
-                EvalFunction = GETS(Argument, FunctionName)
-            Case "aHour"
-                EvalFunction = Hour_(Argument, FunctionName)
-            Case "iBETA"
-                EvalFunction = iBETA(Argument, FunctionName)
-            Case "aIff"
-                EvalFunction = Iff_(Argument, FunctionName)
-            Case "InverseMatrix"
-                EvalFunction = InverseMatrix(Argument, FunctionName)
-            Case "aIPMT"
-                EvalFunction = IPMT_(Argument, FunctionName)
-            Case "aIRR"
-                EvalFunction = IRR_(Argument, FunctionName)
-            Case "aLeft"
-                EvalFunction = Left_(Argument, FunctionName)
-            Case "aLen"
-                EvalFunction = Len_(Argument, FunctionName)
-            Case "LowerCase"
-                EvalFunction = LCase_(Argument, FunctionName)
-            Case "Logarithm"
-                EvalFunction = Logarithm(Argument, FunctionName)
-            Case "LgN"
-                EvalFunction = LgN(Argument, FunctionName)
-            Case "LUdecomposition"
-                EvalFunction = LUdecomposition(Argument, FunctionName)
-            Case "LUSolveLinearSystem"
-                EvalFunction = LUsolve(Argument, FunctionName)
-            Case "LN"
-                EvalFunction = LN(Argument, FunctionName)
-            Case "LSQRsolve"
-                EvalFunction = LSQRsolve(Argument, FunctionName)
-            Case "Max"
-                EvalFunction = Max(Argument, FunctionName)
-            Case "Middle"
-                EvalFunction = Mid_(Argument, FunctionName)
-            Case "Min"
-                EvalFunction = Min(Argument, FunctionName)
-            Case "aMinute"
-                EvalFunction = Minute_(Argument, FunctionName)
-            Case "aMIRR"
-                EvalFunction = MIRR_(Argument, FunctionName)
-            Case "MatrixMult"
-                EvalFunction = MMult(Argument, FunctionName)
-            Case "MultiLinearReg"
-                EvalFunction = MLR(Argument, FunctionName)
-            Case "MatrixNegation"
-                EvalFunction = MNEG(Argument, FunctionName)
-            Case "MatrixRound"
-                EvalFunction = MROUND(Argument, FunctionName)
-            Case "MatrixSum"
-                EvalFunction = MSum(Argument, FunctionName)
-            Case "MatrixTranspose"
-                EvalFunction = MTranspose(Argument, FunctionName)
-            Case "aMonthName"
-                EvalFunction = MonthName_(Argument, FunctionName)
-            Case "aMonth"
-                EvalFunction = Month_(Argument, FunctionName)
-            Case "NORM"
-                EvalFunction = NORM(Argument, FunctionName)
-            Case "aNow"
-                EvalFunction = Now_(Argument, FunctionName)
-            Case "aNPER"
-                EvalFunction = NPER_(Argument, FunctionName)
-            Case "aNPV"
-                EvalFunction = NPV_(Argument, FunctionName)
-            Case "Percent"
-                EvalFunction = Percent(Argument, FunctionName)
-            Case "aPMT"
-                EvalFunction = PMT_(Argument, FunctionName)
-            Case "aPPMT"
-                EvalFunction = PPMT_(Argument, FunctionName)
-            Case "Power"
-                EvalFunction = Power(Argument, FunctionName)
-            Case "aPV"
-                EvalFunction = PV_(Argument, FunctionName)
-            Case "QRdecomposition"
-                EvalFunction = QRdec(Argument, FunctionName)
-            Case "aRATE"
-                EvalFunction = RATE_(Argument, FunctionName)
-            Case "REM"
-                EvalFunction = aREM(Argument, FunctionName)
-            Case "aReplace"
-                EvalFunction = Replace_(Argument, FunctionName)
-            Case "aRight"
-                EvalFunction = Right_(Argument, FunctionName)
-            Case "ROUND"
-                EvalFunction = aROUND(Argument, FunctionName)
-            Case "Sign"
-                EvalFunction = Sign(Argument, FunctionName)
-            Case "Sine"
-                EvalFunction = Sine(Argument, FunctionName)
-            Case "SolveLinearSystem"
-                EvalFunction = Solve(Argument, FunctionName)
-            Case "aSLN"
-                EvalFunction = SLN_(Argument, FunctionName)
-            Case "SquareRoot"
-                EvalFunction = SquareRoot(Argument, FunctionName)
-            Case "SUM"
-                EvalFunction = SUM(Argument, FunctionName)
-            Case "Tangent"
-                EvalFunction = Tangent(Argument, FunctionName)
-            Case "STUDT"
-                EvalFunction = STUDT(Argument, FunctionName)
-            Case "aSwitch"
-                EvalFunction = Switch_(Argument, FunctionName)
-            Case "aSYD"
-                EvalFunction = SYD_(Argument, FunctionName)
-            Case "aTimeSerial"
-                EvalFunction = TimeSerial_(Argument, FunctionName)
-            Case "aTimeValue"
-                EvalFunction = TimeValue_(Argument, FunctionName)
-            Case "TINV"
-                EvalFunction = TINV(Argument, FunctionName)
-            Case "TINV_1T"
-                EvalFunction = TINV_1T(Argument, FunctionName)
-            Case "TINV_2T"
-                EvalFunction = TINV_2T(Argument, FunctionName)
-            Case "aTrim"
-                EvalFunction = Trim_(Argument, FunctionName)
-            Case "aUcase"
-                EvalFunction = UCase_(Argument, FunctionName)
-            Case "aWweekDay"
-                EvalFunction = WeekDay_(Argument, FunctionName)
-            Case "aWeekDayName"
-                EvalFunction = WeekDayName_(Argument, FunctionName)
-            Case "aYear"
-                EvalFunction = Year_(Argument, FunctionName)
+            Case "Absolute": EvalFunction = Absolute(Argument, FunctionName)
+            Case "ACHISQ": EvalFunction = ACHISQ(Argument, FunctionName)
+            Case "AERF": EvalFunction = AERF(Argument, FunctionName)
+            Case "AGAUSS": EvalFunction = AGAUSS(Argument, FunctionName)
+            Case "AFISHF": EvalFunction = AFISHF(Argument, FunctionName)
+            Case "ANORM": EvalFunction = anorm(Argument, FunctionName)
+            Case "ArcSin": EvalFunction = ArcSin(Argument, FunctionName)
+            Case "ArcCos": EvalFunction = ArcCos(Argument, FunctionName)
+            Case "ArcTan": EvalFunction = ArcTan(Argument, FunctionName)
+            Case "ASTUDT": EvalFunction = ASTUDT(Argument, FunctionName)
+            Case "strArray": EvalFunction = Array_(Argument, FunctionName)
+            Case "ASCII": EvalFunction = Asc_(Argument, FunctionName)
+            Case "Average": EvalFunction = average(Argument, FunctionName)
+            Case "BETAINV": EvalFunction = BETAINV(Argument, FunctionName)
+            Case "Cosin": EvalFunction = Cosin(Argument, FunctionName)
+            Case "CHISQ": EvalFunction = CHISQ(Argument, FunctionName)
+            Case "CholeskyDec": EvalFunction = CholeskyDecomposition(Argument, FunctionName)
+            Case "CholeskyInverseMatrix": EvalFunction = CholeskyInverseMatrix(Argument, FunctionName)
+            Case "CholeskySolve": EvalFunction = CholeskySolve(Argument, FunctionName)
+            Case "aChoose": EvalFunction = Choose(Argument, FunctionName)
+            Case "ASCIIchr": EvalFunction = Chr_(Argument, FunctionName)
+            Case "aCeiling": EvalFunction = aCeiling(Argument, FunctionName)
+            Case "aDate": EvalFunction = Date_(Argument, FunctionName)
+            Case "aDateAdd": EvalFunction = DateAdd_(Argument, FunctionName)
+            Case "aDateDiff":  EvalFunction = DateDiff_(Argument, FunctionName)
+            Case "aDatePart": EvalFunction = DatePart_(Argument, FunctionName)
+            Case "aDateSerial": EvalFunction = DateSerial_(Argument, FunctionName)
+            Case "aDateValue": EvalFunction = DateValue_(Argument, FunctionName)
+            Case "aDay":  EvalFunction = Day_(Argument, FunctionName)
+            Case "aDDB": EvalFunction = DDB_(Argument, FunctionName)
+            Case "MatrixDeterminant": EvalFunction = Determinant(Argument, FunctionName)
+            Case "ERF": EvalFunction = ERF(Argument, FunctionName)
+            Case "ExpEuler": EvalFunction = ExpEuler(Argument, FunctionName)
+            Case "FISHF": EvalFunction = FISHF(Argument, FunctionName)
+            Case "CurveFit": EvalFunction = Fit(Argument, FunctionName)
+            Case "aFloor": EvalFunction = aFloor(Argument, FunctionName)
+            Case "aFormat": EvalFunction = Format_(Argument, FunctionName)
+            Case "aFV": EvalFunction = FV_(Argument, FunctionName)
+            Case "FunctionZero": EvalFunction = Zero(Argument, FunctionName)
+            Case "Gamma": EvalFunction = tGamma(Argument, FunctionName)
+            Case "GammaLN": EvalFunction = GAMMALN(Argument, FunctionName)
+            Case "GAUSS": EvalFunction = GAUSS(Argument, FunctionName)
+            Case "GET": EvalFunction = GETS(Argument, FunctionName)
+            Case "aHour": EvalFunction = Hour_(Argument, FunctionName)
+            Case "iBETA": EvalFunction = iBETA(Argument, FunctionName)
+            Case "aIff": EvalFunction = Iff_(Argument, FunctionName)
+            Case "InverseMatrix": EvalFunction = InverseMatrix(Argument, FunctionName)
+            Case "aIPMT": EvalFunction = IPMT_(Argument, FunctionName)
+            Case "aIRR": EvalFunction = IRR_(Argument, FunctionName)
+            Case "aLeft":  EvalFunction = Left_(Argument, FunctionName)
+            Case "aLen": EvalFunction = Len_(Argument, FunctionName)
+            Case "LowerCase": EvalFunction = LCase_(Argument, FunctionName)
+            Case "Logarithm": EvalFunction = Logarithm(Argument, FunctionName)
+            Case "LgN": EvalFunction = LgN(Argument, FunctionName)
+            Case "LUdecomposition": EvalFunction = LUdecomposition(Argument, FunctionName)
+            Case "LUSolveLinearSystem": EvalFunction = LUsolve(Argument, FunctionName)
+            Case "LN": EvalFunction = LN(Argument, FunctionName)
+            Case "LSQRsolve": EvalFunction = LSQRsolve(Argument, FunctionName)
+            Case "Max": EvalFunction = Max(Argument, FunctionName)
+            Case "Middle": EvalFunction = Mid_(Argument, FunctionName)
+            Case "Min": EvalFunction = Min(Argument, FunctionName)
+            Case "aMinute": EvalFunction = Minute_(Argument, FunctionName)
+            Case "aMIRR": EvalFunction = MIRR_(Argument, FunctionName)
+            Case "MatrixMult": EvalFunction = MMult(Argument, FunctionName)
+            Case "MultiLinearReg": EvalFunction = MLR(Argument, FunctionName)
+            Case "MatrixNegation": EvalFunction = MNEG(Argument, FunctionName)
+            Case "MatrixRound": EvalFunction = MROUND(Argument, FunctionName)
+            Case "MatrixSum": EvalFunction = MSum(Argument, FunctionName)
+            Case "MatrixTranspose": EvalFunction = MTranspose(Argument, FunctionName)
+            Case "aMonthName":  EvalFunction = MonthName_(Argument, FunctionName)
+            Case "aMonth": EvalFunction = Month_(Argument, FunctionName)
+            Case "NORM": EvalFunction = NORM(Argument, FunctionName)
+            Case "aNow": EvalFunction = Now_(Argument, FunctionName)
+            Case "aNPER": EvalFunction = NPER_(Argument, FunctionName)
+            Case "aNPV": EvalFunction = NPV_(Argument, FunctionName)
+            Case "Percent": EvalFunction = Percent(Argument, FunctionName)
+            Case "aPMT": EvalFunction = PMT_(Argument, FunctionName)
+            Case "aPPMT": EvalFunction = PPMT_(Argument, FunctionName)
+            Case "Power": EvalFunction = Power(Argument, FunctionName)
+            Case "aPV": EvalFunction = PV_(Argument, FunctionName)
+            Case "QRdecomposition": EvalFunction = QRdec(Argument, FunctionName)
+            Case "aRATE": EvalFunction = RATE_(Argument, FunctionName)
+            Case "REM": EvalFunction = aREM(Argument, FunctionName)
+            Case "aReplace": EvalFunction = Replace_(Argument, FunctionName)
+            Case "aRight": EvalFunction = Right_(Argument, FunctionName)
+            Case "ROUND": EvalFunction = aROUND(Argument, FunctionName)
+            Case "Sign": EvalFunction = Sign(Argument, FunctionName)
+            Case "Sine": EvalFunction = Sine(Argument, FunctionName)
+            Case "SolveLinearSystem": EvalFunction = Solve(Argument, FunctionName)
+            Case "aSLN": EvalFunction = SLN_(Argument, FunctionName)
+            Case "SquareRoot": EvalFunction = SquareRoot(Argument, FunctionName)
+            Case "SUM": EvalFunction = SUM(Argument, FunctionName)
+            Case "Tangent": EvalFunction = Tangent(Argument, FunctionName)
+            Case "STUDT": EvalFunction = STUDT(Argument, FunctionName)
+            Case "aSwitch": EvalFunction = Switch_(Argument, FunctionName)
+            Case "aSYD": EvalFunction = SYD_(Argument, FunctionName)
+            Case "aTimeSerial": EvalFunction = TimeSerial_(Argument, FunctionName)
+            Case "aTimeValue": EvalFunction = TimeValue_(Argument, FunctionName)
+            Case "TINV": EvalFunction = TINV(Argument, FunctionName)
+            Case "TINV_1T": EvalFunction = TINV_1T(Argument, FunctionName)
+            Case "TINV_2T": EvalFunction = TINV_2T(Argument, FunctionName)
+            Case "aTrim": EvalFunction = Trim_(Argument, FunctionName)
+            Case "aUcase": EvalFunction = UCase_(Argument, FunctionName)
+            Case "aWweekDay": EvalFunction = WeekDay_(Argument, FunctionName)
+            Case "aWeekDayName": EvalFunction = WeekDayName_(Argument, FunctionName)
+            Case "aYear": EvalFunction = Year_(Argument, FunctionName)
             Case Else 'Try to overload variable
                 EvalFunction = OverLoadVarName(Argument, FunctionName)
         End Select
@@ -4265,40 +4159,23 @@ End Function
 ''' </summary>
 Private Function GetOpSymbol(ByRef OPtoken As OperatorToken) As String
     Select Case OPtoken
-        Case OperatorToken.otSum
-            GetOpSymbol = op_plus
-        Case OperatorToken.otDiff
-            GetOpSymbol = op_minus
-        Case OperatorToken.otMultiplication
-            GetOpSymbol = op_mult
-        Case OperatorToken.otDivision
-            GetOpSymbol = op_div
-        Case OperatorToken.otIntDiv
-            GetOpSymbol = op_intDiv
-        Case OperatorToken.otMod
-            GetOpSymbol = op_mod
-        Case OperatorToken.otPower
-            GetOpSymbol = op_power
-        Case OperatorToken.otEqual
-            GetOpSymbol = op_equal
-        Case OperatorToken.otNotEqual
-            GetOpSymbol = op_inequality
-        Case OperatorToken.otGreaterThan
-            GetOpSymbol = op_gt
-        Case OperatorToken.otLessThan
-            GetOpSymbol = op_lt
-        Case OperatorToken.otGreaterThanOrEqual
-            GetOpSymbol = op_gtequal
-        Case OperatorToken.otLessThanOrEqual
-            GetOpSymbol = op_ltequal
-        Case OperatorToken.otLike
-            GetOpSymbol = op_like
-        Case OperatorToken.otLogicalAND
-            GetOpSymbol = op_and
-        Case OperatorToken.otLogicalOR
-            GetOpSymbol = op_or
-        Case OperatorToken.otLogicalXOR
-            GetOpSymbol = op_xor
+        Case OperatorToken.otSum: GetOpSymbol = op_plus
+        Case OperatorToken.otDiff: GetOpSymbol = op_minus
+        Case OperatorToken.otMultiplication: GetOpSymbol = op_mult
+        Case OperatorToken.otDivision: GetOpSymbol = op_div
+        Case OperatorToken.otIntDiv: GetOpSymbol = op_intDiv
+        Case OperatorToken.otMod: GetOpSymbol = op_mod
+        Case OperatorToken.otPower: GetOpSymbol = op_power
+        Case OperatorToken.otEqual: GetOpSymbol = op_equal
+        Case OperatorToken.otNotEqual: GetOpSymbol = op_inequality
+        Case OperatorToken.otGreaterThan: GetOpSymbol = op_gt
+        Case OperatorToken.otLessThan: GetOpSymbol = op_lt
+        Case OperatorToken.otGreaterThanOrEqual: GetOpSymbol = op_gtequal
+        Case OperatorToken.otLessThanOrEqual: GetOpSymbol = op_ltequal
+        Case OperatorToken.otLike: GetOpSymbol = op_like
+        Case OperatorToken.otLogicalAND: GetOpSymbol = op_and
+        Case OperatorToken.otLogicalOR: GetOpSymbol = op_or
+        Case OperatorToken.otLogicalXOR: GetOpSymbol = op_xor
     End Select
 End Function
 
