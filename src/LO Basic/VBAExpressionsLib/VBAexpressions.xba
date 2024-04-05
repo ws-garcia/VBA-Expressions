@@ -3399,18 +3399,6 @@ err_Handler:
                                     d_lParenthesis &amp; err.Description &amp; d_rParenthesis
 End Function
 
-Private Function fZero(ByRef aFunction As String, ByVal A As Double, _
-                        ByVal B As Double, Optional epsilon As Double = 0.0000000001, _
-                        Optional includeVarNames As Boolean = True, _
-                        Optional useBisectionMethod As Boolean = False, _
-                        Optional printDebugINFO As Boolean = False) As String
-    If Not useBisectionMethod Then
-        fZero = fZeroMRF(aFunction, A, B, epsilon, includeVarNames, printDebugINFO)
-    Else
-        fZero = fZeroMBM(aFunction, A, B, epsilon, includeVarNames, printDebugINFO)
-    End If
-End Function
-
 &apos;&apos;&apos; &lt;summary&gt;
 &apos;&apos;&apos;     Finds a zero of a univariate function ussing a modified bisection method.
 &apos;&apos;&apos;     aFunction must be a continuous function f(x) for the interval a &lt;= x &lt;= b.
@@ -3418,13 +3406,11 @@ End Function
 &apos;&apos;&apos; &lt;param name=&quot;aFunction&quot;&gt;Inline function.&lt;/param&gt;
 &apos;&apos;&apos; &lt;param name=&quot;a&quot;&gt;Leftmost interval value.&lt;/param&gt;
 &apos;&apos;&apos; &lt;param name=&quot;b&quot;&gt;Rightmost interval value.&lt;/param&gt;
-&apos;&apos;&apos; &lt;param name=&quot;epsilon&quot;&gt;Tolerance (relative error limit).&lt;/param&gt;
 &apos;&apos;&apos; &lt;param name=&quot;IncludeVarNames&quot;&gt;Include variable name in result.&lt;/param&gt;
-&apos;&apos;&apos; &lt;param name=&quot;printDebugINFO&quot;&gt;Print information like iteraction count.&lt;/param&gt;
+&apos;&apos;&apos; &lt;param name=&quot;epsilon&quot;&gt;Tolerance (relative error limit).&lt;/param&gt;
 Private Function fZeroMBM(ByRef aFunction As String, ByVal A As Double, _
-                        ByVal B As Double, Optional epsilon As Double = 0.0000000001, _
-                        Optional includeVarNames As Boolean = True, _
-                        Optional printDebugINFO As Boolean = False) As String
+                        ByVal B As Double, Optional includeVarNames As Boolean = True, _
+                        Optional epsilon As Double = 0.0000000001) As String
     Dim absFC As Double, absFD As Double
     Dim aZero As Double
     Dim c As Double, d As Double   &apos;Intermediate points |a---:c:----:d:---b|
@@ -3516,7 +3502,7 @@ Private Function fZeroMBM(ByRef aFunction As String, ByVal A As Double, _
         .LetVarValue(tmpVar(varIdx), tmpResult)
         If Round(tmpFzeroEval, Len(CStr(1 / aZero)) - 1) = 0 Then
             If includeVarNames Then
-                fZeroMBM = .CurrentVarValues
+                fZeroMBM = ToLiteralString(.CurrentVarValues)
             Else
                 fZeroMBM = tmpResult
             End If
@@ -3526,9 +3512,6 @@ Private Function fZeroMBM(ByRef aFunction As String, ByVal A As Double, _
     End With
 fZeroMBM_terminate:
     Set fEvalHelper = Nothing
-    If printDebugINFO Then
-        &apos;Debug.Print &quot;fZeroMBM: &quot; &amp; vbCrLf &amp; vbTab &amp; vbTab &amp; &quot;Evaluations:&quot;; evalCounter; &quot;; Iteractions:&quot;; k
-    End If
     Exit Function
 fZeroMBM_errHandler:
     fZeroMBM = e_ValueError
