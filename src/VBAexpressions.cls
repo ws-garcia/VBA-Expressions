@@ -2238,6 +2238,8 @@ Public Function Create(ByRef aExpression As Variant, Optional resetScope As Bool
             P_EXPRESSION = aExpression
             If resetScope Then
                 VariablesInit ExprToEval
+            Else
+                ParseVariables ExprToEval
             End If
             ExprToEval = SBracketsNotationToNominal(ExprToEval)
             Parse ExprToEval

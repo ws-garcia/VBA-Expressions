@@ -173,7 +173,7 @@ Private P_ENFORCE_BOOLEAN As Boolean
 Private P_FORMATRESULT As Boolean
 Private P_GALLOPING_MODE As Boolean
 Private P_RESULT As Variant
-Private P_SCOPE As Object
+Private P_SCOPE As VBAexpressionsScope
 Private P_SEPARATORCHAR As String
 Private SubTreeData As Variant&apos;() As String
 Private UserDefFunctions As ClusterBuffer
@@ -446,10 +446,8 @@ Public Property Get EvalScope() As Object
     Set EvalScope = P_SCOPE
 End Property
 
-Public Property Set EvalScope(aObject As Object)
-    If VarType(VBAexpressionsScope) = &quot;VBAexpressionsScope&quot; Then
-        Set P_SCOPE = aObject
-	End If
+Public Property Set EvalScope(aObject As VBAexpressionsScope)
+    Set P_SCOPE = aObject
 End Property
 
 &apos;&apos;&apos; &lt;summary&gt;
@@ -2218,6 +2216,8 @@ Public Function Create(ByRef aExpression As Variant, Optional resetScope As Bool
             P_EXPRESSION = aExpression
             If resetScope Then
                 VariablesInit ExprToEval
+            Else
+            	ParseVariables ExprToEval
             End If
             ExprToEval = SBracketsNotationToNominal(ExprToEval)
             Parse ExprToEval
