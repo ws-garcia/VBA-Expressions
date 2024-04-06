@@ -4988,11 +4988,11 @@ Private Function IRR_(ByRef expression As String, ByRef fName As String) As Stri
     Select Case argsCount
         Case 1, 2
             'Attempt to arrive at a positive IRR solution.
-            tmpEval = fZeroMBM(DefineIRRfunction(strArray), -0.2, 0.99, 0.00001, False)
+            tmpEval = fZeroMBM(DefineIRRfunction(strArray), -0.2, 0.99, False, 0.00001)
             If argsCount = 2 Then
                 If CBool(tmpData(UB)) Then
                     If tmpEval = e_ValueError Then 'Positive IRR not found
-                        tmpEval = fZeroMBM(DefineIRRfunction(strArray), -0.99, -0.19, 0.00001, False)
+                        tmpEval = fZeroMBM(DefineIRRfunction(strArray), -0.99, -0.19, False, 0.00001)
                     End If
                 End If
             End If
