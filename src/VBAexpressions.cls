@@ -616,7 +616,7 @@ Private Function ACHISQ(ByRef expression As String, ByRef fName As String) As St
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -750,7 +750,7 @@ Private Function AERF(ByRef expression As String, ByRef fName As String) As Stri
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -789,7 +789,7 @@ Private Function AFISHF(ByRef expression As String, ByRef fName As String) As St
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -849,7 +849,7 @@ Private Function AGAUSS(ByRef expression As String, ByRef fName As String) As St
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -890,7 +890,7 @@ Private Function anorm(ByRef expression As String, ByRef fName As String) As Str
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -1029,7 +1029,7 @@ Private Function aREM(ByRef expression As String, ByRef fName As String) As Stri
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -1058,7 +1058,7 @@ Private Function aROUND(ByRef expression As String, ByRef fName As String) As St
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -1363,7 +1363,7 @@ Private Function ASTUDT(ByRef expression As String, ByRef fName As String) As St
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -1407,7 +1407,7 @@ Private Function average(ByRef expression As String, ByRef fName As String) As S
     
     On Error GoTo err_Handler
     tmpEval = 0
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     For g = LBound(tmpData) To UBound(tmpData)
         tmpEval = tmpEval + CDbl(tmpData(g))
     Next g
@@ -1478,7 +1478,7 @@ Private Function BETAINV(ByRef expression As String, ByRef fName As String) As S
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -1757,7 +1757,7 @@ Private Function CHISQ(ByRef expression As String, ByRef fName As String) As Str
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -2105,7 +2105,7 @@ Private Function Choose(ByRef expression As String, ByRef fName As String) As St
     Dim index As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     index = Fix(CDbl(tmpData(LB))) + LB
@@ -2315,7 +2315,7 @@ Private Function DateAdd_(ByRef expression As String, ByRef fName As String) As 
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -2345,7 +2345,7 @@ Private Function DateDiff_(ByRef expression As String, ByRef fName As String) As
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -2390,7 +2390,7 @@ Private Function DatePart_(ByRef expression As String, ByRef fName As String) As
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -2432,7 +2432,7 @@ Private Function DateSerial_(ByRef expression As String, ByRef fName As String) 
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -2462,7 +2462,7 @@ Private Function DateValue_(ByRef expression As String, ByRef fName As String) A
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -2502,7 +2502,7 @@ Private Function Day_(ByRef expression As String, ByRef fName As String) As Stri
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -2530,7 +2530,7 @@ Private Function DDB_(ByRef expression As String, ByRef fName As String) As Stri
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -2654,7 +2654,7 @@ Private Function ERF(ByRef expression As String, ByRef fName As String) As Strin
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -2958,7 +2958,7 @@ Private Function FISHF(ByRef expression As String, ByRef fName As String) As Str
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -3225,7 +3225,7 @@ Private Function Format_(ByRef expression As String, ByRef fName As String) As S
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -3275,7 +3275,7 @@ Private Function FV_(ByRef expression As String, ByRef fName As String) As Strin
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -3593,7 +3593,7 @@ Private Function GAUSS(ByRef expression As String, ByRef fName As String) As Str
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -4697,7 +4697,7 @@ Private Function Hour_(ByRef expression As String, ByRef fName As String) As Str
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -4734,7 +4734,7 @@ Private Function iBETA(ByRef expression As String, ByRef fName As String) As Str
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -4846,7 +4846,7 @@ Private Function Iff_(ByRef expression As String, ByRef fName As String) As Stri
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -4937,7 +4937,7 @@ Private Function IPMT_(ByRef expression As String, ByRef fName As String) As Str
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -5249,7 +5249,7 @@ Private Function Left_(ByRef expression As String, ByRef fName As String) As Str
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -5299,7 +5299,7 @@ Private Function LgN(ByRef expression As String, ByRef fName As String) As Strin
     
     On Error GoTo err_Handler
     tmpEval = 0
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     If UB - LB = 1 Then
@@ -5644,7 +5644,7 @@ Private Function Max(ByRef expression As String, ByRef fName As String) As Strin
     Dim compEval As Double
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     tmpEval = CDbl(tmpData(LBound(tmpData)))
     For g = LBound(tmpData) + 1 To UBound(tmpData)
         compEval = CDbl(tmpData(g))
@@ -5681,7 +5681,7 @@ Private Function Mid_(ByRef expression As String, ByRef fName As String) As Stri
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -5720,7 +5720,7 @@ Private Function Min(ByRef expression As String, ByRef fName As String) As Strin
     Dim compEval As Double
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     tmpEval = CDbl(tmpData(LBound(tmpData)))
     For g = LBound(tmpData) + 1 To UBound(tmpData)
         compEval = CDbl(tmpData(g))
@@ -5768,7 +5768,7 @@ Private Function Minute_(ByRef expression As String, ByRef fName As String) As S
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -6239,7 +6239,7 @@ Private Function MonthName_(ByRef expression As String, ByRef fName As String) A
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -6272,7 +6272,7 @@ Private Function Month_(ByRef expression As String, ByRef fName As String) As St
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -6622,7 +6622,7 @@ Private Function NORM(ByRef expression As String, ByRef fName As String) As Stri
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -6676,7 +6676,7 @@ Private Function NPER_(ByRef expression As String, ByRef fName As String) As Str
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -6769,7 +6769,7 @@ Private Function OverLoadVarName(ByRef expression As String, ByRef fName As Stri
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR) 'Expected simple integers list
+    tmpData() = SplitArgs(expression) 'Expected simple integers list
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -6960,7 +6960,7 @@ Private Function PMT_(ByRef expression As String, ByRef fName As String) As Stri
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -7077,7 +7077,7 @@ Private Function Power(ByRef expression As String, ByRef fName As String) As Str
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     If UB - LB = 1 Then
@@ -7102,7 +7102,7 @@ Private Function PPMT_(ByRef expression As String, ByRef fName As String) As Str
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -7148,7 +7148,7 @@ Private Function PV_(ByRef expression As String, ByRef fName As String) As Strin
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -7443,7 +7443,7 @@ Private Function RATE_(ByRef expression As String, ByRef fName As String) As Str
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -7634,7 +7634,7 @@ Private Function Replace_(ByRef expression As String, ByRef fName As String) As 
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -7713,7 +7713,7 @@ Private Function Right_(ByRef expression As String, ByRef fName As String) As St
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -7862,7 +7862,7 @@ Private Function SLN_(ByRef expression As String, ByRef fName As String) As Stri
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -8156,7 +8156,7 @@ Private Function STUDT(ByRef expression As String, ByRef fName As String) As Str
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -8294,7 +8294,7 @@ Private Function SUM(ByRef expression As String, ByRef fName As String) As Strin
     
     On Error GoTo err_Handler
     tmpEval = 0
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     For g = LBound(tmpData) To UBound(tmpData)
         tmpEval = tmpEval + CDbl(tmpData(g))
     Next g
@@ -8314,7 +8314,7 @@ Private Function Switch_(ByRef expression As String, ByRef fName As String) As S
     Dim tmpEval As Boolean
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -8350,7 +8350,7 @@ Private Function SYD_(ByRef expression As String, ByRef fName As String) As Stri
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -8405,7 +8405,7 @@ Private Function TimeSerial_(ByRef expression As String, ByRef fName As String) 
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -8435,7 +8435,7 @@ Private Function TimeValue_(ByRef expression As String, ByRef fName As String) A
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -8473,7 +8473,7 @@ Private Function TINV(ByRef expression As String, ByRef fName As String) As Stri
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -8528,7 +8528,7 @@ Private Function TINV_1T(ByRef expression As String, ByRef fName As String) As S
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -8576,7 +8576,7 @@ Private Function TINV_2T(ByRef expression As String, ByRef fName As String) As S
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -8659,7 +8659,7 @@ Private Sub TokenizeSubExpr(ByRef expression As String, ByRef SubExpressionsData
                 GetRootedTree ExpCopy, tmpReplacement, OperationIndex, outBuffer
                 outBuffer.CompCluster = False
             Case Else 'Composite function argument
-                tmpArgs() = Split(ExpCopy, P_SEPARATORCHAR)
+                tmpArgs() = SplitArgs(ExpCopy)
                 For taIcounter = LBound(tmpArgs) To UBound(tmpArgs)
                     GetRootedTree tmpArgs(taIcounter), tmpReplacement, OperationIndex, outBuffer
                     AddToMap outBuffer.index, outBuffer
@@ -8850,7 +8850,7 @@ Private Function WeekDayName_(ByRef expression As String, ByRef fName As String)
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -8889,7 +8889,7 @@ Private Function WeekDay_(ByRef expression As String, ByRef fName As String) As 
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
@@ -8922,7 +8922,7 @@ Private Function Year_(ByRef expression As String, ByRef fName As String) As Str
     Dim LB As Long, UB As Long
     
     On Error GoTo err_Handler
-    tmpData() = Split(expression, P_SEPARATORCHAR)
+    tmpData() = SplitArgs(expression)
     LB = LBound(tmpData)
     UB = UBound(tmpData)
     argsCount = UB - LB + 1
