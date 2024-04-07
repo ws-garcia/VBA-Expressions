@@ -2171,7 +2171,7 @@ Private Function Compute() As String
             If Not EvalTree(B).CompArrCluster Then   &apos;Function Argument
                 EvalTree(B).EvalResult = Join$(tmpResult, P_SEPARATORCHAR)
             Else        &apos;Array function Argument
-                EvalTree(B).EvalResult = JoinArrFunctArg(tmpResult, EvalTree(B).ClusterArrBounds(0), EvalTree(B).ClusterArrBounds(1))
+                EvalTree(B).EvalResult = JoinArrFunctArg(tmpResult, EvalTree(B).ClusterArrBounds)
             End If
         End If
     Next B
@@ -2959,6 +2959,22 @@ Private Sub ExpandCBbuffer(ByRef aBuffer As ClusterBuffer)
     aBuffer.Storage = tmpBuffer
 End Sub
 
+Private Sub ExpandCompositeArg(ByRef outBuffer As ClusterTree, ByRef tmpReplacement As String, _
+                            ByRef ExpCopy As String, ByRef tmpArgs() As String, _
+                            ByRef taIcounter As Long, ByRef OperationIndex As Long)
+    outBuffer.ClusterArrBounds = SplitArrBranch(ExpCopy, tmpArgs)
+    If outBuffer.ClusterArrBounds(0) &lt;&gt; -1 Then  &apos;Splitting argument success
+        For taIcounter = LBound(tmpArgs) To UBound(tmpArgs)
+            GetRootedTree tmpArgs(taIcounter), tmpReplacement, OperationIndex, outBuffer
+            AddToMap outBuffer.aindex, outBuffer
+        Next taIcounter
+        outBuffer.CompCluster = True
+        outBuffer.CompArrCluster = True
+    Else
+        &apos;Todo: Code here for trap error of missing {} in a composite array input
+    End If
+End Sub
+
 Private Function ExpEuler(ByRef expression As String, ByRef fName As String) As String
     On Error GoTo err_Handler
     ExpEuler = CStr(Exp(CDbl(expression)))
@@ -3198,10 +3214,12 @@ End Function
 
 Private Function FormatEntry(expression As String) As String
     FormatEntry = ReplaceImpliedMult( _
-                                Replace(Replace(Replace(RemoveDupNegation(ApplyLawOfSigns _
-                                (ReconstructLiteralStrings(CStr(expression), _
-                                Join(Split(expression, d_Space), vbNullString)))), &quot;()&quot;, &quot;(&apos;&apos;)&quot;), &quot;{{&quot;, &quot;({{&quot;), &quot;}}&quot;, &quot;}})&quot;) _
-                                )
+                                Replace( _
+                                    RemoveDupNegation( _
+                                        ApplyLawOfSigns( _
+                                        ReconstructLiteralStrings( _
+                                        expression, Join$(Split(expression, d_Space), vbNullString)))), _
+                                    &quot;()&quot;, &quot;(&apos;&apos;)&quot;))
 End Function
 
 Private Function FormatLiteralString(ByRef aString As String, _
@@ -5330,30 +5348,78 @@ err_Handler:
     err.Clear
 End Function
 
-Private Function JoinArrFunctArg(ByRef DecompArray() As String, ByRef MaxRowIndex As Long, ByRef MaxColIndex As Long) As String
+Private Function JoinArrFunctArg(ByRef DecompArray() As String, ByRef MapedIdx() As Long) As String
     Dim tmpResult As String
+    Dim tmpArray As String
+    Dim MaxRowIndex As Long
+    Dim MaxColIndex As Long
     Dim i As Long, j As Long
+    Dim k As Long
+    Dim UB As Long
+    Dim wIdx As Long
     
-    If MaxColIndex &gt; -1 Then
-        For i = 0 To MaxRowIndex
-            For j = 0 To MaxColIndex
-                If j = 0 Then
-                    tmpResult = tmpResult &amp; d_lCurly &amp; DecompArray(j + (i * (MaxColIndex + 1)))
-                Else
-                    tmpResult = tmpResult &amp; P_SEPARATORCHAR &amp; DecompArray(j + (i * (MaxColIndex + 1)))
-                End If
-                If j = MaxColIndex Then
-                    tmpResult = tmpResult &amp; d_rCurly
-                End If
-            Next j
-            If i &lt; MaxRowIndex Then
-                tmpResult = tmpResult &amp; P_SEPARATORCHAR
+    UB = UBound(MapedIdx)
+    For k = LBound(MapedIdx) To UB
+        If MapedIdx(k) &lt;&gt; -2 Then
+            MaxRowIndex = MapedIdx(k)
+            If MapedIdx(k + 1) &lt;&gt; -3 Then &apos;2D Array
+                MaxColIndex = MapedIdx(k + 1)
+            Else &apos;Vector
+                MaxColIndex = 0
             End If
-        Next i
-    Else
-        tmpResult = d_lCurly &amp; Join$(DecompArray, P_SEPARATORCHAR) &amp; d_rCurly
-    End If
-    JoinArrFunctArg = d_lCurly &amp; tmpResult &amp; d_rCurly
+            tmpArray = vbNullString
+            For i = 0 To MaxRowIndex
+                If MapedIdx(k + 1) &lt;&gt; -3 And MaxColIndex &gt; 0 Then
+                    For j = 0 To MaxColIndex
+                        If j = 0 Then
+                            tmpArray = tmpArray &amp; d_lCurly &amp; _
+                                                DecompArray(j + (i * (MaxColIndex + 1)) + wIdx)
+                        Else
+                            tmpArray = tmpArray &amp; P_SEPARATORCHAR &amp; DecompArray(j + (i * (MaxColIndex + 1)) + wIdx)
+                        End If
+                        If j = MaxColIndex Then
+                            tmpArray = tmpArray &amp; d_rCurly
+                        End If
+                    Next j
+                Else
+                    If i = 0 Then
+                        tmpArray = tmpArray &amp; d_lCurly &amp; DecompArray((i * (MaxColIndex + 1)) + wIdx)
+                    Else
+                        tmpArray = tmpArray &amp; DecompArray((i * (MaxColIndex + 1)) + wIdx)
+                    End If
+                    If i = MaxRowIndex Then
+                        tmpArray = tmpArray &amp; d_rCurly
+                    End If
+                End If
+                If i &lt; MaxRowIndex Then
+                    tmpArray = tmpArray &amp; P_SEPARATORCHAR
+                End If
+            Next i
+            If MapedIdx(k + 1) &lt;&gt; -3 Then
+                tmpArray = d_lCurly &amp; tmpArray &amp; d_rCurly
+                If MaxColIndex &gt; 0 Then
+                    wIdx = wIdx + i * j
+                Else
+                    wIdx = wIdx + i
+                End If
+            Else
+                wIdx = wIdx + i
+            End If
+            tmpResult = tmpResult &amp; tmpArray
+            k = k + 1
+        Else
+            If tmpResult &lt;&gt; vbNullString Then
+                tmpResult = tmpResult &amp; DecompArray(wIdx)
+            Else
+                tmpResult = DecompArray(wIdx)
+            End If
+            wIdx = wIdx + 1
+        End If
+        If k &lt; UB Then
+            tmpResult = tmpResult &amp; P_SEPARATORCHAR
+        End If
+    Next k
+    JoinArrFunctArg = tmpResult
 End Function
 
 Private Function LCase_(ByRef expression As String, ByRef fName As String) As String
@@ -8188,24 +8254,75 @@ End Function
 &apos;&apos;&apos; &lt;param name=&quot;outArr&quot;&gt;Array to be scanned and overwritten.&lt;/param&gt;
 Private Function SplitArrBranch(ByRef Argument As String, ByRef outArr() As String) As Variant
     Dim tmpArr() As String
-    Dim tmpResult(0 To 1) As Long
+    Dim tmpArgs() As String
+    Dim tmpResult() As Long
+    Dim tmpOutArr() As String
+    Dim i As Long
+    Dim j As Long
+    Dim k As Long
+    Dim m As Long
+    Dim n As Long
+    Dim UB As Long
+    Dim usedIdx As Long
     
-    tmpArr() = ArrayFromString(Argument)
-    If IsArrayAllocated(tmpArr) Then &apos;Transform success
-        If Is2Darray(tmpArr) Then
-            outArr = ArraySTR1DFrom2DArr(tmpArr)
-            tmpResult(0) = UBound(tmpArr)   &apos;Rows in the array
-            tmpResult(1) = UBound(tmpArr, 2)  &apos;Columns in each row
+    tmpArgs() = SplitArgs(Argument)
+    UB = UBound(tmpArgs)
+    ReDim tmpResult(0 To 2 * (UB + 1))
+    ReDim outArr(0 To 0)
+    For i = 0 To UB
+        If (tmpArgs(i) Like &quot;{{*}}&quot;) Then &apos; Array
+            tmpArr() = ArrayFromString(tmpArgs(i))
+            If IsArrayAllocated(tmpArr) Then &apos;Transform success
+                If Is2Darray(tmpArr) Then
+                    tmpOutArr = ArraySTR1DFrom2DArr(tmpArr)
+                    tmpResult(j) = UBound(tmpArr)   &apos;Rows in the array
+                    tmpResult(j + 1) = UBound(tmpArr, 2) &apos;Columns in each row
+                Else
+                    tmpOutArr = tmpArr
+                    tmpResult(j) = UBound(tmpArr)
+                    tmpResult(j + 1) = 0
+                End If
+                j = j + 2 &apos;Worked array elements
+            Else
+                GoTo Err_return
+            End If
         Else
-            outArr = tmpArr
-            tmpResult(0) = UBound(tmpArr)
-            tmpResult(1) = -1
+            If (tmpArgs(i) Like &quot;{*}&quot;) Then &apos; Vector
+                tmpArr() = Split(strVBA.MidB(tmpArgs(i), 3, strVBA.LenB2(tmpArgs(i)) - 4), P_SEPARATORCHAR)
+                If IsArrayAllocated(tmpArr) Then
+                    tmpOutArr = tmpArr
+                    tmpResult(j) = UBound(tmpArr)
+                    tmpResult(j + 1) = -3
+                    j = j + 2
+                Else
+                    GoTo Err_return
+                End If
+            Else &apos; Single data
+                ReDim tmpArr(0 To 0)
+                tmpArr(0) = tmpArgs(i)
+                tmpOutArr = tmpArr
+                tmpResult(j) = -2 &apos;Single data type
+                j = j + 1
+            End If
         End If
-    Else
-        tmpResult(0) = -1   &apos;Return error values
-        tmpResult(1) = -1
-    End If
+        m = UBound(outArr)
+        n = UBound(tmpOutArr) + 1
+        ReDim Preserve outArr(0 To m + n)
+        For k = 0 To n - 1
+            outArr(usedIdx) = tmpOutArr(k)
+            usedIdx = usedIdx + 1
+        Next k
+    Next i
+    ReDim Preserve tmpResult(0 To j - 1)
+    ReDim Preserve outArr(0 To usedIdx - 1)
+nReturn:
     SplitArrBranch = tmpResult
+    Exit Function
+Err_return:
+    ReDim tmpResult(0 To 1)
+    tmpResult(0) = -1   &apos;Return error values
+    tmpResult(1) = -1
+    Resume nReturn
 End Function
 
 Private Sub SplitToken(ByRef expression As String, ByRef oArray() As String, ByRef OPtoken As OperatorToken)
@@ -8784,31 +8901,25 @@ Private Sub TokenizeSubExpr(ByRef expression As String, ByRef SubExpressionsData
     ExpCopy = expression
     tmpReplacement = GetSubstStr(OperationIndex)
     If Not (ExpCopy Like &quot;*{{*}}*&quot;) Then
-        Select Case strVBA.InStrB(1, ExpCopy, P_SEPARATORCHAR)
+        Select Case strVBA.InstrB(1, ExpCopy, P_SEPARATORCHAR)
             Case 0 &apos;Regular sub-expression
                 GetRootedTree ExpCopy, tmpReplacement, OperationIndex, outBuffer
                 outBuffer.CompCluster = False
             Case Else &apos;Composite function argument
-                tmpArgs() = SplitArgs(ExpCopy)
-                For taIcounter = LBound(tmpArgs) To UBound(tmpArgs)
-                    GetRootedTree tmpArgs(taIcounter), tmpReplacement, OperationIndex, outBuffer
-                    AddToMap outBuffer.aindex, outBuffer
-                Next taIcounter
-                outBuffer.CompCluster = True
-                outBuffer.CompArrCluster = False
+                If Not (ExpCopy Like &quot;*{*}*&quot;) Then
+                    tmpArgs() = SplitArgs(ExpCopy)
+                    For taIcounter = LBound(tmpArgs) To UBound(tmpArgs)
+                        GetRootedTree tmpArgs(taIcounter), tmpReplacement, OperationIndex, outBuffer
+                        AddToMap outBuffer.aindex, outBuffer
+                    Next taIcounter
+                    outBuffer.CompCluster = True
+                    outBuffer.CompArrCluster = False
+                Else
+                    ExpandCompositeArg outBuffer, tmpReplacement, ExpCopy, tmpArgs, taIcounter, OperationIndex
+                End If
         End Select
     Else    &apos;Composite array function argument
-        outBuffer.ClusterArrBounds = SplitArrBranch(ExpCopy, tmpArgs)
-        If outBuffer.ClusterArrBounds(0) &lt;&gt; -1 Then &apos;Splitting argument success
-            For taIcounter = LBound(tmpArgs) To UBound(tmpArgs)
-                GetRootedTree tmpArgs(taIcounter), tmpReplacement, OperationIndex, outBuffer
-                AddToMap outBuffer.aindex, outBuffer
-            Next taIcounter
-            outBuffer.CompCluster = True
-            outBuffer.CompArrCluster = True
-        Else
-            &apos;Todo: Code here for trap error of missing () in a composite array and standard input
-        End If
+        ExpandCompositeArg outBuffer, tmpReplacement, ExpCopy, tmpArgs, taIcounter, OperationIndex
     End If
 End Sub
 
