@@ -1,4 +1,5 @@
-# ![VBA Expressions](/docs/assets/img/VBA%20Expressions.png)
+# VBA Expressions
+## ![VBA Expressions](/docs/assets/img/VBA%20Expressions-NewLogo.png)
 [![GitHub](https://img.shields.io/github/license/ws-garcia/VBA-Expressions?style=plastic)](https://github.com/ws-garcia/VBA-Expressions/blob/master/LICENSE) [![GitHub release (latest by date)](https://img.shields.io/github/v/release/ws-garcia/VBA-Expressions?style=plastic)](https://github.com/ws-garcia/VBA-Expressions/releases/latest)
 
 ## Introductory words
