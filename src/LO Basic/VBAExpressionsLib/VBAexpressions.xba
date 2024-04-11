@@ -4747,8 +4747,13 @@ Private Sub GetTokenStart(ByRef expression As String, ByRef startIndex As Long, 
         Else
             If outLng &gt;= 3 Then
                 If AscW(strVBA.MidB(expression, outLng - 2, 2)) = 69 Then &apos;Ignore Sci notation &quot;E&quot;
-                    outLng = outLng - 4
-                    curChar = strVBA.MidB(expression, outLng, 2)
+                    If outLng &gt; 4 Then
+                        curChar = strVBA.MidB(expression, outLng - 4, 2)
+                        Select Case AscW(curChar) &apos;Previous char must be numeric: #E[+-]#
+                            Case 48 To 57
+                                outLng = outLng - 4
+                        End Select
+                    End If
                 End If
             End If
         End If

@@ -7,4 +7,5 @@
  <library:element library:name="VBAexpressions"/>
  <library:element library:name="VBAcallBack"/>
  <library:element library:name="UDFunctions"/>
+ <library:element library:name="clsSimpleMath"/>
 </library:library>

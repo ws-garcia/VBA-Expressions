@@ -71,4 +71,12 @@ Public Function Concat(List As Variant) As String
     Next i
     Concat = Apostrophe &amp; tmpResult &amp; Apostrophe
 End Function
+Public Function SimpleProduct(ByRef aValues As Variant) As Double
+    Dim firstNumber As Double
+    Dim secondNumber As Double
+
+    firstNumber = CDbl(aValues(LBound(aValues)))
+    secondNumber = CDbl(aValues(UBound(aValues)))
+    SimpleProduct = firstNumber * secondNumber
+End Function
 </script:module>

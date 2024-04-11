@@ -4629,8 +4629,13 @@ Private Sub GetTokenStart(ByRef expression As String, ByRef startIndex As Long, 
         Else
             If outLng >= 3 Then
                 If AscW(MidB$(expression, outLng - 2, 2)) = 69 Then 'Ignore Sci notation "E"
-                    outLng = outLng - 4
-                    curChar = MidB$(expression, outLng, 2)
+                    If outLng > 4 Then
+                        curChar = MidB$(expression, outLng - 4, 2)
+                        Select Case AscW(curChar) 'Previous char must be numeric: #E[+-]#
+                            Case 48 To 57
+                                outLng = outLng - 4
+                        End Select
+                    End If
                 End If
             End If
         End If
