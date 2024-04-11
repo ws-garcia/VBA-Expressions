@@ -332,7 +332,11 @@ Sub RunAllTests
 			&quot;C = {{-1;13};{6;15}}&quot; _
 		)
 	VarOverload(&quot;Variables overloading: indirect assignment&quot;)
-	
+	Run( _
+			&quot;Excel BETA.DIST function test&quot;, _
+			&quot;ROUND(IBETA((2-1)/(3-1);8;10);4)&quot;, _
+			&quot;0.6855&quot; _
+		)
 	SF_Exception.debugprint(&quot;Passed tests:&quot;,sAcum)	
 	SF_Exception.debugprint(&quot;Failed tests:&quot;,tTotal - sAcum)	
 	SF_Exception.debugprint(&quot;Passed tests Ratio:&quot;,Round(100*sAcum/tTotal,2) &amp;&quot;%&quot;)
@@ -445,4 +449,10 @@ TestFail:
     SF_Exception.debugprint(&quot;Test &quot; &amp; testName &amp; &quot; raised an error: #&quot; &amp; err.Number &amp; &quot; - &quot; &amp; err.Description)
     Resume TestExit			
 End Sub
+sub tesover
+	&apos;msgbox (&quot;a{2}&quot; Like &quot;[A-Zaz]*{*}&quot;)
+	SF_Exception.consoleClear()
+	call VarOverload(&quot;Variables overloading: indirect assignment&quot;)
+	SF_Exception.console()
+end sub
 </script:module>

@@ -341,8 +341,8 @@ Private Sub Class_Initialize()
     InitCBbuffer UserDefFunctions
     &apos;@--------------------------------------------------------------------
     &apos; Populate linked index constructor
-    LIndexConstruc(0) = d_lCurly
-    LIndexConstruc(2) = d_rCurly
+    LIndexConstruc(0) = d_lSquareB
+    LIndexConstruc(2) = d_rSquareB
     &apos;@--------------------------------------------------------------------
     &apos; Populate building UDFs
     Dim UDFnames() As Variant
@@ -4019,8 +4019,11 @@ Private Function GetFunctionName(ByRef expression As String) As String
         If GFNbool Then
             GetFunctionName = UserDefFunctions.Storage(i).aName
         Else
-            If expression Like &quot;[A-Zaz]*{*}&quot; Then &apos;Not defined function bypass
-                tmpPos = strVBA.InStrB(1, expression, d_lCurly)
+        	ExpCopy = Replace(Replace( _
+        						expression,d_lSquareB,d_lCurly,1), _
+        						d_rSquareB,d_rCurly,1) &apos;Bypass LO Basic LIKE OP limitation 
+            If (ExpCopy Like &quot;[A-Zaz]*{*}&quot;) Then &apos;Not defined function bypass
+                tmpPos = strVBA.InStrB(1, expression, d_lSquareB)
                 GetFunctionName = strVBA.MidB(expression, 1, tmpPos - 1)
             End If
         End If
@@ -4031,9 +4034,9 @@ Private Function GetIndex(ByRef SubstStr As String) As Long
     Dim InitPos As Long
     Dim EndPos As Long
     
-    InitPos = strVBA.InStrB(1, SubstStr, d_lCurly)
+    InitPos = strVBA.InStrB(1, SubstStr, d_lSquareB)
     If InitPos Then
-        EndPos = strVBA.InStrB(1, SubstStr, d_rCurly)
+        EndPos = strVBA.InStrB(1, SubstStr, d_rSquareB)
         If EndPos Then
             GetIndex = strVBA.MidB(SubstStr, InitPos + 2, EndPos - InitPos - 2)
         Else
@@ -4563,7 +4566,7 @@ End Function
 
 &apos;&apos;&apos; &lt;summary&gt;
 &apos;&apos;&apos;     Returns an array with all the sub expressions needed to
-&apos;&apos;&apos;     evaluate the given expression. A string such as {0}
+&apos;&apos;&apos;     evaluate the given expression. A string such as [0]
 &apos;&apos;&apos;     indicates that the current token should be evaluated using
 &apos;&apos;&apos;     the value or token residing at index 0 using functions
 &apos;&apos;&apos;     and arithmetic operators.
