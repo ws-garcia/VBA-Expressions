@@ -335,8 +335,8 @@ Private Sub Class_Initialize()
     InitCBbuffer UserDefFunctions
     '@--------------------------------------------------------------------
     ' Populate linked index constructor
-    LIndexConstruc(0) = d_lCurly
-    LIndexConstruc(2) = d_rCurly
+    LIndexConstruc(0) = d_lSquareB
+    LIndexConstruc(2) = d_rSquareB
     '@--------------------------------------------------------------------
     ' Populate building UDFs
     Dim UDFnames() As Variant
@@ -658,8 +658,8 @@ Public Sub AddConstant(aValue As String, aKey As String)
 End Sub
 
 Private Sub AddExponentialPredictors(ByRef x() As Double, ByRef pExponents() As Long)
-    Dim i As Long
-    Dim j As Long
+    Dim I As Long
+    Dim J As Long
     Dim UB As Long
     Dim UB2 As Long
     Dim tmpData() As Double
@@ -667,41 +667,41 @@ Private Sub AddExponentialPredictors(ByRef x() As Double, ByRef pExponents() As 
     UB = UBound(x)
     UB2 = UBound(x, 2)
     tmpData = x
-    For i = 0 To UBound(pExponents)
-        If pExponents(i) > 1 Then 'Only not lineal degrees
+    For I = 0 To UBound(pExponents)
+        If pExponents(I) > 1 Then 'Only not lineal degrees
             UB2 = UB2 + 1
             ReDim Preserve tmpData(0 To UB, 0 To UB2)
-            For j = 0 To UB
-                tmpData(j, UB2) = x(j, 0) ^ pExponents(i)
-            Next j
+            For J = 0 To UB
+                tmpData(J, UB2) = x(J, 0) ^ pExponents(I)
+            Next J
         End If
-    Next i
+    Next I
     x = tmpData
     Erase tmpData
 End Sub
 
 Private Sub AddIntersectionCol(ByRef x() As Double)
-    Dim i As Long
-    Dim j As Long
+    Dim I As Long
+    Dim J As Long
     Dim UB As Long
     Dim UB2 As Long
     
     UB = UBound(x)
     UB2 = UBound(x, 2)
     ReDim Preserve x(0 To UB, 0 To UB2 + 1)
-    For i = 0 To UB
-        For j = UB2 To 0 Step -1
-            x(i, j + 1) = x(i, j)
-            If j = 0 Then
-                x(i, j) = 1
+    For I = 0 To UB
+        For J = UB2 To 0 Step -1
+            x(I, J + 1) = x(I, J)
+            If J = 0 Then
+                x(I, J) = 1
             End If
-        Next j
-    Next i
+        Next J
+    Next I
 End Sub
 
 Private Sub AddPredictorsRelations(ByRef x() As Double, ByRef PredInteractions As Variant)
-    Dim i As Long
-    Dim j As Long
+    Dim I As Long
+    Dim J As Long
     Dim UB As Long
     Dim UB2 As Long
     Dim idx1 As Long
@@ -712,16 +712,16 @@ Private Sub AddPredictorsRelations(ByRef x() As Double, ByRef PredInteractions A
     UB = UBound(x)
     UB2 = UBound(x, 2)
     tmpData = x
-    For i = 0 To UBound(PredInteractions)
-        tmpPredict = Split(PredInteractions(i), op_mult)
+    For I = 0 To UBound(PredInteractions)
+        tmpPredict = Split(PredInteractions(I), op_mult)
         idx1 = CLng(MidB(tmpPredict(LBound(tmpPredict)), 3))
         idx2 = CLng(MidB(tmpPredict(LBound(tmpPredict) + 1), 3))
         UB2 = UB2 + 1
         ReDim Preserve tmpData(0 To UB, 0 To UB2)
-        For j = 0 To UB
-            tmpData(j, UB2) = x(j, idx1) * x(j, idx2)
-        Next j
-    Next i
+        For J = 0 To UB
+            tmpData(J, UB2) = x(J, idx1) * x(J, idx2)
+        Next J
+    Next I
     x = tmpData
     Erase tmpData
 End Sub
@@ -813,18 +813,18 @@ err_Handler:
 End Function
 
 Private Function AFISHF_(p As Double, N1 As Double, N2 As Double) As Double
-    Dim v As Double, dv As Double, f As Double
+    Dim v As Double, dv As Double, F As Double
     
-    v = 0.5: dv = 0.5: f = 0
+    v = 0.5: dv = 0.5: F = 0
     Do While (dv > 0.000000000000001)
-        f = 1 / v - 1: dv = dv / 2
-        If (FISHF_(f, N1, N2) > p) Then
+        F = 1 / v - 1: dv = dv / 2
+        If (FISHF_(F, N1, N2) > p) Then
              v = v - dv
         Else
             v = v + dv
         End If
     Loop
-    AFISHF_ = f
+    AFISHF_ = F
 End Function
 
 Private Function aFloor(ByRef expression As String, ByRef fName As String) As String
@@ -1093,7 +1093,7 @@ Public Function ArrayFromString(ByRef strArray As String) As String()
     Dim arrCapacity As Long
     Dim boolOpenArray As Boolean
     Dim curChar As String
-    Dim i As Long, j As Long
+    Dim I As Long, J As Long
     Dim NumCols As Long
     Dim NumRows As Long
     Dim OneDarr As Boolean
@@ -1114,22 +1114,22 @@ Public Function ArrayFromString(ByRef strArray As String) As String()
     If MidB$(StrCopy, StrLen - 3) <> "}}" Then 'Missed "}" from input
         Exit Function
     End If
-    i = 1
+    I = 1
     aIndex = -1
     arrCapacity = 128
     ReDim tmpStr(0 To arrCapacity - 1)
     Do
-        curChar = MidB$(StrCopy, i, 2)
+        curChar = MidB$(StrCopy, I, 2)
         If curChar = d_lCurly Then
             OpenCBrackets = OpenCBrackets + 1
             If (OpenCBrackets And 1) = 0 Then 'Takes care of array syntax
-                VectorStartPos = i + 2
+                VectorStartPos = I + 2
             End If
         Else
             If curChar = d_rCurly Then
                 OpenCBrackets = OpenCBrackets - 1
                 If (OpenCBrackets And 1) Then 'End of vector
-                    VectorEndPos = i
+                    VectorEndPos = I
                     aIndex = aIndex + 1
                     If aIndex > arrCapacity Then
                         arrCapacity = arrCapacity * 2
@@ -1141,8 +1141,8 @@ Public Function ArrayFromString(ByRef strArray As String) As String()
             End If
         End If
         boolOpenArray = (OpenCBrackets > 0)
-        i = i + 2
-    Loop While boolOpenArray Or (i <= StrLen)
+        I = I + 2
+    Loop While boolOpenArray Or (I <= StrLen)
     NumRows = aIndex
     NumCols = UBound(tmpStr(aIndex))
     inputIs2D = strArray Like "{{*}" & P_SEPARATORCHAR & "{*}*}"
@@ -1152,15 +1152,15 @@ Public Function ArrayFromString(ByRef strArray As String) As String()
     Else '2D array
         ReDim OutStrArray(0 To NumRows, 0 To NumCols)
     End If
-    For i = 0 To NumRows
-        For j = 0 To NumCols
+    For I = 0 To NumRows
+        For J = 0 To NumCols
             If OneDarr Then
-                OutStrArray(j) = tmpStr(i)(j)
+                OutStrArray(J) = tmpStr(I)(J)
             Else
-                OutStrArray(i, j) = tmpStr(i)(j)
+                OutStrArray(I, J) = tmpStr(I)(J)
             End If
-        Next j
-    Next i
+        Next J
+    Next I
     ArrayFromString = OutStrArray
 End Function
 
@@ -1173,7 +1173,7 @@ Public Function ArrayFromString2(ByRef strArray As String) As Variant()
     Dim arrCapacity As Long
     Dim boolOpenArray As Boolean
     Dim curChar As String
-    Dim i As Long
+    Dim I As Long
     Dim JaggedArrFlag As Boolean
     Dim NumRows As Long
     Dim StrCopy As String
@@ -1191,29 +1191,29 @@ Public Function ArrayFromString2(ByRef strArray As String) As Variant()
     If MidB$(StrCopy, StrLen - 3) <> "}}" Then 'Missed "}" from input
         Exit Function
     End If
-    i = 1
+    I = 1
     aIndex = -1
     arrCapacity = 128
     ReDim tmpStr(0 To arrCapacity - 1)
     Do
-        curChar = MidB$(StrCopy, i, 2)
+        curChar = MidB$(StrCopy, I, 2)
         If curChar = d_lCurly Then
             OpenCBrackets = OpenCBrackets + 1
             If Not JaggedArrFlag Then
                 JaggedArrFlag = (OpenCBrackets > 2)
             End If
             If (OpenCBrackets And 1) = 0 Then 'Takes care of array syntax
-                VectorStartPos = i + 2
+                VectorStartPos = I + 2
             End If
         Else
             If curChar = d_rCurly Then
                 OpenCBrackets = OpenCBrackets - 1
                 If (OpenCBrackets And 1) Then 'End of vector
                     If Not JaggedArrFlag Then
-                        VectorEndPos = i
+                        VectorEndPos = I
                     Else
                         VectorStartPos = VectorStartPos - 2
-                        VectorEndPos = i + 2
+                        VectorEndPos = I + 2
                     End If
                     aIndex = aIndex + 1
                     If aIndex > arrCapacity Then
@@ -1234,8 +1234,8 @@ Public Function ArrayFromString2(ByRef strArray As String) As Variant()
             End If
         End If
         boolOpenArray = (OpenCBrackets > 0)
-        i = i + 2
-    Loop While boolOpenArray Or (i <= StrLen)
+        I = I + 2
+    Loop While boolOpenArray Or (I <= StrLen)
     NumRows = aIndex
     ReDim Preserve tmpStr(0 To aIndex)
     ArrayFromString2 = tmpStr
@@ -1246,8 +1246,8 @@ End Function
 ''' </summary>
 ''' <param name="InputArray">The array to operate.</param>
 Private Function ArraySTR1DFrom2DArr(ByRef InputArray() As String) As String()
-    Dim i As Long, LB As Long, UB As Long
-    Dim j As Long, LB2 As Long, UB2 As Long
+    Dim I As Long, LB As Long, UB As Long
+    Dim J As Long, LB2 As Long, UB2 As Long
     Dim tmpData() As String
     
     LB = LBound(InputArray)
@@ -1255,11 +1255,11 @@ Private Function ArraySTR1DFrom2DArr(ByRef InputArray() As String) As String()
     LB2 = LBound(InputArray, 2)
     UB2 = UBound(InputArray, 2)
     ReDim tmpData(0 To (UB - LB + 1) * (UB2 - LB2 + 1) - 1)
-    For i = LB To UB
-        For j = LB2 To UB2
-            tmpData(i * (UB2 - LB2 + 1) + j) = InputArray(i, j)
-        Next j
-    Next i
+    For I = LB To UB
+        For J = LB2 To UB2
+            tmpData(I * (UB2 - LB2 + 1) + J) = InputArray(I, J)
+        Next J
+    Next I
     ArraySTR1DFrom2DArr = tmpData
 End Function
 
@@ -1268,8 +1268,8 @@ End Function
 ''' </summary>
 ''' <param name="InputArray">The array to operate.</param>
 Public Function ArrayToString(ByRef InputArray As Variant) As String
-    Dim i As Long, LB As Long, UB As Long
-    Dim j As Long, LB2 As Long, UB2 As Long
+    Dim I As Long, LB As Long, UB As Long
+    Dim J As Long, LB2 As Long, UB2 As Long
     Dim tmpData As String, MultiDimArr As Boolean
     Dim isJaggedArray As Boolean
     
@@ -1288,33 +1288,33 @@ Public Function ArrayToString(ByRef InputArray As Variant) As String
                 UB = LB
             End If
         End If
-        For i = LB To UB
-            If isJaggedArray And IsTwiceJaggedArr(InputArray, i) Then
-                If i = LB Then
-                    tmpData = ArrayToString(InputArray(i))
+        For I = LB To UB
+            If isJaggedArray And IsTwiceJaggedArr(InputArray, I) Then
+                If I = LB Then
+                    tmpData = ArrayToString(InputArray(I))
                 Else
-                    tmpData = tmpData & ArrayToString(InputArray(i))
+                    tmpData = tmpData & ArrayToString(InputArray(I))
                 End If
             Else
                 If isJaggedArray Then
-                    LB2 = LBound(InputArray(i))
-                    UB2 = UBound(InputArray(i))
+                    LB2 = LBound(InputArray(I))
+                    UB2 = UBound(InputArray(I))
                 End If
-                For j = LB2 To UB2
-                    If j = LB2 Then
-                        tmpData = tmpData & d_lCurly & GetArrItm(InputArray, MultiDimArr, isJaggedArray, i, j)
+                For J = LB2 To UB2
+                    If J = LB2 Then
+                        tmpData = tmpData & d_lCurly & GetArrItm(InputArray, MultiDimArr, isJaggedArray, I, J)
                     Else
-                        tmpData = tmpData & P_SEPARATORCHAR & GetArrItm(InputArray, MultiDimArr, isJaggedArray, i, j)
+                        tmpData = tmpData & P_SEPARATORCHAR & GetArrItm(InputArray, MultiDimArr, isJaggedArray, I, J)
                     End If
-                    If j = UB2 Then
+                    If J = UB2 Then
                         tmpData = tmpData & d_rCurly
                     End If
-                Next j
+                Next J
             End If
-            If i < UB Then
+            If I < UB Then
                 tmpData = tmpData & P_SEPARATORCHAR
             End If
-        Next i
+        Next I
         ArrayToString = d_lCurly & tmpData & d_rCurly
     End If
 End Function
@@ -1401,16 +1401,16 @@ Private Function ASTUDT_(p As Double, n As Double) As Double
 End Function
 
 Private Function average(ByRef expression As String, ByRef fName As String) As String
-    Dim g As Long
+    Dim G As Long
     Dim tmpData() As String
     Dim tmpEval As Double
     
     On Error GoTo err_Handler
     tmpEval = 0
     tmpData() = SplitArgs(expression)
-    For g = LBound(tmpData) To UBound(tmpData)
-        tmpEval = tmpEval + CDbl(tmpData(g))
-    Next g
+    For G = LBound(tmpData) To UBound(tmpData)
+        tmpEval = tmpEval + CDbl(tmpData(G))
+    Next G
     tmpEval = tmpEval / (UBound(tmpData) - LBound(tmpData) + 1)
     average = CStr(tmpEval): Erase tmpData
     Exit Function
@@ -1426,7 +1426,7 @@ Private Function betacf(x As Double, A As Double, B As Double) As Double
     Dim M2 As Long
     Dim aa As Double, c As Double
     Dim d As Double, del As Double
-    Dim h As Double, qab As Double
+    Dim H As Double, qab As Double
     Dim qam As Double, qap As Double
     
     fpmin = 1E-30
@@ -1437,7 +1437,7 @@ Private Function betacf(x As Double, A As Double, B As Double) As Double
     c = 1: d = 1 - qab * x / qap
     If Abs(d) < fpmin Then d = fpmin
     d = 1 / d
-    h = d
+    H = d
     Do While m <= 100
         M2 = 2 * m
         aa = m * (B - m) * x / ((qam + M2) * (A + M2))
@@ -1446,7 +1446,7 @@ Private Function betacf(x As Double, A As Double, B As Double) As Double
         If Abs(d) < fpmin Then d = fpmin
         c = 1 + aa / c
         If Abs(c) < fpmin Then c = fpmin
-        d = 1 / d: h = h * d * c
+        d = 1 / d: H = H * d * c
         aa = -(A + m) * (qab + m) * x / ((A + M2) * (qap + M2))
 '       // Next step of the recurrence (the odd one)
         d = 1 + aa * d
@@ -1454,11 +1454,11 @@ Private Function betacf(x As Double, A As Double, B As Double) As Double
         c = 1 + aa / c
         If Abs(c) < fpmin Then c = fpmin
         d = 1 / d: del = d * c
-        h = h * del
+        H = H * del
         If Abs(del - 1#) < 0.0000003 Then Exit Do
         m = m + 1
     Loop
-    betacf = h
+    betacf = H
 End Function
 
 ''' <summary>
@@ -1504,15 +1504,15 @@ Private Function BETAINV_(p As Double, A As Double, B As Double) As Double
     Const EPS As Double = 0.00000001
     Dim aL As Double
     Dim a1, b1 As Double
-    Dim j As Long
+    Dim J As Long
     Dim lna As Double, lnb As Double
     Dim pp As Double, t As Double
     Dim u As Double, err As Double
-    Dim x As Double, h As Double
+    Dim x As Double, H As Double
     Dim w As Double, afac As Double
     
     a1 = A - 1: b1 = B - 1
-    j = 0
+    J = 0
     If p <= 0 Then
         BETAINV_ = 0
         Exit Function
@@ -1531,9 +1531,9 @@ Private Function BETAINV_(p As Double, A As Double, B As Double) As Double
         x = (2.30753 + t * 0.27061) / (1 + t * (0.99229 + t * 0.04481)) - t
         If p < 0.5 Then x = -x
         aL = (x * x - 3) / 6
-        h = 2 / (1 / (2 * A - 1) + 1 / (2 * B - 1))
-        w = (x * Sqr(aL + h) / h) - (1 / (2 * B - 1) - 1 / (2 * A - 1)) * _
-            (aL + 5 / 6 - 2 / (3 * h))
+        H = 2 / (1 / (2 * A - 1) + 1 / (2 * B - 1))
+        w = (x * Sqr(aL + H) / H) - (1 / (2 * B - 1) - 1 / (2 * A - 1)) * _
+            (aL + 5 / 6 - 2 / (3 * H))
         x = A / (A + B * Exp(2 * w))
     Else
         lna = Log(A / (A + B)): lnb = Log(B / (A + B))
@@ -1546,7 +1546,7 @@ Private Function BETAINV_(p As Double, A As Double, B As Double) As Double
         End If
     End If
     afac = -GAMMALN_(A) - GAMMALN_(B) + GAMMALN_(A + B)
-    Do While j < 10
+    Do While J < 10
         If x = 0 Or x = 1 Then BETAINV_ = x: Exit Function
         err = iBETA_(x, A, B) - p
         t = Exp(a1 * Log(x) + b1 * Log(1 - x) + afac)
@@ -1555,8 +1555,8 @@ Private Function BETAINV_(p As Double, A As Double, B As Double) As Double
         x = x - t
         If x <= 0 Then x = 0.5 * (x + t)
         If x >= 1 Then x = 0.5 * (x + t + 1)
-        If Abs(t) < EPS * x And j > 0 Then Exit Do
-        j = j + 1
+        If Abs(t) < EPS * x And J > 0 Then Exit Do
+        J = J + 1
     Loop
     BETAINV_ = x
 End Function
@@ -1821,8 +1821,8 @@ End Function
 Private Function Cholesky(ByRef A() As Double, ByRef el() As Double) As Double()
     Dim n As Long   'Rows
     Dim m As Long   'Columns
-    Dim i As Long
-    Dim j As Long
+    Dim I As Long
+    Dim J As Long
     Dim k As Long
     Dim pSum As Double
     
@@ -1830,30 +1830,30 @@ Private Function Cholesky(ByRef A() As Double, ByRef el() As Double) As Double()
     m = UBound(A, 2) - LBound(A, 2) + 1
     If m <> n Then Exit Function 'need square matrix
     el = A
-    For i = 0 To n - 1
-        For j = i To n - 1
-            pSum = el(i, j)
-            k = i - 1
+    For I = 0 To n - 1
+        For J = I To n - 1
+            pSum = el(I, J)
+            k = I - 1
             Do While k >= 0
-                pSum = pSum - el(i, k) * el(j, k)
+                pSum = pSum - el(I, k) * el(J, k)
                 k = k - 1
             Loop
-            If i = j Then 'Check diagonal elements
+            If I = J Then 'Check diagonal elements
                 If pSum <= 0 Then 'A, with rounding errors, is not positive-definite.
                     Erase el 'Cholesky failed. Test for not initialized array needed.
                     Exit Function
                 End If
-                el(i, i) = Sqr(pSum)
+                el(I, I) = Sqr(pSum)
             Else
-                el(j, i) = pSum / el(i, i)
+                el(J, I) = pSum / el(I, I)
             End If
-        Next j
-    Next i
-    For i = 0 To n - 1
-        For j = 0 To i - 1
-            el(j, i) = 0
-        Next j
-    Next i
+        Next J
+    Next I
+    For I = 0 To n - 1
+        For J = 0 To I - 1
+            el(J, I) = 0
+        Next J
+    Next I
     Cholesky = el
 End Function
 
@@ -1947,33 +1947,33 @@ End Function
 ''' </summary>
 Private Function CholeskyInverseMatrix_(ByRef el() As Double) As Double()
     Dim n As Long
-    Dim i As Long
-    Dim j As Long
+    Dim I As Long
+    Dim J As Long
     Dim k As Long
     Dim pSum As Double
     Dim ainv() As Double
     
     n = UBound(el) - LBound(el) + 1
     ReDim ainv(0 To n - 1, 0 To n - 1)
-    For i = 0 To n - 1
-        For j = 0 To i
-            pSum = IIf(i = j, 1, 0)
-            For k = i - 1 To j Step -1
-                pSum = pSum - el(i, k) * ainv(j, k)
+    For I = 0 To n - 1
+        For J = 0 To I
+            pSum = IIf(I = J, 1, 0)
+            For k = I - 1 To J Step -1
+                pSum = pSum - el(I, k) * ainv(J, k)
             Next k
-            ainv(j, i) = pSum / el(i, i)
-        Next j
-    Next i
-    For i = n - 1 To 0 Step -1
-        For j = 0 To i
-            pSum = IIf(i < j, 0, ainv(j, i))
-            For k = i + 1 To n - 1
-                pSum = pSum - el(k, i) * ainv(j, k)
+            ainv(J, I) = pSum / el(I, I)
+        Next J
+    Next I
+    For I = n - 1 To 0 Step -1
+        For J = 0 To I
+            pSum = IIf(I < J, 0, ainv(J, I))
+            For k = I + 1 To n - 1
+                pSum = pSum - el(k, I) * ainv(J, k)
             Next k
-            ainv(i, j) = pSum / el(i, i)
-            ainv(j, i) = ainv(i, j)
-        Next j
-    Next i
+            ainv(I, J) = pSum / el(I, I)
+            ainv(J, I) = ainv(I, J)
+        Next J
+    Next I
     CholeskyInverseMatrix_ = ainv
     Erase ainv
 End Function
@@ -2068,7 +2068,7 @@ End Function
 '''     NOTE: el() Stores the decomposition.
 ''' </summary>
 Private Sub CholeskySolve_(ByRef el() As Double, ByRef B() As Double, ByRef x() As Double)
-    Dim i As Long
+    Dim I As Long
     Dim k As Long
     Dim pSum As Double
     Dim n As Long
@@ -2078,24 +2078,24 @@ Private Sub CholeskySolve_(ByRef el() As Double, ByRef B() As Double, ByRef x() 
     e = UBound(B) - LBound(B) + 1
     If e <> n Then Exit Sub 'bad lengths in Cholesky
     ReDim x(0 To n - 1)
-    For i = 0 To n - 1 'Solve L.y = b, storing y in x.
-        pSum = B(i)
-        k = i - 1
+    For I = 0 To n - 1 'Solve L.y = b, storing y in x.
+        pSum = B(I)
+        k = I - 1
         Do While k >= 0
-            pSum = pSum - el(i, k) * x(k)
+            pSum = pSum - el(I, k) * x(k)
             k = k - 1
         Loop
-        x(i) = pSum / el(i, i)
-    Next i
-    For i = n - 1 To 0 Step -1 'Solve LT.x = y
-        pSum = x(i)
-        k = i + 1
+        x(I) = pSum / el(I, I)
+    Next I
+    For I = n - 1 To 0 Step -1 'Solve LT.x = y
+        pSum = x(I)
+        k = I + 1
         Do While k < n
-            pSum = pSum - el(k, i) * x(k)
+            pSum = pSum - el(k, I) * x(k)
             k = k + 1
         Loop
-        x(i) = pSum / el(i, i)
-    Next i
+        x(I) = pSum / el(I, I)
+    Next I
 End Sub
 
 Private Function Choose(ByRef expression As String, ByRef fName As String) As String
@@ -2136,20 +2136,20 @@ End Function
 '''     NOTE: PolyFit helper
 ''' </summary>
 Private Function ColumnAvg(vArr() As Double, Optional colIndex As Long) As Double
-    Dim i As Long
+    Dim I As Long
     Dim n As Long
     Dim TDflag As Boolean
     Dim tmpResult As Double
     
     n = UBound(vArr) - LBound(vArr) + 1
     TDflag = Is2Darray(vArr)
-    For i = 0 To n - 1
+    For I = 0 To n - 1
         If TDflag Then
-            tmpResult = tmpResult + vArr(i, colIndex) / n
+            tmpResult = tmpResult + vArr(I, colIndex) / n
         Else
-            tmpResult = tmpResult + vArr(i) / n
+            tmpResult = tmpResult + vArr(I) / n
         End If
-    Next i
+    Next I
     ColumnAvg = tmpResult
 End Function
 
@@ -2159,7 +2159,7 @@ End Function
 Private Function Compute() As String
     Dim B As Long
     Dim t As Long
-    Dim i As Long
+    Dim I As Long
     Dim OperationIndex As Long
     Dim BaseIndex As Long
     Dim SkipToken As Boolean
@@ -2187,9 +2187,9 @@ Private Function Compute() As String
             tmpResult() = Split(EvalTree(B).resulstMap, P_SEPARATORCHAR)
             '@--------------------------------------------------------------------
             ' Loop all sub-expression tokens results
-            For i = LBound(tmpResult) To UBound(tmpResult)
-                tmpResult(i) = EvalTree(B).Storage(CLng(tmpResult(i))).EvalResult
-            Next i
+            For I = LBound(tmpResult) To UBound(tmpResult)
+                tmpResult(I) = EvalTree(B).Storage(CLng(tmpResult(I))).EvalResult
+            Next I
             If Not EvalTree(B).CompArrCluster Then   'Function Argument
                 EvalTree(B).EvalResult = Join$(tmpResult, P_SEPARATORCHAR)
             Else        'Array function Argument
@@ -2280,7 +2280,7 @@ End Function
 ''' <param name="samplesArr">Data sample containing the observations pairs (x,y).</param>
 ''' <param name="cOption">Curve type ID.</param>
 Private Function DataLinearization(ByRef samplesArr() As Double, cOption As Long) As Double()
-    Dim i As Long
+    Dim I As Long
     Dim LB As Long
     Dim UB As Long
     Dim LB2 As Long
@@ -2292,19 +2292,19 @@ Private Function DataLinearization(ByRef samplesArr() As Double, cOption As Long
     LB2 = LBound(samplesArr, 2)
     UB2 = UBound(samplesArr, 2)
     ReDim tmpResult(LB To UB, LB2 To UB2)
-    For i = LB To UB
+    For I = LB To UB
         Select Case cOption
             Case 2, 3 'Exponential [y = a*e^(b*x) or y = a*b^x]
-                tmpResult(i, 1) = Log10(samplesArr(i, 1))
-                tmpResult(i, 0) = samplesArr(i, 0)
+                tmpResult(I, 1) = Log10(samplesArr(I, 1))
+                tmpResult(I, 0) = samplesArr(I, 0)
             Case 4 'Power [y = a*x^b]
-                tmpResult(i, 1) = Log10(samplesArr(i, 1))
-                tmpResult(i, 0) = Log10(samplesArr(i, 0))
+                tmpResult(I, 1) = Log10(samplesArr(I, 1))
+                tmpResult(I, 0) = Log10(samplesArr(I, 0))
             Case 5 'Logarithmic [y = a*ln(x) + b]
-                tmpResult(i, 1) = samplesArr(i, 1)
-                tmpResult(i, 0) = Log(samplesArr(i, 0)) 'LN
+                tmpResult(I, 1) = samplesArr(I, 1)
+                tmpResult(I, 0) = Log(samplesArr(I, 0)) 'LN
         End Select
-    Next i
+    Next I
     DataLinearization = tmpResult
 End Function
 
@@ -2560,10 +2560,10 @@ End Function
 
 Public Sub DeclareUDF(ByRef UDFname As Variant, Optional ByRef UDFlib As String = "UserDefFunctions")
     If IsArray(UDFname) Then
-        Dim i As Long
-        For i = LBound(UDFname) To UBound(UDFname)
-            StoreUDF UserDefFunctions, CStr(UDFname(i)), UDFlib    'The Value member points to the function library
-        Next i
+        Dim I As Long
+        For I = LBound(UDFname) To UBound(UDFname)
+            StoreUDF UserDefFunctions, CStr(UDFname(I)), UDFlib    'The Value member points to the function library
+        Next I
     Else
         StoreUDF UserDefFunctions, CStr(UDFname), UDFlib
     End If
@@ -2603,13 +2603,13 @@ Private Function Determinant(ByRef expression As String, ByRef fName As String) 
             Dim aArray() As Double
             Dim pivotingIdx() As Long
             Dim d As Double             'Interchages parity
-            Dim i As Long
+            Dim I As Long
             
             aArray() = ToDblArray(ArrayFromString(tmpData(LB)))
             LUdecomp aArray(), pivotingIdx, d
-            For i = LBound(aArray) To UBound(aArray)
-                d = d * aArray(i, i)
-            Next i
+            For I = LBound(aArray) To UBound(aArray)
+                d = d * aArray(I, I)
+            Next I
             tmpEval = d
         Case Else
             tmpEval = e_ValueError
@@ -2997,13 +2997,13 @@ err_Handler:
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
-Private Function FISHF_(f As Double, N1 As Double, N2 As Double) As Double
+Private Function FISHF_(F As Double, N1 As Double, N2 As Double) As Double
     Dim x As Double, th As Double
     Dim A As Double, sth As Double
     Dim cth As Double, c As Double
     Dim k As Double
     
-    x = N2 / (N1 * f + N2)
+    x = N2 / (N1 * F + N2)
     If (REM_(N1, 2) = 0) Then
         FISHF_ = STATCOM(1 - x, N2, N1 + N2 - 4, N2 - 2) * (x ^ (N2 / 2))
         Exit Function
@@ -3012,7 +3012,7 @@ Private Function FISHF_(f As Double, N1 As Double, N2 As Double) As Double
         FISHF_ = 1 - STATCOM(x, N1, N1 + N2 - 4, N1 - 2) * ((1 - x) ^ (N1 / 2))
         Exit Function
     End If
-    th = Atn(Sqr(N1 * f / N2))
+    th = Atn(Sqr(N1 * F / N2))
     A = th / PID2: sth = Sin(th): cth = Cos(th)
     If (N2 > 1) Then
         A = A + sth * cth * STATCOM(cth * cth, 2, N2 - 3, -1) / PID2
@@ -3172,31 +3172,31 @@ Private Function FormatNamedPredictors(ByRef strPredictorsNames As String, _
     Dim savedPredNames() As String
     Dim s As Long
     Dim n As Long
-    Dim i As Long
+    Dim I As Long
     
     'Split predictors names
     tmpData = Split(FormatLiteralString(strPredictorsNames, True), P_SEPARATORCHAR)
     n = UBound(tmpData) - LBound(tmpData) + 1
     ReDim savedPredNames(0 To n - 1)
-    Do While i < n
-        If tmpData(i) <> vbNullString Then
-            If Not IsSavedPredictorName(tmpData(i), savedPredNames) Then
-                savedPredNames(s) = tmpData(i)
+    Do While I < n
+        If tmpData(I) <> vbNullString Then
+            If Not IsSavedPredictorName(tmpData(I), savedPredNames) Then
+                savedPredNames(s) = tmpData(I)
                 s = s + 1
             Else 'Duplicate predictor name
                 Exit Function
             End If
         End If
-        i = i + 1
+        I = I + 1
     Loop
     tmpResult = strPredictorsInterList
-    For i = 0 To s - 1
+    For I = 0 To s - 1
         If namedToNominal Then
-            tmpResult = Replace(tmpResult, savedPredNames(i), "X" & CStr(i + 1))
+            tmpResult = Replace(tmpResult, savedPredNames(I), "X" & CStr(I + 1))
         Else
-            tmpResult = Replace(tmpResult, "X" & CStr(i + 1), savedPredNames(i))
+            tmpResult = Replace(tmpResult, "X" & CStr(I + 1), savedPredNames(I))
         End If
-    Next i
+    Next I
     Erase tmpData, savedPredNames
     If namedToNominal Then
         FormatNamedPredictors = FormatNumeredInteractions(tmpResult)
@@ -3206,10 +3206,10 @@ Private Function FormatNamedPredictors(ByRef strPredictorsNames As String, _
 End Function
 
 Private Function FormatNumeredInteractions(ByRef strPredictorsInterList As String) As String
-    Dim i As Long
+    Dim I As Long
     Dim n As Long
     Dim e As Long
-    Dim f As Long
+    Dim F As Long
     Dim u As String
     Dim v As String
     Dim tmpElem As String
@@ -3218,21 +3218,21 @@ Private Function FormatNumeredInteractions(ByRef strPredictorsInterList As Strin
     
     tmpData = Split(FormatLiteralString(strPredictorsInterList, True), P_SEPARATORCHAR)
     n = UBound(tmpData) - LBound(tmpData) + 1
-    For i = 0 To n - 1
-        If Not tmpData(i) Like "[Xx]*#:[Xx]*#" Then Exit Function
-        tmpPredict = Split(tmpData(i), ChrW(58))
+    For I = 0 To n - 1
+        If Not tmpData(I) Like "[Xx]*#:[Xx]*#" Then Exit Function
+        tmpPredict = Split(tmpData(I), ChrW(58))
         u = MidB(tmpPredict(0), 3)
         v = MidB(tmpPredict(1), 3)
         If Not IsNumeric(u) Or Not IsNumeric(v) Then Exit Function
         e = CLng(MidB(tmpPredict(0), 3))
-        f = CLng(v)
-        If e > f Then
+        F = CLng(v)
+        If e > F Then
             tmpElem = tmpPredict(0)
             tmpPredict(0) = tmpPredict(1)
             tmpPredict(1) = tmpElem
-            tmpData(i) = Join(tmpPredict, ChrW(58))
+            tmpData(I) = Join(tmpPredict, ChrW(58))
         End If
-    Next i
+    Next I
     FormatNumeredInteractions = ToLiteralString(Join(tmpData, P_SEPARATORCHAR))
 End Function
 
@@ -3344,7 +3344,7 @@ Private Function fZeroMBM(ByRef aFunction As String, ByVal A As Double, _
     Dim fa As Double, fb As Double
     Dim fc As Double, fd As Double
     Dim fEvalHelper As VBAexpressions
-    Dim i As Long
+    Dim I As Long
     Dim k As Double
     Dim segmentLen As Double
     Dim tmpFzeroEval As Double
@@ -3364,12 +3364,12 @@ Private Function fZeroMBM(ByRef aFunction As String, ByVal A As Double, _
         tmpVar() = Split(.CurrentVariables, "; ")
         varLB = LBound(tmpVar)
         If UBound(tmpVar) - varLB > 0 Then  'Reject multivariate functions
-            For i = varLB To UBound(tmpVar)
-                If Not IsConstant(tmpVar(i)) Then
+            For I = varLB To UBound(tmpVar)
+                If Not IsConstant(tmpVar(I)) Then
                     varCounter = varCounter + 1
-                    varIdx = i
+                    varIdx = I
                 End If
-            Next i
+            Next I
             If varCounter > 1 Then
                 fZeroMBM = e_ValueError
                 Exit Function
@@ -3464,7 +3464,7 @@ Private Function fZeroMRF(ByRef aFunction As String, ByVal A As Double, _
     Dim fa As Double, fb As Double
     Dim fc As Double, fd As Double
     Dim fEvalHelper As VBAexpressions
-    Dim i As Long
+    Dim I As Long
     Dim k As Double, CK As Double
     Dim tmpVar() As String
     Dim toleranceFlag As Boolean
@@ -3481,12 +3481,12 @@ Private Function fZeroMRF(ByRef aFunction As String, ByVal A As Double, _
         tmpVar() = Split(.CurrentVariables, "; ")
         varLB = LBound(tmpVar)
         If UBound(tmpVar) - varLB > 0 Then  'Reject multivariate functions
-            For i = varLB To UBound(tmpVar)
-                If Not IsConstant(tmpVar(i)) Then
+            For I = varLB To UBound(tmpVar)
+                If Not IsConstant(tmpVar(I)) Then
                     varCounter = varCounter + 1
-                    varIdx = i
+                    varIdx = I
                 End If
-            Next i
+            Next I
             If varCounter > 1 Then
                 fZeroMRF = e_ValueError
                 Exit Function
@@ -3577,7 +3577,7 @@ End Function
 ''' </summary>
 ''' <param name="x">Value to compute the GAMMALN function from.</param>
 Private Function GAMMALN_(x As Double) As Double
-    Dim j As Long
+    Dim J As Long
     Dim cof As Variant
     Dim ser As Double
     Dim xx As Double, y As Double
@@ -3588,10 +3588,10 @@ Private Function GAMMALN_(x As Double) As Double
     y = x: xx = x
     tmp = x + 5.5
     tmp = tmp - (xx + 0.5) * Log(tmp)
-    For j = LBound(cof) To UBound(cof)
+    For J = LBound(cof) To UBound(cof)
         y = y + 1
-        ser = ser + cof(j) / (y)
-    Next j
+        ser = ser + cof(J) / (y)
+    Next J
     GAMMALN_ = Log(2.506628274631 * ser / xx) - tmp
 End Function
 
@@ -3653,7 +3653,7 @@ Private Function get2DimArrayCopy(ByRef bArray() As Double) As Double()
     Dim tmpResult() As Double
     Dim isArray2D As Boolean
     Dim colDim As Long
-    Dim i As Long, j As Long
+    Dim I As Long, J As Long
     Dim LB As Long, UB As Long
     Dim LB2 As Long, UB2 As Long
     
@@ -3667,15 +3667,15 @@ Private Function get2DimArrayCopy(ByRef bArray() As Double) As Double()
     End If
     ReDim tmpResult(0 To UB - LB, 0 To colDim)
     If isArray2D Then
-        For i = LB To UB
-            For j = LB2 To UB2
-                tmpResult(0 + i - LB, 0 + j - LB2) = bArray(i, j)
-            Next j
-        Next i
+        For I = LB To UB
+            For J = LB2 To UB2
+                tmpResult(0 + I - LB, 0 + J - LB2) = bArray(I, J)
+            Next J
+        Next I
     Else
-        For i = LB To UB
-            tmpResult(0 + i - LB, 0) = bArray(i)
-        Next i
+        For I = LB To UB
+            tmpResult(0 + I - LB, 0) = bArray(I)
+        Next I
     End If
     get2DimArrayCopy = tmpResult
 End Function
@@ -3821,7 +3821,7 @@ Private Function GetArrItm(ByRef arr As Variant, ByRef MultiDimArr As Boolean, _
 End Function
 
 Private Function GetCBItemIdx(ByRef cbBuffer As ClusterBuffer, ByRef ItemName As String) As Long
-    Dim i As Long
+    Dim I As Long
     Dim tmpResult As Boolean
     Dim tmpItemName As String
     
@@ -3833,14 +3833,14 @@ Private Function GetCBItemIdx(ByRef cbBuffer As ClusterBuffer, ByRef ItemName As
                 tmpItemName = ItemName
         End Select
         If cbBuffer.index > -1 Then
-            i = 0
+            I = 0
             Do
-                tmpResult = (cbBuffer.Storage(i).name = tmpItemName)
-                i = i + 1
-            Loop While i <= cbBuffer.index And Not tmpResult
+                tmpResult = (cbBuffer.Storage(I).name = tmpItemName)
+                I = I + 1
+            Loop While I <= cbBuffer.index And Not tmpResult
         End If
         If tmpResult Then
-            GetCBItemIdx = i - 1
+            GetCBItemIdx = I - 1
         Else
             GetCBItemIdx = -1
         End If
@@ -3897,9 +3897,11 @@ Private Function GetFunctionName(ByRef expression As String) As String
     For EFjCounter = LBound(FunctionsId) To UBound(FunctionsId)
         tmpPos = InStrB(1, ExpCopy, FunctionsId(EFjCounter))
         If tmpPos Then
-            GFNbool = ValidFuntionName(ExpCopy, FunctionsId(EFjCounter), tmpPos)
-            If GFNbool Then
-                Exit For
+            If ExpCopy = FunctionsId(EFjCounter) Then
+                GFNbool = ValidFuntionName(ExpCopy, FunctionsId(EFjCounter), tmpPos)
+                If GFNbool Then
+                    Exit For
+                End If
             End If
         End If
     Next EFjCounter
@@ -3907,22 +3909,24 @@ Private Function GetFunctionName(ByRef expression As String) As String
         GetFunctionName = FunctionsName(EFjCounter)
         IsUDFFunction = False
     Else 'Check for UDFs
-        Dim i As Long
-        For i = 0 To UserDefFunctions.index
-            tmpPos = InStrB(1, ExpCopy, UserDefFunctions.Storage(i).name)
+        Dim I As Long
+        For I = 0 To UserDefFunctions.index
+            tmpPos = InStrB(1, ExpCopy, UserDefFunctions.Storage(I).name)
             If tmpPos Then
-                GFNbool = ValidFuntionName(ExpCopy, UserDefFunctions.Storage(i).name, tmpPos)
-                If GFNbool Then
-                    Exit For
+                If ExpCopy = UserDefFunctions.Storage(I).name Then
+                    GFNbool = ValidFuntionName(ExpCopy, UserDefFunctions.Storage(I).name, tmpPos)
+                    If GFNbool Then
+                        Exit For
+                    End If
                 End If
             End If
-        Next i
+        Next I
         IsUDFFunction = GFNbool
         If GFNbool Then
-            GetFunctionName = UserDefFunctions.Storage(i).name
+            GetFunctionName = UserDefFunctions.Storage(I).name
         Else
-            If expression Like "[A-Zaz]*{*}" Then 'Not defined function bypass
-                tmpPos = InStrB(1, expression, d_lCurly)
+            If expression Like "[A-Zaz]*[[]*[]]" Then 'Not defined function bypass
+                tmpPos = InStrB(1, expression, d_lSquareB)
                 GetFunctionName = MidB$(expression, 1, tmpPos - 1)
             End If
         End If
@@ -3933,9 +3937,9 @@ Private Function GetIndex(ByRef SubstStr As String) As Long
     Dim InitPos As Long
     Dim EndPos As Long
     
-    InitPos = InStrB(1, SubstStr, d_lCurly)
+    InitPos = InStrB(1, SubstStr, d_lSquareB)
     If InitPos Then
-        EndPos = InStrB(1, SubstStr, d_rCurly)
+        EndPos = InStrB(1, SubstStr, d_rSquareB)
         If EndPos Then
             GetIndex = MidB$(SubstStr, InitPos + 2, EndPos - InitPos - 2)
         Else
@@ -4245,8 +4249,8 @@ Private Function GetPredInterArr(ByRef strPredictorsInterList As String, n As Lo
     Dim idx1 As Long
     Dim idx2 As Long
     Dim s As Long
-    Dim i As Long
-    Dim j As Long
+    Dim I As Long
+    Dim J As Long
     Dim m As Long
     Dim elemComb As Long
     Dim r As Double    'Sample of r elements
@@ -4269,17 +4273,17 @@ Private Function GetPredInterArr(ByRef strPredictorsInterList As String, n As Lo
         idx1 = CLng(MidB(tmpPredict(LBound(tmpPredict)), 3))
         idx2 = CLng(MidB(tmpPredict(LBound(tmpPredict) + 1), 3))
         s = 0
-        j = 0
+        J = 0
         Do While s < elemComb
-            i = 1
-            j = j + 1
-            Do While i <= j
+            I = 1
+            J = J + 1
+            Do While I <= J
                 'Check predictor "Xi.Xj"
-                If idx1 = i And idx2 = j Then
+                If idx1 = I And idx2 = J Then
                     tmpResult(s) = True
                     Exit Do
                 End If
-                i = i + 1
+                I = I + 1
                 s = s + 1
             Loop
         Loop
@@ -4297,26 +4301,26 @@ End Function
 Private Function GetPredInterNames(ByRef PredInterArr() As Boolean) As String
     Dim tmpResult As String
     Dim s As Long
-    Dim i As Long
-    Dim j As Long
+    Dim I As Long
+    Dim J As Long
     Dim elemComb As Long
     
     elemComb = UBound(PredInterArr) - LBound(PredInterArr) + 1
 
     Do While s < elemComb
-        i = 1
-        j = j + 1
-        Do While i <= j
+        I = 1
+        J = J + 1
+        Do While I <= J
             'Check predictor "Xi.Xj"
             If PredInterArr(s) Then
                 If tmpResult <> vbNullString Then
                     tmpResult = tmpResult & P_SEPARATORCHAR & _
-                                "X" & i & op_mult & "X" & j
+                                "X" & I & op_mult & "X" & J
                 Else
-                    tmpResult = "X" & i & op_mult & "X" & j
+                    tmpResult = "X" & I & op_mult & "X" & J
                 End If
             End If
-            i = i + 1
+            I = I + 1
             s = s + 1
         Loop
     Loop
@@ -4445,7 +4449,7 @@ End Function
 
 ''' <summary>
 '''     Returns an array with all the sub expressions needed to
-'''     evaluate the given expression. A string such as {0}
+'''     evaluate the given expression. A string such as [0]
 '''     indicates that the current token should be evaluated using
 '''     the value or token residing at index 0 using functions
 '''     and arithmetic operators.
@@ -4694,7 +4698,7 @@ Private Function GoodnessOfFit_(ByRef Polynomial As String, ByRef ObserArray() A
     Dim Rsquared As Double
     Dim seSquare As Double
     Dim stSquare As Double
-    Dim i As Long
+    Dim I As Long
     Dim n As Long
     
     n = UBound(ObserArray) - LBound(ObserArray) + 1
@@ -4702,11 +4706,11 @@ Private Function GoodnessOfFit_(ByRef Polynomial As String, ByRef ObserArray() A
     With exprHelper
         .Create Polynomial
         averageY = ColumnAvg(ObserArray, 1) 'Mean
-        For i = 0 To n - 1
-            .Eval "x=" & CStr(ObserArray(i, 0))
-            seSquare = seSquare + (ObserArray(i, 1) - CDbl(.Result)) ^ 2 'Partial sum squared regression
-            stSquare = stSquare + (averageY - ObserArray(i, 1)) ^ 2 'Partial total sum of squares
-        Next i
+        For I = 0 To n - 1
+            .Eval "x=" & CStr(ObserArray(I, 0))
+            seSquare = seSquare + (ObserArray(I, 1) - CDbl(.Result)) ^ 2 'Partial sum squared regression
+            stSquare = stSquare + (averageY - ObserArray(I, 1)) ^ 2 'Partial total sum of squares
+        Next I
         Rsquared = Round(1 - seSquare / stSquare, 4)
     End With
     GoodnessOfFit_ = Rsquared
@@ -4783,15 +4787,15 @@ Private Function iBETAINV(p As Double, A As Double, B As Double) As Double
     Const EPS As Double = 0.00000001
     Dim aL As Double
     Dim a1, b1 As Double
-    Dim j As Long
+    Dim J As Long
     Dim lna As Double, lnb As Double
     Dim pp As Double, t As Double
     Dim u As Double, err As Double
-    Dim x As Double, h As Double
+    Dim x As Double, H As Double
     Dim w As Double, afac As Double
 
     a1 = A - 1: b1 = B - 1
-    j = 0
+    J = 0
     If p <= 0 Then
         iBETAINV = 0
         Exit Function
@@ -4810,9 +4814,9 @@ Private Function iBETAINV(p As Double, A As Double, B As Double) As Double
         x = (2.30753 + t * 0.27061) / (1 + t * (0.99229 + t * 0.04481)) - t
         If p < 0.5 Then x = -x
         aL = (x * x - 3) / 6
-        h = 2 / (1 / (2 * A - 1) + 1 / (2 * B - 1))
-        w = (x * Sqr(aL + h) / h) - (1 / (2 * B - 1) - 1 / (2 * A - 1)) * _
-            (aL + 5 / 6 - 2 / (3 * h))
+        H = 2 / (1 / (2 * A - 1) + 1 / (2 * B - 1))
+        w = (x * Sqr(aL + H) / H) - (1 / (2 * B - 1) - 1 / (2 * A - 1)) * _
+            (aL + 5 / 6 - 2 / (3 * H))
         x = A / (A + B * Exp(2 * w))
     Else
         lna = Log(A / (A + B)): lnb = Log(B / (A + B))
@@ -4825,17 +4829,17 @@ Private Function iBETAINV(p As Double, A As Double, B As Double) As Double
         End If
     End If
     afac = -GAMMALN_(A) - GAMMALN_(B) + GAMMALN_(A + B)
-    Do While j < 10
+    Do While J < 10
         If x = 0 Or x = 1 Then iBETAINV = x: Exit Function
         err = iBETA_(x, A, B) - p
         t = Exp(a1 * Log(x) + b1 * Log(1 - x) + afac)
         u = err / t
-        t = u / (1 - 0.5 * Min(1, u * (a1 / x - b1 / (1 - x))))
+        t = u / (1 - 0.5 * MIN_(1, u * (a1 / x - b1 / (1 - x))))
         x = x - t
         If x <= 0 Then x = 0.5 * (x + t)
         If x >= 1 Then x = 0.5 * (x + t + 1)
-        If Abs(t) < EPS * x And j > 0 Then Exit Do
-        j = j + 1
+        If Abs(t) < EPS * x And J > 0 Then Exit Do
+        J = J + 1
     Loop
     iBETAINV = x
 End Function
@@ -5193,15 +5197,15 @@ Private Function IsPlusOrMinus(ByRef Char As String) As Boolean
 End Function
 
 Private Function IsSavedPredictorName(ByRef aName As String, ByRef aNamesList() As String) As Boolean
-    Dim i As Long
+    Dim I As Long
     Dim tmpResult As Boolean
     Dim n As Long
 
     n = UBound(aNamesList)
-    i = LBound(aNamesList)
-    Do While Not tmpResult And i <= n
-        tmpResult = (aName = aNamesList(i))
-        i = i + 1
+    I = LBound(aNamesList)
+    Do While Not tmpResult And I <= n
+        tmpResult = (aName = aNamesList(I))
+        I = I + 1
     Loop
     IsSavedPredictorName = tmpResult
 End Function
@@ -5234,7 +5238,7 @@ Private Function JoinArrFunctArg(ByRef DecompArray() As String, ByRef MapedIdx()
     Dim tmpArray As String
     Dim MaxRowIndex As Long
     Dim MaxColIndex As Long
-    Dim i As Long, j As Long
+    Dim I As Long, J As Long
     Dim k As Long
     Dim UB As Long
     Dim wIdx As Long
@@ -5249,42 +5253,42 @@ Private Function JoinArrFunctArg(ByRef DecompArray() As String, ByRef MapedIdx()
                 MaxColIndex = 0
             End If
             tmpArray = vbNullString
-            For i = 0 To MaxRowIndex
+            For I = 0 To MaxRowIndex
                 If MapedIdx(k + 1) <> -3 And MaxColIndex > 0 Then
-                    For j = 0 To MaxColIndex
-                        If j = 0 Then
+                    For J = 0 To MaxColIndex
+                        If J = 0 Then
                             tmpArray = tmpArray & d_lCurly & _
-                                                DecompArray(j + (i * (MaxColIndex + 1)) + wIdx)
+                                                DecompArray(J + (I * (MaxColIndex + 1)) + wIdx)
                         Else
-                            tmpArray = tmpArray & P_SEPARATORCHAR & DecompArray(j + (i * (MaxColIndex + 1)) + wIdx)
+                            tmpArray = tmpArray & P_SEPARATORCHAR & DecompArray(J + (I * (MaxColIndex + 1)) + wIdx)
                         End If
-                        If j = MaxColIndex Then
+                        If J = MaxColIndex Then
                             tmpArray = tmpArray & d_rCurly
                         End If
-                    Next j
+                    Next J
                 Else
-                    If i = 0 Then
-                        tmpArray = tmpArray & d_lCurly & DecompArray((i * (MaxColIndex + 1)) + wIdx)
+                    If I = 0 Then
+                        tmpArray = tmpArray & d_lCurly & DecompArray((I * (MaxColIndex + 1)) + wIdx)
                     Else
-                        tmpArray = tmpArray & DecompArray((i * (MaxColIndex + 1)) + wIdx)
+                        tmpArray = tmpArray & DecompArray((I * (MaxColIndex + 1)) + wIdx)
                     End If
-                    If i = MaxRowIndex Then
+                    If I = MaxRowIndex Then
                         tmpArray = tmpArray & d_rCurly
                     End If
                 End If
-                If i < MaxRowIndex Then
+                If I < MaxRowIndex Then
                     tmpArray = tmpArray & P_SEPARATORCHAR
                 End If
-            Next i
+            Next I
             If MapedIdx(k + 1) <> -3 Then
                 tmpArray = d_lCurly & tmpArray & d_rCurly
                 If MaxColIndex > 0 Then
-                    wIdx = wIdx + i * j
+                    wIdx = wIdx + I * J
                 Else
-                    wIdx = wIdx + i
+                    wIdx = wIdx + I
                 End If
             Else
-                wIdx = wIdx + i
+                wIdx = wIdx + I
             End If
             tmpResult = tmpResult & tmpArray
             k = k + 1
@@ -5461,10 +5465,10 @@ Private Sub LUbkSub(ByRef A() As Double, ByRef indx() As Long, ByRef B() As Doub
 ' Numerical recipes in C: the art of scientific computing / William H. Press [et al.]
 ' - 2nd ed. (p.47)
 '-----------------------------------------------------------------------------------------
-    Dim i As Long
+    Dim I As Long
     Dim ii As Long
     Dim ip As Long
-    Dim j As Long
+    Dim J As Long
     Dim n As Long
     Dim pSum As Double
     Dim aLB As Long
@@ -5476,26 +5480,26 @@ Private Sub LUbkSub(ByRef A() As Double, ByRef indx() As Long, ByRef B() As Doub
     bLB = LBound(B)
     n = aUB - aLB + 1
     ii = 0
-    For i = 1 To n
-        ip = indx(i)
+    For I = 1 To n
+        ip = indx(I)
         pSum = B(ip + bLB - 1)
-        B(ip + bLB - 1) = B(i + bLB - 1)
+        B(ip + bLB - 1) = B(I + bLB - 1)
         If ii Then
-            For j = ii To i - 1
-                pSum = pSum - A(i + aLB - 1, j + aLB - 1) * B(j + bLB - 1)
-            Next j
+            For J = ii To I - 1
+                pSum = pSum - A(I + aLB - 1, J + aLB - 1) * B(J + bLB - 1)
+            Next J
         ElseIf pSum Then
-            ii = i
+            ii = I
         End If
-        B(i + bLB - 1) = pSum
-    Next i
-    For i = n To 1 Step -1
-        pSum = B(i + bLB - 1)
-        For j = i + 1 To n
-            pSum = pSum - A(i + aLB - 1, j + aLB - 1) * B(j + bLB - 1)
-        Next j
-        B(i + bLB - 1) = pSum / A(i + aLB - 1, i + aLB - 1)
-    Next i
+        B(I + bLB - 1) = pSum
+    Next I
+    For I = n To 1 Step -1
+        pSum = B(I + bLB - 1)
+        For J = I + 1 To n
+            pSum = pSum - A(I + aLB - 1, J + aLB - 1) * B(J + bLB - 1)
+        Next J
+        B(I + bLB - 1) = pSum / A(I + aLB - 1, I + aLB - 1)
+    Next I
 End Sub
 
 ''' <summary>
@@ -5515,9 +5519,9 @@ Private Sub LUdecomp(ByRef A() As Double, ByRef indx() As Long, _
 ' - 2nd ed. (p.46-47)
 '-----------------------------------------------------------------------------------------
     Dim n As Long
-    Dim i As Long
+    Dim I As Long
     Dim imax As Long
-    Dim j As Long
+    Dim J As Long
     Dim k As Long
     Dim big As Double
     Dim dum As Double
@@ -5533,59 +5537,59 @@ Private Sub LUdecomp(ByRef A() As Double, ByRef indx() As Long, _
     ReDim vv(1 To n)
     ReDim indx(1 To n)
     d = 1                       'No row interchanges yet
-    For i = 1 To n              'Loop rows to get the implicit scaling information
+    For I = 1 To n              'Loop rows to get the implicit scaling information
         big = 0
-        For j = 1 To n
-            temp = Abs(A(i + aLB - 1, j + aLB - 1))
+        For J = 1 To n
+            temp = Abs(A(I + aLB - 1, J + aLB - 1))
             If temp > big Then big = temp
-        Next j
+        Next J
         If big = 0 Then         'a is a singular matrix
             Exit Sub
         End If
         'No nonzero largest element
-        vv(i) = 1 / big          'Save the scaling
-    Next i
-    For j = 1 To n               'Loop over columns of Crout's method
-        For i = 1 To j - 1
-            pSum = A(i + aLB - 1, j + aLB - 1)
-            For k = 1 To i - 1
-                pSum = pSum - A(i + aLB - 1, k + aLB - 1) * A(k + aLB - 1, j + aLB - 1)
+        vv(I) = 1 / big          'Save the scaling
+    Next I
+    For J = 1 To n               'Loop over columns of Crout's method
+        For I = 1 To J - 1
+            pSum = A(I + aLB - 1, J + aLB - 1)
+            For k = 1 To I - 1
+                pSum = pSum - A(I + aLB - 1, k + aLB - 1) * A(k + aLB - 1, J + aLB - 1)
             Next k
-            A(i + aLB - 1, j + aLB - 1) = pSum
-        Next i
+            A(I + aLB - 1, J + aLB - 1) = pSum
+        Next I
         big = 0                  'Initialize for search the largest pivot element
-        For i = j To n
-            pSum = A(i + aLB - 1, j + aLB - 1)
-            For k = 1 To j - 1
-                pSum = pSum - A(i + aLB - 1, k + aLB - 1) * A(k + aLB - 1, j + aLB - 1)
+        For I = J To n
+            pSum = A(I + aLB - 1, J + aLB - 1)
+            For k = 1 To J - 1
+                pSum = pSum - A(I + aLB - 1, k + aLB - 1) * A(k + aLB - 1, J + aLB - 1)
             Next k
-            A(i + aLB - 1, j + aLB - 1) = pSum
-            dum = vv(i) * Abs(pSum)
+            A(I + aLB - 1, J + aLB - 1) = pSum
+            dum = vv(I) * Abs(pSum)
             If dum >= big Then
                 big = dum
-                imax = i
+                imax = I
             End If
-        Next i
-        If j <> imax Then         'Need rows interchange?
+        Next I
+        If J <> imax Then         'Need rows interchange?
             For k = 1 To n
                 dum = A(imax + aLB - 1, k + aLB - 1)
-                A(imax + aLB - 1, k + aLB - 1) = A(j + aLB - 1, k + aLB - 1)
-                A(j + aLB - 1, k + aLB - 1) = dum
+                A(imax + aLB - 1, k + aLB - 1) = A(J + aLB - 1, k + aLB - 1)
+                A(J + aLB - 1, k + aLB - 1) = dum
             Next k
             d = -1 * d           'Change parity
-            vv(imax) = vv(j)     'Change scale factor
+            vv(imax) = vv(J)     'Change scale factor
         End If
-        indx(j) = imax
-        If A(j + aLB - 1, j + aLB - 1) = 0 Then    'Avoid division by zero in singular matrix
-            A(j + aLB - 1, j + aLB - 1) = Tiny
+        indx(J) = imax
+        If A(J + aLB - 1, J + aLB - 1) = 0 Then    'Avoid division by zero in singular matrix
+            A(J + aLB - 1, J + aLB - 1) = Tiny
         End If
-        If j <> n Then           'Divide by the pivot element
-            dum = 1 / A(j + aLB - 1, j + aLB - 1)
-            For i = j + 1 To n
-                A(i + aLB - 1, j + aLB - 1) = A(i + aLB - 1, j + aLB - 1) * dum
-            Next i
+        If J <> n Then           'Divide by the pivot element
+            dum = 1 / A(J + aLB - 1, J + aLB - 1)
+            For I = J + 1 To n
+                A(I + aLB - 1, J + aLB - 1) = A(I + aLB - 1, J + aLB - 1) * dum
+            Next I
         End If
-    Next j
+    Next J
     Erase vv
 End Sub
 
@@ -5709,7 +5713,7 @@ Private Function LUsolve_(ByRef aArray() As Double, ByRef bArray() As Double) As
 End Function
 
 Private Function Max(ByRef expression As String, ByRef fName As String) As String
-    Dim g As Long
+    Dim G As Long
     Dim tmpData() As String
     Dim tmpEval As Double
     Dim compEval As Double
@@ -5717,12 +5721,12 @@ Private Function Max(ByRef expression As String, ByRef fName As String) As Strin
     On Error GoTo err_Handler
     tmpData() = SplitArgs(expression)
     tmpEval = CDbl(tmpData(LBound(tmpData)))
-    For g = LBound(tmpData) + 1 To UBound(tmpData)
-        compEval = CDbl(tmpData(g))
+    For G = LBound(tmpData) + 1 To UBound(tmpData)
+        compEval = CDbl(tmpData(G))
         If compEval > tmpEval Then
             tmpEval = compEval
         End If
-    Next g
+    Next G
     Max = CStr(tmpEval): Erase tmpData
     Exit Function
 err_Handler:
@@ -5732,16 +5736,16 @@ err_Handler:
 End Function
 
 Private Function MAX_(ParamArray aList() As Variant) As Double
-    Dim i As Long
+    Dim I As Long
     Dim tmpResult As Double
     Dim tmpEl As Double
     
-    i = LBound(aList)
-    tmpResult = CDbl(aList(i))
-    For i = i + 1 To UBound(aList)
-        tmpEl = CDbl(aList(i))
+    I = LBound(aList)
+    tmpResult = CDbl(aList(I))
+    For I = I + 1 To UBound(aList)
+        tmpEl = CDbl(aList(I))
         If tmpEl > tmpResult Then tmpResult = tmpEl
-    Next i
+    Next I
     MAX_ = tmpResult
 End Function
 
@@ -5785,7 +5789,7 @@ err_Handler:
 End Function
 
 Private Function Min(ByRef expression As String, ByRef fName As String) As String
-    Dim g As Long
+    Dim G As Long
     Dim tmpData() As String
     Dim tmpEval As Double
     Dim compEval As Double
@@ -5793,12 +5797,12 @@ Private Function Min(ByRef expression As String, ByRef fName As String) As Strin
     On Error GoTo err_Handler
     tmpData() = SplitArgs(expression)
     tmpEval = CDbl(tmpData(LBound(tmpData)))
-    For g = LBound(tmpData) + 1 To UBound(tmpData)
-        compEval = CDbl(tmpData(g))
+    For G = LBound(tmpData) + 1 To UBound(tmpData)
+        compEval = CDbl(tmpData(G))
         If compEval < tmpEval Then
             tmpEval = compEval
         End If
-    Next g
+    Next G
     Min = CStr(tmpEval): Erase tmpData
     Exit Function
 err_Handler:
@@ -5868,8 +5872,8 @@ Private Function MInverse_(ByRef A() As Double, ByRef indx() As Long, _
 '-----------------------------------------------------------------------------------------
     Dim y() As Double
     Dim col() As Double
-    Dim i As Long
-    Dim j As Long
+    Dim I As Long
+    Dim J As Long
     Dim aUB As Long
     Dim aLB As Long
     Dim n As Long
@@ -5880,31 +5884,31 @@ Private Function MInverse_(ByRef A() As Double, ByRef indx() As Long, _
     ReDim y(0 To n - 1, 0 To n - 1)
     ReDim col(1 To n)
     LUdecomp A, indx, d
-    For j = 1 To n
-        For i = 1 To n
-            col(i) = 0
-        Next i
-        col(j) = 1
+    For J = 1 To n
+        For I = 1 To n
+            col(I) = 0
+        Next I
+        col(J) = 1
         LUbkSub A, indx, col
-        For i = 1 To n
-            If Abs(col(i)) = 0 Then col(i) = 0      'Avoid VBA -0 value
-            y(i - 1, j - 1) = col(i)
-        Next i
-    Next j
+        For I = 1 To n
+            If Abs(col(I)) = 0 Then col(I) = 0      'Avoid VBA -0 value
+            y(I - 1, J - 1) = col(I)
+        Next I
+    Next J
     MInverse_ = y
 End Function
 
 Private Function MIN_(ParamArray aList() As Variant) As Double
-    Dim i As Long
+    Dim I As Long
     Dim tmpResult As Double
     Dim tmpEl As Double
     
-    i = LBound(aList)
-    tmpResult = CDbl(aList(i))
-    For i = i + 1 To UBound(aList)
-        tmpEl = CDbl(aList(i))
+    I = LBound(aList)
+    tmpResult = CDbl(aList(I))
+    For I = I + 1 To UBound(aList)
+        tmpEl = CDbl(aList(I))
         If tmpEl < tmpResult Then tmpResult = tmpEl
-    Next i
+    Next I
     MIN_ = tmpResult
 End Function
 
@@ -5945,7 +5949,7 @@ err_Handler:
 End Function
 
 ''' <summary>
-'''     Performs a multiple linear regression over a model with more than to regressors/predictors.
+'''     Performs a multiple linear regression over a model with more than two regressors/predictors.
 '''     The parameters required by the functions are:
 '''         1- X: the model NxK matrix with K regressors variables for all the N observations.
 '''         2- Y: a Nx1 vector with N observations for the model.
@@ -6053,7 +6057,7 @@ Private Function MLR_(x() As Double, y() As Double, Optional k As Long = -1, _
     Dim p As Long
     Dim SSE As Double
     Dim SST As Double
-    Dim i As Long
+    Dim I As Long
     Dim tmpY() As Double
     
     If Not Is2Darray(y) Then
@@ -6073,10 +6077,10 @@ Private Function MLR_(x() As Double, y() As Double, Optional k As Long = -1, _
         yhat = ToDblArray(MMULT_(x, Betahat)) 'Predictions
         e = MSum_(tmpY, yhat, True)    'Residuals
         ymean = ColumnAvg(y)
-        For i = 0 To n - 1
-            SSE = SSE + e(i, 0) ^ 2
-            SST = SST + (y(i) - ymean) ^ 2
-        Next i
+        For I = 0 To n - 1
+            SSE = SSE + e(I, 0) ^ 2
+            SST = SST + (y(I) - ymean) ^ 2
+        Next I
         If n > p Then
             sigmaSquared = SSE / (n - p) 'Squared standard error
         Else
@@ -6144,8 +6148,8 @@ Private Function MMULT_(ByRef A() As Double, ByRef B As Variant) As Variant
     Dim bLB As Long, bLB2 As Long
     Dim bUB As Long, bUB2 As Long
     Dim c() As Double
-    Dim i As Long
-    Dim j As Long, jj As Long
+    Dim I As Long
+    Dim J As Long, jj As Long
     Dim m As Long
     Dim n As Long
     Dim OutputIsArray As Boolean
@@ -6160,9 +6164,9 @@ Private Function MMULT_(ByRef A() As Double, ByRef B As Variant) As Variant
         n = aUB2 - aLB2 + 1
         m = bUB2 - bLB2 + 1
         If m = n Then   'Require equal columns count
-            For i = 0 To n - 1 'Loop a() rows
-                pSum = pSum + A(aLB2 + i) * B(bLB2 + i)
-            Next i
+            For I = 0 To n - 1 'Loop a() rows
+                pSum = pSum + A(aLB2 + I) * B(bLB2 + I)
+            Next I
             OutputIsArray = False
         End If
     ElseIf (aIsVector And Not IsArray(B)) Or _
@@ -6172,34 +6176,34 @@ Private Function MMULT_(ByRef A() As Double, ByRef B As Variant) As Variant
                 aLB = LBound(A): aUB = UBound(A)
                 m = aUB - aLB + 1
                 ReDim c(0 To m - 1)
-                For i = 0 To m - 1
-                    c(i) = A(aLB + i) * B
-                Next i
+                For I = 0 To m - 1
+                    c(I) = A(aLB + I) * B
+                Next I
             Else
                 aLB = LBound(A): aUB = UBound(A)
                 aLB2 = LBound(A, 2): aUB2 = UBound(A, 2)
                 n = aUB - aLB + 1
                 m = aUB2 - aLB2 + 1
                 ReDim c(0 To n - 1, 0 To m - 1)
-                For i = 0 To n - 1
-                    For j = 0 To m - 1
-                        c(i, j) = A(aLB + i, aLB2 + j) * B
-                    Next j
-                Next i
+                For I = 0 To n - 1
+                    For J = 0 To m - 1
+                        c(I, J) = A(aLB + I, aLB2 + J) * B
+                    Next J
+                Next I
             End If
         End If
     ElseIf aIsVector And IsArray(B) Then '1D array x 2D array
         VM_DOT_ A, B, aLB, aLB2, aUB, _
-                aUB2, bLB2, bUB2, c, i, j, _
+                aUB2, bLB2, bUB2, c, I, J, _
                 m, n, pSum, bLB, bUB, jj
     ElseIf Not aIsVector And Not bIsVector Then '2D array x 2D array
         MM_DOT_ A, B, aLB, aLB2, aUB, _
                 aUB2, bLB, bLB2, bUB, _
-                bUB2, c, i, j, jj, m, n, pSum
+                bUB2, c, I, J, jj, m, n, pSum
     ElseIf Not aIsVector And bIsVector Then '2D array x 1D array
         MV_DOT_ A, B, aLB, aLB2, aUB, _
                 aUB2, bLB, bLB2, bUB, _
-                bUB2, c, i, j, jj, m, n, pSum
+                bUB2, c, I, J, jj, m, n, pSum
     End If
     If OutputIsArray Then
         If IsArrayAllocated(c) Then
@@ -6214,7 +6218,7 @@ End Function
 
 Private Sub MM_DOT_(ByRef A() As Double, ByRef B As Variant, ByRef aLB As Long, ByRef aLB2 As Long, ByRef aUB As Long, _
                     ByRef aUB2 As Long, ByRef bLB As Long, ByRef bLB2 As Long, ByRef bUB As Long, ByRef bUB2 As Long, _
-                    ByRef c() As Double, ByRef i As Long, ByRef j As Long, ByRef jj As Long, ByRef m As Long, _
+                    ByRef c() As Double, ByRef I As Long, ByRef J As Long, ByRef jj As Long, ByRef m As Long, _
                     ByRef n As Long, ByRef pSum As Double)
                     
     aLB = LBound(A): aUB = UBound(A)
@@ -6225,15 +6229,15 @@ Private Sub MM_DOT_(ByRef A() As Double, ByRef B As Variant, ByRef aLB As Long, 
     m = bUB2 - bLB2 + 1
     If Not (aUB2 - aLB2 + 1) <> (bUB - bLB + 1) Then
         ReDim c(0 To n - 1, 0 To m - 1)
-        For i = 0 To n - 1
-            For j = 0 To m - 1
+        For I = 0 To n - 1
+            For J = 0 To m - 1
                 pSum = 0
                 For jj = 0 To aUB2 - aLB2
-                    pSum = pSum + A(aLB + i, aLB2 + jj) * B(bLB + jj, bLB2 + j)
+                    pSum = pSum + A(aLB + I, aLB2 + jj) * B(bLB + jj, bLB2 + J)
                 Next jj
-                c(i, j) = pSum
-            Next j
-        Next i
+                c(I, J) = pSum
+            Next J
+        Next I
     End If
 End Sub
 
@@ -6274,7 +6278,7 @@ Private Function MNEG_(ByRef aMatrix() As Double) As Double()
     Dim mLB2 As Long
     Dim mUB As Long
     Dim mUB2 As Long
-    Dim i As Long, j As Long
+    Dim I As Long, J As Long
     Dim ii As Long, jj As Long
     Dim tmpResult() As Double
     
@@ -6285,18 +6289,18 @@ Private Function MNEG_(ByRef aMatrix() As Double) As Double()
         mLB2 = LBound(aMatrix, 2)
         mUB2 = UBound(aMatrix, 2)
         ReDim tmpResult(0 To mUB - mLB, 0 To mUB2 - mLB2)
-        For i = mLB To mUB
+        For I = mLB To mUB
             jj = 0
-            For j = mLB2 To mUB2
-                If Abs(aMatrix(i, j)) Then tmpResult(ii, jj) = -1 * aMatrix(i, j)
+            For J = mLB2 To mUB2
+                If Abs(aMatrix(I, J)) Then tmpResult(ii, jj) = -1 * aMatrix(I, J)
                 jj = jj + 1
-            Next j
+            Next J
             ii = ii + 1
-        Next i
+        Next I
     Else
         ReDim tmpResult(0 To mUB - mLB)
-        For i = mLB To mUB
-            If Abs(aMatrix(i, j)) Then tmpResult(ii) = -1 * aMatrix(i)
+        For I = mLB To mUB
+            If Abs(aMatrix(I, J)) Then tmpResult(ii) = -1 * aMatrix(I)
             ii = ii + 1
         Next
     End If
@@ -6398,7 +6402,7 @@ err_Handler:
 End Function
 
 Private Function MROUND_(ByRef aArray() As Double, Optional nDigits As Long = 0) As Double()
-    Dim i As Long, j As Long
+    Dim I As Long, J As Long
     Dim LB1 As Long, LB2 As Long
     Dim UB1 As Long, UB2 As Long
     Dim tmpResult() As Double
@@ -6407,17 +6411,17 @@ Private Function MROUND_(ByRef aArray() As Double, Optional nDigits As Long = 0)
         UB1 = UBound(aArray): LB1 = LBound(aArray)
         UB2 = UBound(aArray, 2): LB2 = LBound(aArray, 2)
         ReDim tmpResult(0 To UB1 - LB1, 0 To UB2 - LB2)
-        For i = LB1 To UB1
-            For j = LB2 To UB2
-                tmpResult(i - LB1, j - LB2) = Round(aArray(i, j), nDigits)
-            Next j
-        Next i
+        For I = LB1 To UB1
+            For J = LB2 To UB2
+                tmpResult(I - LB1, J - LB2) = Round(aArray(I, J), nDigits)
+            Next J
+        Next I
     Else
         UB1 = UBound(aArray): LB1 = LBound(aArray)
         ReDim tmpResult(0 To UB1 - LB1)
-        For i = LB1 To UB1
-            tmpResult(i - LB1) = Round(aArray(i), nDigits)
-        Next i
+        For I = LB1 To UB1
+            tmpResult(I - LB1) = Round(aArray(I), nDigits)
+        Next I
     End If
     MROUND_ = tmpResult
 End Function
@@ -6471,8 +6475,8 @@ Private Function MSum_(ByRef A() As Double, ByRef B() As Double, _
     Dim LBb2 As Long
     Dim m As Long
     Dim n As Long
-    Dim i As Long
-    Dim j As Long
+    Dim I As Long
+    Dim J As Long
     Dim pSum As Double
     Dim aFlag As Boolean
     Dim bFlag As Boolean
@@ -6490,29 +6494,29 @@ Private Function MSum_(ByRef A() As Double, ByRef B() As Double, _
         If UBb - LBb + 1 <> n Then Exit Function    'Required equal numbers of rows
         If UBound(B, 2) - LBb2 + 1 <> m Then Exit Function     'Required equal numbers of columns
         ReDim c(0 To n - 1, 0 To m - 1)
-        For i = 0 To n - 1
-            For j = 0 To m - 1
+        For I = 0 To n - 1
+            For J = 0 To m - 1
                 If Not Difference Then
-                    pSum = A(i + LBa, j + LBa2) + B(i + LBb, j + LBb2)
+                    pSum = A(I + LBa, J + LBa2) + B(I + LBb, J + LBb2)
                 Else
-                    pSum = A(i + LBa, j + LBa2) - B(i + LBb, j + LBb2)
+                    pSum = A(I + LBa, J + LBa2) - B(I + LBb, J + LBb2)
                 End If
-                c(i, j) = pSum
-            Next j
-        Next i
+                c(I, J) = pSum
+            Next J
+        Next I
     Else
         If Not aFlag And Not bFlag Then 'Two vectors
             n = UBound(A) - LBa + 1
             If UBb - LBb + 1 <> n Then Exit Function
             ReDim c(0 To n - 1)
-            For i = 0 To n - 1
+            For I = 0 To n - 1
                 If Not Difference Then
-                    pSum = A(i + LBa) + B(i + LBb)
+                    pSum = A(I + LBa) + B(I + LBb)
                 Else
-                    pSum = A(i + LBa) - B(i + LBb)
+                    pSum = A(I + LBa) - B(I + LBb)
                 End If
-                c(i) = pSum
-            Next i
+                c(I) = pSum
+            Next I
         Else 'One vector and one 2D matrix
             Dim M2D() As Double
             Dim VECT1D() As Double
@@ -6547,18 +6551,18 @@ Private Function MSum_(ByRef A() As Double, ByRef B() As Double, _
                 n = ubV1D - lbV1D + 1
                 If ubM2D - lbM2D + 1 <> n Then Exit Function
                 ReDim c(0 To n - 1)
-                For i = 0 To n - 1
+                For I = 0 To n - 1
                     If Not Difference Then
-                        pSum = M2D(i + lbM2D, lb2M2D) + VECT1D(i + lbV1D)
+                        pSum = M2D(I + lbM2D, lb2M2D) + VECT1D(I + lbV1D)
                     Else 'Always compute A-B
                         If Not invertedSumFlag Then
-                            pSum = M2D(i + lbM2D, lb2M2D) - VECT1D(i + lbV1D)
+                            pSum = M2D(I + lbM2D, lb2M2D) - VECT1D(I + lbV1D)
                         Else
-                            pSum = VECT1D(i + lbV1D) - M2D(i + lbM2D, lb2M2D)
+                            pSum = VECT1D(I + lbV1D) - M2D(I + lbM2D, lb2M2D)
                         End If
                     End If
-                    c(i) = pSum
-                Next i
+                    c(I) = pSum
+                Next I
             End If
         End If
     End If
@@ -6603,8 +6607,8 @@ Private Function MTranspose_(ByRef A() As Double) As Double()
     Dim UBa2 As Long
     Dim m As Long
     Dim n As Long
-    Dim i As Long
-    Dim j As Long
+    Dim I As Long
+    Dim J As Long
     Dim Is1Darray As Boolean
     
     Is1Darray = Not Is2Darray(A)
@@ -6623,22 +6627,22 @@ Private Function MTranspose_(ByRef A() As Double) As Double()
     n = UBa - LBa + 1
     m = UBa2 - LBa2 + 1
     ReDim c(0 To m - 1, 0 To n - 1)
-    For i = 0 To n - 1
-        For j = 0 To m - 1
+    For I = 0 To n - 1
+        For J = 0 To m - 1
             If Not Is1Darray Then
-                c(j, i) = A(LBa + i, LBa2 + j)
+                c(J, I) = A(LBa + I, LBa2 + J)
             Else
-                c(j, i) = A(LBa + j)
+                c(J, I) = A(LBa + J)
             End If
-        Next j
-    Next i
+        Next J
+    Next I
     MTranspose_ = c
 End Function
 
 Private Sub MV_DOT_(ByRef A() As Double, ByVal B As Variant, ByVal aLB As Long, ByVal aLB2 As Long, _
                     ByVal aUB As Long, ByVal aUB2 As Long, ByVal bLB As Long, ByVal bLB2 As Long, _
-                    ByVal bUB As Long, ByVal bUB2 As Long, ByRef c() As Double, ByVal i As Long, _
-                    ByVal j As Long, ByVal jj As Long, ByVal m As Long, ByVal n As Long, ByRef pSum As Double)
+                    ByVal bUB As Long, ByVal bUB2 As Long, ByRef c() As Double, ByVal I As Long, _
+                    ByVal J As Long, ByVal jj As Long, ByVal m As Long, ByVal n As Long, ByRef pSum As Double)
                     
     aLB = LBound(A): aUB = UBound(A)
     aLB2 = LBound(A, 2): aUB2 = UBound(A, 2)
@@ -6648,15 +6652,15 @@ Private Sub MV_DOT_(ByRef A() As Double, ByVal B As Variant, ByVal aLB As Long, 
     m = bUB2 - bLB2 + 1
     If Not (aUB2 - aLB2 + 1) <> (bUB - bLB + 1) Then
         ReDim c(0 To n - 1, 0 To m - 1)
-        For i = 0 To n - 1
-            For j = 0 To m - 1
+        For I = 0 To n - 1
+            For J = 0 To m - 1
                 pSum = 0
                 For jj = 0 To aUB2 - aLB2
-                    pSum = pSum + A(aLB + i, aLB2 + jj) * B(bLB2 + j)
+                    pSum = pSum + A(aLB + I, aLB2 + jj) * B(bLB2 + J)
                 Next jj
-                c(i, j) = pSum
-            Next j
-        Next i
+                c(I, J) = pSum
+            Next J
+        Next I
     End If
 End Sub
 
@@ -6816,16 +6820,16 @@ err_Handler:
 End Function
 
 Private Function OPsymbolInArgument(ByRef ArgDefStr As String, ByRef Pattrn As String) As Boolean
-    Dim i As Long
+    Dim I As Long
     Dim tmpResult As Boolean
     Dim LenStr As Long
     
-    i = 1
+    I = 1
     LenStr = LenB(ArgDefStr)
     Do
-        tmpResult = InStrB(1, MidB$(ArgDefStr, i, 2), Pattrn)
-        i = i + 2
-    Loop While i <= LenStr And Not tmpResult
+        tmpResult = InStrB(1, MidB$(ArgDefStr, I, 2), Pattrn)
+        I = I + 2
+    Loop While I <= LenStr And Not tmpResult
     OPsymbolInArgument = tmpResult
 End Function
 
@@ -7075,7 +7079,7 @@ End Function
 Private Function PolyFit_(ByRef samplesArr() As Double, pDegree As Long, _
                             Optional stringOutput As Boolean = True) As Variant
     Dim observCount As Long
-    Dim i As Long
+    Dim I As Long
     Dim mLB As Long
     Dim mUB As Long
     Dim modelArray() As Double
@@ -7090,15 +7094,15 @@ Private Function PolyFit_(ByRef samplesArr() As Double, pDegree As Long, _
     'Create arrays
     ReDim modelArray(0 To observCount - 1, 0 To 0)
     ReDim responseArray(0 To observCount - 1, 0 To 0)
-    For i = 0 To observCount - 1
-        modelArray(i, 0) = samplesArr(i, 0)
-        responseArray(i, 0) = samplesArr(i, 1)
-    Next i
+    For I = 0 To observCount - 1
+        modelArray(I, 0) = samplesArr(I, 0)
+        responseArray(I, 0) = samplesArr(I, 1)
+    Next I
     'Create degrees vector
     ReDim pDegreesArr(0 To pDegree - 1)
-    For i = 0 To pDegree - 1
-        pDegreesArr(i) = i + 1
-    Next i
+    For I = 0 To pDegree - 1
+        pDegreesArr(I) = I + 1
+    Next I
     'Add polynomial substitutions predictors
     AddExponentialPredictors modelArray, pDegreesArr
     'Add columns of ones
@@ -7119,26 +7123,26 @@ End Function
 '''     NOTE: PolyFit helper
 ''' </summary>
 Private Function PolyString(ByRef SolverResult() As Double, ByRef pDegree As Long) As String
-    Dim i As Long
+    Dim I As Long
     Dim tmpResult As String
     
-    For i = 0 To pDegree
-        If i = 0 Then
-            tmpResult = CStr(Round(SolverResult(i, 0), 4))
+    For I = 0 To pDegree
+        If I = 0 Then
+            tmpResult = CStr(Round(SolverResult(I, 0), 4))
         Else
-            If CDbl(SolverResult(i, 0)) > 0 Then
+            If CDbl(SolverResult(I, 0)) > 0 Then
                 tmpResult = tmpResult & d_Space & op_plus _
-                            & d_Space & Round(SolverResult(i, 0), 4)
+                            & d_Space & Round(SolverResult(I, 0), 4)
             Else
-                tmpResult = tmpResult & d_Space & Round(SolverResult(i, 0), 4)
+                tmpResult = tmpResult & d_Space & Round(SolverResult(I, 0), 4)
             End If
-            If i > 1 Then
-                tmpResult = tmpResult & "*x^" & i
+            If I > 1 Then
+                tmpResult = tmpResult & "*x^" & I
             Else
                 tmpResult = tmpResult & "*x"
             End If
         End If
-    Next i
+    Next I
     PolyString = tmpResult
 End Function
 
@@ -7306,7 +7310,7 @@ End Function
 '# QR DECOMPOSITION
 '///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Private Sub QR_(ByRef A As Variant, Optional PositiveDiag As Boolean = False)
-    Dim i As Long, j As Long
+    Dim I As Long, J As Long
     Dim k As Long
     Dim s As Double
     Dim nrm As Double
@@ -7319,29 +7323,29 @@ Private Sub QR_(ByRef A As Variant, Optional PositiveDiag As Boolean = False)
     For k = 0 To n - 1
         '// Compute 2-norm of k-th column without under/overflow.
         nrm = 0
-        For i = k To m - 1
-            nrm = QR_hypot(nrm, QR(i, k))
-        Next i
+        For I = k To m - 1
+            nrm = QR_hypot(nrm, QR(I, k))
+        Next I
         If nrm <> 0 Then
             '// Form k-th Householder vector.
             If (QR(k, k) < 0) Then
                 nrm = -nrm
             End If
-            For i = k To m - 1
-                QR(i, k) = QR(i, k) / nrm
-            Next i
+            For I = k To m - 1
+                QR(I, k) = QR(I, k) / nrm
+            Next I
             QR(k, k) = QR(k, k) + 1#
             '// Apply transformation to remaining columns.
-            For j = k + 1 To n - 1
+            For J = k + 1 To n - 1
                 s = 0#
-                For i = k To m - 1
-                    s = s + QR(i, k) * QR(i, j)
-                Next i
+                For I = k To m - 1
+                    s = s + QR(I, k) * QR(I, J)
+                Next I
                 s = -s / QR(k, k)
-                For i = k To m - 1
-                    QR(i, j) = QR(i, j) + s * QR(i, k)
-                Next i
-            Next j
+                For I = k To m - 1
+                    QR(I, J) = QR(I, J) + s * QR(I, k)
+                Next I
+            Next J
         End If
         rDiag(k) = -nrm
         signFlip(k) = (rDiag(k) < 0) And PositiveDiag
@@ -7352,20 +7356,20 @@ End Sub
 '   @return     Lower trapezoidal matrix whose columns define the reflections
 '   */
 Private Function QR_getH() As Double()
-    Dim h() As Double
-    Dim i As Long, j As Long
+    Dim H() As Double
+    Dim I As Long, J As Long
     
-    ReDim h(0 To m - 1, 0 To n - 1)
-    For i = 0 To m - 1
-        For j = 0 To n - 1
-            If i >= j Then
-                h(i, j) = QR(i, j)
+    ReDim H(0 To m - 1, 0 To n - 1)
+    For I = 0 To m - 1
+        For J = 0 To n - 1
+            If I >= J Then
+                H(I, J) = QR(I, J)
             Else
-                h(i, j) = 0#
+                H(I, J) = 0#
             End If
-        Next j
-    Next i
-    QR_getH = h
+        Next J
+    Next I
+    QR_getH = H
 End Function
 
 '   /** Generate and return the (economy-sized) orthogonal factor
@@ -7373,37 +7377,37 @@ End Function
 '   */
 Private Function QR_getQ() As Double()
     Dim q() As Double
-    Dim i As Long, j As Long
+    Dim I As Long, J As Long
     Dim k As Long
     Dim s As Double
     
     ReDim q(0 To m - 1, 0 To n - 1)
     For k = m - 1 To 0 Step -1
         q(k, k) = 1#
-        For j = k To n - 1
+        For J = k To n - 1
             If (QR(k, k) <> 0) Then
                 s = 0#
-                For i = k To m - 1
-                    s = s + QR(i, k) * q(i, j)
-                Next i
+                For I = k To m - 1
+                    s = s + QR(I, k) * q(I, J)
+                Next I
                 s = -s / QR(k, k)
-                For i = k To m - 1
-                    q(i, j) = q(i, j) + s * QR(i, k)
-                Next i
+                For I = k To m - 1
+                    q(I, J) = q(I, J) + s * QR(I, k)
+                Next I
             End If
-        Next j
+        Next J
     Next k
-    For i = 0 To m - 1
-        For j = 0 To n - 1
-            If Abs(q(i, j)) <> 0 Then
-                If signFlip(j) Then
-                    q(i, j) = -1 * q(i, j)
+    For I = 0 To m - 1
+        For J = 0 To n - 1
+            If Abs(q(I, J)) <> 0 Then
+                If signFlip(J) Then
+                    q(I, J) = -1 * q(I, J)
                 End If
             Else
-                 q(i, j) = 0
+                 q(I, J) = 0
             End If
-        Next j
-    Next i
+        Next J
+    Next I
     QR_getQ = q
 End Function
 
@@ -7412,32 +7416,32 @@ End Function
 '   */
 Private Function QR_getR() As Double()
     Dim r() As Double
-    Dim i As Long, j As Long
+    Dim I As Long, J As Long
     
     ReDim r(0 To n - 1, 0 To n - 1)
-    For i = 0 To n - 1
-        For j = 0 To n - 1
-            If i < j Then
-                r(i, j) = QR(i, j)
-            ElseIf i = j Then
-                r(i, j) = rDiag(i)
+    For I = 0 To n - 1
+        For J = 0 To n - 1
+            If I < J Then
+                r(I, J) = QR(I, J)
+            ElseIf I = J Then
+                r(I, J) = rDiag(I)
             Else
-                r(i, j) = 0#
+                r(I, J) = 0#
             End If
-            If signFlip(i) And (r(i, j) <> 0) Then r(i, j) = -1 * r(i, j)
-        Next j
-    Next i
+            If signFlip(I) And (r(I, J) <> 0) Then r(I, J) = -1 * r(I, J)
+        Next J
+    Next I
     QR_getR = r
 End Function
 
    
 Private Function QR_hypot(ParamArray args() As Variant) As Double
-    Dim i As Long
+    Dim I As Long
     Dim sqrSum As Double
     
-    For i = LBound(args) To UBound(args)
-        sqrSum = sqrSum + (args(i) * args(i))
-    Next i
+    For I = LBound(args) To UBound(args)
+        sqrSum = sqrSum + (args(I) * args(I))
+    Next I
     QR_hypot = Sqr(sqrSum)
 End Function
 
@@ -7445,12 +7449,12 @@ End Function
 '   @return     true if R, and hence A, has full rank.
 '   */
 Private Function QR_isFullRank() As Boolean
-    Dim j As Long
+    Dim J As Long
     Dim tmpResult As Boolean
     
-    Do While j < n And Not tmpResult
-        tmpResult = (rDiag(j) = 0)
-        j = j + 1
+    Do While J < n And Not tmpResult
+        tmpResult = (rDiag(J) = 0)
+        J = J + 1
     Loop
     QR_isFullRank = Not tmpResult
 End Function
@@ -7468,7 +7472,7 @@ Private Function QR_solve(ByRef B() As Double) As Double()
         Exit Function '"Matrix is rank deficient."
     End If
     Dim x() As Double, nx As Long
-    Dim i As Long, j As Long, k As Long
+    Dim I As Long, J As Long, k As Long
     Dim s As Double, tmpResult() As Double
     
 '    // Copy right hand side
@@ -7476,34 +7480,34 @@ Private Function QR_solve(ByRef B() As Double) As Double()
     nx = UBound(x, 2) - LBound(x, 2) + 1
 '    // Compute Y = transpose(Q)*B
     For k = 0 To n - 1
-        For j = 0 To nx - 1
+        For J = 0 To nx - 1
             s = 0
-            For i = k To m - 1
-                s = s + QR(i, k) * x(i, j)
-            Next i
+            For I = k To m - 1
+                s = s + QR(I, k) * x(I, J)
+            Next I
             s = -s / QR(k, k)
-            For i = k To m - 1
-                x(i, j) = x(i, j) + s * QR(i, k)
-            Next i
-        Next j
+            For I = k To m - 1
+                x(I, J) = x(I, J) + s * QR(I, k)
+            Next I
+        Next J
     Next k
 '    // Solve R*X = Y
     For k = n - 1 To 0 Step -1
-        For j = 0 To nx - 1
-            x(k, j) = x(k, j) / rDiag(k)
-        Next j
-        For i = 0 To k - 1
-            For j = 0 To nx - 1
-                x(i, j) = x(i, j) - x(k, j) * QR(i, k)
-            Next j
-        Next i
+        For J = 0 To nx - 1
+            x(k, J) = x(k, J) / rDiag(k)
+        Next J
+        For I = 0 To k - 1
+            For J = 0 To nx - 1
+                x(I, J) = x(I, J) - x(k, J) * QR(I, k)
+            Next J
+        Next I
     Next k
     ReDim tmpResult(0 To n - 1, 0 To nx - 1)
-    For i = 0 To n - 1
-        For j = 0 To nx - 1
-            tmpResult(i, j) = x(i, j)
-        Next j
-    Next i
+    For I = 0 To n - 1
+        For J = 0 To nx - 1
+            tmpResult(I, J) = x(I, J)
+        Next J
+    Next I
     QR_solve = tmpResult
 End Function
 
@@ -7590,7 +7594,7 @@ End Function
 ''' </summary>
 Private Function RegressionString(ByRef SolverResult() As Double, Optional ByRef PredNames As Variant = -1, _
                                     Optional ByRef PredInteractions As Variant = -1) As String
-    Dim i As Long
+    Dim I As Long
     Dim tmpResult As String
     Dim tmpNames() As String
     Dim strPNames As String
@@ -7608,35 +7612,35 @@ Private Function RegressionString(ByRef SolverResult() As Double, Optional ByRef
     If Not IsNumeric(PredInteractions) Then n = UBound(PredInteractions)
     o = UBound(SolverResult)
     ReDim tmpNames(0 To o - 1)
-    For i = 0 To o - 1
+    For I = 0 To o - 1
         If m >= 0 And n >= 0 Then
             If s <= m Then
-                tmpNames(i) = PredNames(i)
+                tmpNames(I) = PredNames(I)
                 s = s + 1
             Else
-                tmpNames(i) = FormatNamedPredictors(strPNames, CStr(PredInteractions(i - s)), False)
+                tmpNames(I) = FormatNamedPredictors(strPNames, CStr(PredInteractions(I - s)), False)
             End If
         Else
-            If n + 1 - (o - i) >= 0 Then 'Save predictors relations without names
-                tmpNames(i) = PredInteractions(n + 1 - (o - i))
+            If n + 1 - (o - I) >= 0 Then 'Save predictors relations without names
+                tmpNames(I) = PredInteractions(n + 1 - (o - I))
             Else
-                tmpNames(i) = "X" & CStr(i + 1)
+                tmpNames(I) = "X" & CStr(I + 1)
             End If
         End If
-    Next i
-    For i = 0 To o
-        If i = 0 Then
-            tmpResult = CStr(Round(SolverResult(i, 0), 4))
+    Next I
+    For I = 0 To o
+        If I = 0 Then
+            tmpResult = CStr(Round(SolverResult(I, 0), 4))
         Else
-            If CDbl(SolverResult(i, 0)) > 0 Then
+            If CDbl(SolverResult(I, 0)) > 0 Then
                 tmpResult = tmpResult & d_Space & op_plus _
-                            & d_Space & Round(SolverResult(i, 0), 4)
+                            & d_Space & Round(SolverResult(I, 0), 4)
             Else
-                tmpResult = tmpResult & d_Space & Round(SolverResult(i, 0), 4)
+                tmpResult = tmpResult & d_Space & Round(SolverResult(I, 0), 4)
             End If
-            tmpResult = tmpResult & op_mult & tmpNames(i - 1)
+            tmpResult = tmpResult & op_mult & tmpNames(I - 1)
         End If
-    Next i
+    Next I
     RegressionString = tmpResult
 End Function
 
@@ -7830,7 +7834,7 @@ Private Function RowColVectTransform(ByRef tVector As Variant) As Double()
     Dim vLB2 As Long
     Dim vUB As Long
     Dim fromRowToCol As Boolean
-    Dim i As Long, j As Long
+    Dim I As Long, J As Long
     Dim tmpResult() As Double
     
     If Not IsArray(tVector) Then Exit Function
@@ -7839,17 +7843,17 @@ Private Function RowColVectTransform(ByRef tVector As Variant) As Double()
     fromRowToCol = Not Is2Darray(tVector)
     If fromRowToCol Then    'Transform row vector to column vector
         ReDim tmpResult(0 To vUB - vLB, 0 To 0)
-        For i = vLB To vUB
-            tmpResult(j, 0) = CDbl(tVector(i))
-            j = j + 1
-        Next i
+        For I = vLB To vUB
+            tmpResult(J, 0) = CDbl(tVector(I))
+            J = J + 1
+        Next I
     Else    'Transform column vector to row vector
         vLB2 = LBound(tVector, 2)
         ReDim tmpResult(0 To vUB - vLB)
-        For i = vLB To vUB
-            tmpResult(j) = CDbl(tVector(i, vLB2))
-            j = j + 1
-        Next i
+        For I = vLB To vUB
+            tmpResult(J) = CDbl(tVector(I, vLB2))
+            J = J + 1
+        Next I
     End If
     RowColVectTransform = tmpResult
 End Function
@@ -8042,7 +8046,7 @@ Private Sub SORiteration(n As Long, ByRef A() As Double, ByRef B() As Double, _
                          ByRef x() As Double, iter As Long, tol As Double, omega As Double)
 ''' Hoffman, J. D. (2001). Numerical methods for engineers and scientists (2nd ed., rev.expanded). Marcel Dekker.
     Dim IT As Long
-    Dim i As Long, j As Long
+    Dim I As Long, J As Long
     Dim dxmax As Double
     Dim residual As Double
     Dim colLB As Long, rowLB As Long
@@ -8051,14 +8055,14 @@ Private Sub SORiteration(n As Long, ByRef A() As Double, ByRef B() As Double, _
     rowLB = LBound(A)
     For IT = 1 To iter
         dxmax = 0
-        For i = 1 To n
-            residual = B(i + rowLB - 1)
-            For j = 1 To n
-                residual = residual - A(i + rowLB - 1, j + colLB - 1) * x(j + rowLB - 1)
-            Next j
+        For I = 1 To n
+            residual = B(I + rowLB - 1)
+            For J = 1 To n
+                residual = residual - A(I + rowLB - 1, J + colLB - 1) * x(J + rowLB - 1)
+            Next J
             If Abs(residual) > dxmax Then dxmax = Abs(residual)
-            x(i + rowLB - 1) = x(i + rowLB - 1) + omega * residual / A(i + rowLB - 1, i + colLB - 1)
-        Next i
+            x(I + rowLB - 1) = x(I + rowLB - 1) + omega * residual / A(I + rowLB - 1, I + colLB - 1)
+        Next I
         If dxmax < tol Then Exit For
     Next IT
 End Sub
@@ -8072,18 +8076,18 @@ Private Function SplitArgs(ByRef args As String) As String()
     Dim LenArgsStr As Long
     Dim VectorOpenFlag As Boolean
     Dim OpenCBrackets As Long
-    Dim i As Long
+    Dim I As Long
     
     tmpPos = 1
     LenArgsStr = LenB(args)
     Do
         VectorOpenFlag = (InStrB(tmpPos, args, d_lCurly) = tmpPos)
         If VectorOpenFlag Then 'Currrent argument is an array
-            i = tmpPos
+            I = tmpPos
             OpenCBrackets = 1
-            Do While VectorOpenFlag And i <= LenArgsStr
-                i = i + 2
-                curChar = MidB$(args, i, 2)
+            Do While VectorOpenFlag And I <= LenArgsStr
+                I = I + 2
+                curChar = MidB$(args, I, 2)
                 If curChar = d_lCurly Then
                     OpenCBrackets = OpenCBrackets + 1
                 Else
@@ -8094,8 +8098,8 @@ Private Function SplitArgs(ByRef args As String) As String()
                 VectorOpenFlag = Not (curChar = d_rCurly) Or OpenCBrackets
             Loop
             SargStart = tmpPos
-            SargEnd = i + 2
-            tmpPos = i + 4
+            SargEnd = I + 2
+            tmpPos = I + 4
         Else
             SargStart = tmpPos
             curChar = MidB$(args, SargStart, 2)
@@ -8131,8 +8135,8 @@ Private Function SplitArrBranch(ByRef Argument As String, ByRef outArr() As Stri
     Dim tmpArgs() As String
     Dim tmpResult() As Long
     Dim tmpOutArr() As String
-    Dim i As Long
-    Dim j As Long
+    Dim I As Long
+    Dim J As Long
     Dim k As Long
     Dim m As Long
     Dim n As Long
@@ -8143,40 +8147,40 @@ Private Function SplitArrBranch(ByRef Argument As String, ByRef outArr() As Stri
     UB = UBound(tmpArgs)
     ReDim tmpResult(0 To 2 * (UB + 1))
     ReDim outArr(0 To 0)
-    For i = 0 To UB
-        If tmpArgs(i) Like "{{*}}" Then ' Array
-            tmpArr() = ArrayFromString(tmpArgs(i))
+    For I = 0 To UB
+        If tmpArgs(I) Like "{{*}}" Then ' Array
+            tmpArr() = ArrayFromString(tmpArgs(I))
             If IsArrayAllocated(tmpArr) Then 'Transform success
                 If Is2Darray(tmpArr) Then
                     tmpOutArr = ArraySTR1DFrom2DArr(tmpArr)
-                    tmpResult(j) = UBound(tmpArr)   'Rows in the array
-                    tmpResult(j + 1) = UBound(tmpArr, 2) 'Columns in each row
+                    tmpResult(J) = UBound(tmpArr)   'Rows in the array
+                    tmpResult(J + 1) = UBound(tmpArr, 2) 'Columns in each row
                 Else
                     tmpOutArr = tmpArr
-                    tmpResult(j) = UBound(tmpArr)
-                    tmpResult(j + 1) = 0
+                    tmpResult(J) = UBound(tmpArr)
+                    tmpResult(J + 1) = 0
                 End If
-                j = j + 2 'Worked array elements
+                J = J + 2 'Worked array elements
             Else
                 GoTo Err_return
             End If
         Else
-            If tmpArgs(i) Like "{*}" Then ' Vector
-                tmpArr() = Split(MidB(tmpArgs(i), 3, LenB(tmpArgs(i)) - 4), P_SEPARATORCHAR)
+            If tmpArgs(I) Like "{*}" Then ' Vector
+                tmpArr() = Split(MidB(tmpArgs(I), 3, LenB(tmpArgs(I)) - 4), P_SEPARATORCHAR)
                 If IsArrayAllocated(tmpArr) Then
                     tmpOutArr = tmpArr
-                    tmpResult(j) = UBound(tmpArr)
-                    tmpResult(j + 1) = -3
-                    j = j + 2
+                    tmpResult(J) = UBound(tmpArr)
+                    tmpResult(J + 1) = -3
+                    J = J + 2
                 Else
                     GoTo Err_return
                 End If
             Else ' Single data
                 ReDim tmpArr(0 To 0)
-                tmpArr(0) = tmpArgs(i)
+                tmpArr(0) = tmpArgs(I)
                 tmpOutArr = tmpArr
-                tmpResult(j) = -2 'Single data type
-                j = j + 1
+                tmpResult(J) = -2 'Single data type
+                J = J + 1
             End If
         End If
         m = UBound(outArr)
@@ -8186,8 +8190,8 @@ Private Function SplitArrBranch(ByRef Argument As String, ByRef outArr() As Stri
             outArr(usedIdx) = tmpOutArr(k)
             usedIdx = usedIdx + 1
         Next k
-    Next i
-    ReDim Preserve tmpResult(0 To j - 1)
+    Next I
+    ReDim Preserve tmpResult(0 To J - 1)
     ReDim Preserve outArr(0 To usedIdx - 1)
 nReturn:
     SplitArrBranch = tmpResult
@@ -8233,14 +8237,14 @@ err_Handler:
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
-Private Function STATCOM(q As Double, i As Double, _
-                        j As Double, B As Double) As Double
+Private Function STATCOM(q As Double, I As Double, _
+                        J As Double, B As Double) As Double
     Dim zz As Double
     Dim z As Double
     Dim k As Double
     
-    zz = 1: z = zz: k = i
-    Do While (k <= j)
+    zz = 1: z = zz: k = I
+    Do While (k <= J)
         zz = zz * q * k / (k - B)
         z = z + zz: k = k + 2
     Loop
@@ -8318,108 +8322,17 @@ Private Function STUDT_(ByVal t As Double, n As Double) As Double
     End If
 End Function
 
-Private Function subTINV_(x1 As Double, x2 As Double) As Variant
-    If ((0 >= x1 Or Abs(x1) - Abs(Fix(x1)) <> 0) Or (0 >= x2 Or x2 >= 1)) Then
-        subTINV_ = False
-    Else
-        subTINV_ = GetPrecisionResult(subt_(x1, x2))
-    End If
-End Function
-
-Private Function subtprob_(y1 As Double, y2 As Double) As Double
-    Dim e As Double, rt1 As Double
-    Dim L As Double, n As Double
-    Dim s As Double, rt2 As Double
-    
-    L = Atn((y2 / Sqr(y1)) / 1)
-    n = Cos(L) ^ 2: s = 1
-    For rt2 = y1 - 2 To 2 Step -2
-        s = 1 + (rt2 - 1) / rt2 * n * s
-    Next rt2
-    If REM_(y1, 2) = 0 Then
-        e = 0.5
-        rt1 = Sin(L) / 2
-        subtprob_ = rt1
-    Else
-        e = 0.5 + L / pi
-        If 1 = y1 Then
-            rt1 = 0
-        Else
-            rt1 = Cos(L) * Sin(L) / pi
-        End If
-        subtprob_ = MAX_(0, 1 - e - rt1 * s)
-    End If
-End Function
-
-Private Function subt_(t As Double, r As Double) As Double
-    Dim e As Double, h As Double
-    Dim f As Double, i As Double
-    Dim inp1 As Double, inp2 As Double
-    Dim inp3 As Double, inp4 As Double
-    Dim inp5 As Double, inp6 As Double
-    Dim inp7 As Double, inp9 As Double
-    
-    If (0 >= r Or r >= 1) Then
-        subt_ = 0: Exit Function
-    End If
-    If (0.5 > r) Then
-        subt_ = -subt_(t, 1 - r): Exit Function
-    End If
-    e = subu_(r)
-    inp1 = e ^ 2
-    inp2 = (27 * inp1 + 339) * inp1 + 930
-    inp2 = inp2 * inp1 - 1782
-    inp2 = ((inp2 * inp1 - 765) * inp1 + 17955) / 368640
-    inp3 = (79 * inp1 + 776) * inp1 + 1482
-    inp3 = inp3 * inp1 - 1920
-    inp3 = (inp3 * inp1 - 945) / 92160
-    inp4 = (((3 * inp1 + 19) * inp1 + 17) * inp1 - 15) / 384
-    inp6 = ((5 * inp1 + 16) * inp1 + 3) / 96
-    inp5 = (inp1 + 1) / 4
-    inp7 = inp3 + inp2 / t
-    inp7 = (inp6 + (inp4 + inp7 / t) / t)
-    inp7 = e * (1 + (inp5 + inp7 / t) / t)
-    If (t <= (Log10(r) ^ 2) + 3) Then
-        Do
-            f = subtprob_(t, inp7)
-            inp9 = t + 1
-            i = Log(inp9 / (t + inp7 * inp7))
-            i = i + Log(t / inp9 / 2 / pi) - 1 + (1 / inp9 - 1 / t)
-            i = (f - r) / Exp((inp9 * i / 6) / 2)
-            inp7 = inp7 + i
-            h = RoundToPrecision(i, Abs(Fix(Log10(Abs(inp7)) - 6)))
-        Loop While (inp7 And 0 <> h)
-    End If
-    subt_ = inp7
-End Function
-
-Private Function subu_(p3 As Double) As Double
-    Dim p4 As Double
-    Dim e As Double
-    
-    p4 = -Log(4 * p3 * (1 - p3))
-    e = -3.231081277E-09 + p4 * (3.657763036E-11 + 6.936233982E-13 * p4)
-    e = -0.00000104527497 + p4 * (8.360937017E-08 + p4 * e)
-    e = 0.000006841218299 + p4 * (0.000005824238515 + p4 * e)
-    e = -0.0008364353589 + p4 * (-0.0002250947176 + p4 * e)
-    e = Sqr(p4 * (1.570796288 + p4 * (0.03706987906 + p4 * e)))
-    If p3 > 0.5 Then
-        e = -e
-    End If
-    subu_ = e
-End Function
-
 Private Function SUM(ByRef expression As String, ByRef fName As String) As String
-    Dim g As Long
+    Dim G As Long
     Dim tmpData() As String
     Dim tmpEval As Double
     
     On Error GoTo err_Handler
     tmpEval = 0
     tmpData() = SplitArgs(expression)
-    For g = LBound(tmpData) To UBound(tmpData)
-        tmpEval = tmpEval + CDbl(tmpData(g))
-    Next g
+    For G = LBound(tmpData) To UBound(tmpData)
+        tmpEval = tmpEval + CDbl(tmpData(G))
+    Next G
     SUM = CStr(tmpEval): Erase tmpData
     Exit Function
 err_Handler:
@@ -8581,9 +8494,11 @@ End Function
 ''' <summary>
 '''     Receives the degrees of freedom and the confidence level to
 '''     compute the one-tailed or two-tailed t-value (Student t-value)
-'''     with up to 6 significant digits accuracy. Use the tOption
-'''     parameter to select from two and right one-tailed computation.
-'''     [(c) iCalculator™](https://www.icalculator.com/)
+'''     with full accuracy. Use the tOption parameter to select from
+'''     two and right one-tailed computation.
+'''
+'''     (c) David M. Lane
+'''     https://onlinestatbook.com/2/calculators/inverse_t_dist.html
 ''' </summary>
 ''' <param name="confidence">Confidence level.</param>
 ''' <param name="dof">Shape parameter alpha.</param>
@@ -8618,28 +8533,37 @@ err_Handler:
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
-Private Function TINV_(confidence As Double, dof As Double, _
+Private Function TINV_(ByRef confidence As Double, dof As Double, _
                             Optional tOption As Single = 2) As Double
+    Dim x As Double
     Dim p As Double 'Probability
     
     If confidence > 1 And confidence < 100 Then 'Percentage entry
         confidence = confidence / 100
     End If
-    p = (1 - confidence)
+    p = 1 - confidence
     If tOption = 1 Then
-        TINV_ = subTINV_(dof, p)
+        x = iBETAINV(2 * p, 0.5 * dof, 0.5)
     Else
         If tOption = 2 Then
-            TINV_ = subTINV_(dof, p / 2)
+            x = iBETAINV(p, 0.5 * dof, 0.5)
         End If
+    End If
+    x = Sqr(dof * (1 - x) / x)
+    If confidence > 0 Then
+        TINV_ = x
+    Else
+        TINV_ = -x
     End If
 End Function
 
 ''' <summary>
 '''     Receives the degrees of freedom and the Probability to
-'''     compute the one-tailed t-value (Student t-value) with up
-'''     to 6 significant digits accuracy. Parameter p can be passed
-'''     as 0 < p < 1, or 1 < p < 100
+'''     compute the one-tailed t-value (Student t-value) with full
+'''     accuracy. Parameter p can be passed as 0 < p < 1, or 1 < p < 100
+'''
+'''     (c) David M. Lane
+'''     https://onlinestatbook.com/2/calculators/inverse_t_dist.html
 ''' </summary>
 ''' <param name="p">Probability.</param>
 ''' <param name="dof">Degrees of freedom.</param>
@@ -8673,21 +8597,14 @@ err_Handler:
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
-Private Function TINV_1T_(p As Double, dof As Double) As Double
-    Dim confidence As Double
-    
-    If p > 1 Then  'Percentage entry
-        p = p / 100
-    End If
-    confidence = 1 - p
-    TINV_1T_ = TINV_(confidence, dof, 1)
-End Function
-
 ''' <summary>
 '''     Receives the degrees of freedom and the Probability to
 '''     compute the two-tailed t-value (Student t-value) with full
 '''     significant digits accuracy. Parameter p can be passed
 '''     as 0 < p < 1, or 1 < p < 100
+'''
+'''     (c) David M. Lane
+'''     https://onlinestatbook.com/2/calculators/inverse_t_dist.html
 ''' </summary>
 ''' <param name="p">Probability.</param>
 ''' <param name="dof">Degrees of freedom.</param>
@@ -8704,7 +8621,7 @@ Private Function TINV_2T(ByRef expression As String, ByRef fName As String) As S
     argsCount = UB - LB + 1
     Select Case argsCount
         Case 2
-            tmpEval = TINV_2T_( _
+            tmpEval = TINV_( _
                             CDbl(tmpData(LB)), _
                             CDbl(tmpData(UB)) _
                             )
@@ -8720,24 +8637,9 @@ err_Handler:
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
 
-Private Function TINV_2T_(ByVal p As Double, dof As Long) As Double
-    Dim x As Double
-    
-    If p > 1 Then 'Percentage entry
-        p = p / 100
-    End If
-    x = iBETAINV(p, 0.5 * dof, 0.5)
-    x = Sqr(dof * (1 - x) / x)
-    If p > 0 Then
-        TINV_2T_ = x
-    Else
-        TINV_2T_ = -x
-    End If
-End Function
-
 Public Function ToDblArray(ByRef aArray As Variant) As Double()
-    Dim i As Long, LB As Long, UB As Long
-    Dim j As Long, LB2 As Long, UB2 As Long
+    Dim I As Long, LB As Long, UB As Long
+    Dim J As Long, LB2 As Long, UB2 As Long
     Dim tmpResult() As Double
     Dim IsVector As Boolean
     
@@ -8751,15 +8653,15 @@ Public Function ToDblArray(ByRef aArray As Variant) As Double()
     Else
         ReDim tmpResult(0 To UB - LB)
     End If
-    For i = LB To UB
+    For I = LB To UB
         If IsVector Then
-            tmpResult(i - LB) = CDbl(aArray(i))
+            tmpResult(I - LB) = CDbl(aArray(I))
         Else
-            For j = LB2 To UB2
-                tmpResult(i - LB, j - LB2) = CDbl(aArray(i, j))
-            Next j
+            For J = LB2 To UB2
+                tmpResult(I - LB, J - LB2) = CDbl(aArray(I, J))
+            Next J
         End If
-    Next i
+    Next I
     ToDblArray = tmpResult
 End Function
 
@@ -8904,9 +8806,11 @@ Private Sub VariableAssignment(ByRef vString As String)
     fCurlyPos = InStrB(1, tmpVstring, d_lCurly)
     If fCurlyPos > 0 Then
         If InStrB(fCurlyPos + 1, tmpVstring, d_lCurly) - fCurlyPos = 2 Then 'Full array
-            tmpVstring = Replace(tmpVstring, d_rCurly & d_rCurly & P_SEPARATORCHAR, d_rCurly & d_rCurly & P_SEPARATORCHAR & P_SEPARATORCHAR)
+            tmpVstring = Replace(tmpVstring, d_rCurly & d_rCurly & P_SEPARATORCHAR, _
+                            d_rCurly & d_rCurly & P_SEPARATORCHAR & P_SEPARATORCHAR)
         Else 'Vector
-            tmpVstring = Replace(tmpVstring, d_rCurly & P_SEPARATORCHAR, d_rCurly & P_SEPARATORCHAR & P_SEPARATORCHAR)
+            tmpVstring = Replace(tmpVstring, d_rCurly & P_SEPARATORCHAR, _
+                        d_rCurly & P_SEPARATORCHAR & P_SEPARATORCHAR)
         End If
     Else
         tmpVstring = Replace(tmpVstring, P_SEPARATORCHAR, P_SEPARATORCHAR & P_SEPARATORCHAR)
@@ -8936,7 +8840,7 @@ End Sub
 
 Private Sub VM_DOT_(ByRef A() As Double, ByRef B As Variant, ByRef aLB As Long, ByRef aLB2 As Long, _
                     ByRef aUB As Long, ByRef aUB2 As Long, ByRef bLB2 As Long, ByRef bUB2 As Long, _
-                    ByRef c() As Double, ByRef i As Long, ByRef j As Long, ByRef m As Long, _
+                    ByRef c() As Double, ByRef I As Long, ByRef J As Long, ByRef m As Long, _
                     ByRef n As Long, ByRef pSum As Double, ByRef bLB As Long, ByRef bUB As Long, ByRef jj As Long)
                     
     aLB = 0: aUB = 0
@@ -8947,15 +8851,15 @@ Private Sub VM_DOT_(ByRef A() As Double, ByRef B As Variant, ByRef aLB As Long, 
     m = bUB2 - bLB2 + 1
     If Not (aUB2 - aLB2 + 1) <> (bUB - bLB + 1) Then
         ReDim c(0 To n - 1, 0 To m - 1)
-        For i = 0 To n - 1
-            For j = 0 To m - 1
+        For I = 0 To n - 1
+            For J = 0 To m - 1
                 pSum = 0
                 For jj = 0 To aUB2 - aLB2        'Loop a() columns
-                    pSum = pSum + A(aLB + jj) * B(bLB + jj, bLB2 + j)
+                    pSum = pSum + A(aLB + jj) * B(bLB + jj, bLB2 + J)
                 Next jj
-                c(i, j) = pSum
-            Next j
-        Next i
+                c(I, J) = pSum
+            Next J
+        Next I
     End If
 End Sub
 
