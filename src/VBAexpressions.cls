@@ -8549,7 +8549,7 @@ Private Function TINV_(ByRef confidence As Double, dof As Double, _
             x = iBETAINV(p, 0.5 * dof, 0.5)
         End If
     End If
-    x = Sqr(dof * (1 - x) / x)
+    x = Round(Sqr(dof * (1 - x) / x), 8)
     If confidence > 0 Then
         TINV_ = x
     Else

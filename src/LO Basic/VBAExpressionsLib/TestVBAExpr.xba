@@ -337,6 +337,11 @@ Sub RunAllTests
 			&quot;ROUND(IBETA((2-1)/(3-1);8;10);4)&quot;, _
 			&quot;0.6855&quot; _
 		)
+	Run( _
+			&quot;Excel T.INV function test&quot;, _
+			&quot;ROUND(TINV(0.75;2;1);8)&quot;, _
+			&quot;0.81649658&quot; _
+		)
 	SF_Exception.debugprint(&quot;Passed tests:&quot;,sAcum)	
 	SF_Exception.debugprint(&quot;Failed tests:&quot;,tTotal - sAcum)	
 	SF_Exception.debugprint(&quot;Passed tests Ratio:&quot;,Round(100*sAcum/tTotal,2) &amp;&quot;%&quot;)

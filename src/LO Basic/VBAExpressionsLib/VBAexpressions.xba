@@ -3995,9 +3995,11 @@ Private Function GetFunctionName(ByRef expression As String) As String
     For EFjCounter = LBound(FunctionsId) To UBound(FunctionsId)
         tmpPos = strVBA.InStrB(1, ExpCopy, FunctionsId(EFjCounter))
         If tmpPos Then
-            GFNbool = ValidFuntionName(ExpCopy, FunctionsId(EFjCounter), tmpPos)
-            If GFNbool Then
-                Exit For
+            If ExpCopy = FunctionsId(EFjCounter) Then
+                GFNbool = ValidFuntionName(ExpCopy, FunctionsId(EFjCounter), tmpPos)
+                If GFNbool Then
+                    Exit For
+                End If
             End If
         End If
     Next EFjCounter
@@ -4009,9 +4011,11 @@ Private Function GetFunctionName(ByRef expression As String) As String
         For i = 0 To UserDefFunctions.aindex
             tmpPos = strVBA.InStrB(1, ExpCopy, UserDefFunctions.Storage(i).aName)
             If tmpPos Then
-                GFNbool = ValidFuntionName(ExpCopy, UserDefFunctions.Storage(i).aName, tmpPos)
-                If GFNbool Then
-                    Exit For
+                If ExpCopy = UserDefFunctions.Storage(I).name Then
+                    GFNbool = ValidFuntionName(ExpCopy, UserDefFunctions.Storage(I).name, tmpPos)
+                    If GFNbool Then
+                        Exit For
+                    End If
                 End If
             End If
         Next i
@@ -4951,7 +4955,7 @@ Private Function iBETAINV(p As Double, A As Double, B As Double) As Double
         err = iBETA_(x, A, B) - p
         t = Exp(a1 * Log(x) + b1 * Log(1 - x) + afac)
         u = err / t
-        t = u / (1 - 0.5 * Min(1, u * (a1 / x - b1 / (1 - x))))
+        t = u / (1 - 0.5 * MIN_(1, u * (a1 / x - b1 / (1 - x))))
         x = x - t
         If x &lt;= 0 Then x = 0.5 * (x + t)
         If x &gt;= 1 Then x = 0.5 * (x + t + 1)
@@ -8452,97 +8456,6 @@ Private Function STUDT_(ByVal t As Double, n As Double) As Double
     End If
 End Function
 
-Private Function subTINV_(x1 As Double, x2 As Double) As Variant
-    If ((0 &gt;= x1 Or Abs(x1) - Abs(Fix(x1)) &lt;&gt; 0) Or (0 &gt;= x2 Or x2 &gt;= 1)) Then
-        subTINV_ = False
-    Else
-        subTINV_ = GetPrecisionResult(subt_(x1, x2))
-    End If
-End Function
-
-Private Function subtprob_(y1 As Double, y2 As Double) As Double
-    Dim e As Double, rt1 As Double
-    Dim L As Double, n As Double
-    Dim s As Double, rt2 As Double
-    
-    L = Atn((y2 / Sqr(y1)) / 1)
-    n = Cos(L) ^ 2: s = 1
-    For rt2 = y1 - 2 To 2 Step -2
-        s = 1 + (rt2 - 1) / rt2 * n * s
-    Next rt2
-    If REM_(y1, 2) = 0 Then
-        e = 0.5
-        rt1 = Sin(L) / 2
-        subtprob_ = rt1
-    Else
-        e = 0.5 + L / pi
-        If 1 = y1 Then
-            rt1 = 0
-        Else
-            rt1 = Cos(L) * Sin(L) / pi
-        End If
-        subtprob_ = MAX_(0, 1 - e - rt1 * s)
-    End If
-End Function
-
-Private Function subt_(t As Double, r As Double) As Double
-    Dim e As Double, h As Double
-    Dim f As Double, i As Double
-    Dim inp1 As Double, inp2 As Double
-    Dim inp3 As Double, inp4 As Double
-    Dim inp5 As Double, inp6 As Double
-    Dim inp7 As Double, inp9 As Double
-    
-    If (0 &gt;= r Or r &gt;= 1) Then
-        subt_ = 0: Exit Function
-    End If
-    If (0.5 &gt; r) Then
-        subt_ = -subt_(t, 1 - r): Exit Function
-    End If
-    e = subu_(r)
-    inp1 = e ^ 2
-    inp2 = (27 * inp1 + 339) * inp1 + 930
-    inp2 = inp2 * inp1 - 1782
-    inp2 = ((inp2 * inp1 - 765) * inp1 + 17955) / 368640
-    inp3 = (79 * inp1 + 776) * inp1 + 1482
-    inp3 = inp3 * inp1 - 1920
-    inp3 = (inp3 * inp1 - 945) / 92160
-    inp4 = (((3 * inp1 + 19) * inp1 + 17) * inp1 - 15) / 384
-    inp6 = ((5 * inp1 + 16) * inp1 + 3) / 96
-    inp5 = (inp1 + 1) / 4
-    inp7 = inp3 + inp2 / t
-    inp7 = (inp6 + (inp4 + inp7 / t) / t)
-    inp7 = e * (1 + (inp5 + inp7 / t) / t)
-    If (t &lt;= (Log10(r) ^ 2) + 3) Then
-        Do
-            f = subtprob_(t, inp7)
-            inp9 = t + 1
-            i = Log(inp9 / (t + inp7 * inp7))
-            i = i + Log(t / inp9 / 2 / pi) - 1 + (1 / inp9 - 1 / t)
-            i = (f - r) / Exp((inp9 * i / 6) / 2)
-            inp7 = inp7 + i
-            h = RoundToPrecision(i, Abs(Fix(Log10(Abs(inp7)) - 6)))
-        Loop While (inp7 And 0 &lt;&gt; h)
-    End If
-    subt_ = inp7
-End Function
-
-Private Function subu_(p3 As Double) As Double
-    Dim p4 As Double
-    Dim e As Double
-    
-    p4 = -Log(4 * p3 * (1 - p3))
-    e = -3.231081277E-09 + p4 * (3.657763036E-11 + 6.936233982E-13 * p4)
-    e = -0.00000104527497 + p4 * (8.360937017E-08 + p4 * e)
-    e = 0.000006841218299 + p4 * (0.000005824238515 + p4 * e)
-    e = -0.0008364353589 + p4 * (-0.0002250947176 + p4 * e)
-    e = Sqr(p4 * (1.570796288 + p4 * (0.03706987906 + p4 * e)))
-    If p3 &gt; 0.5 Then
-        e = -e
-    End If
-    subu_ = e
-End Function
-
 Private Function SUM(ByRef expression As String, ByRef fName As String) As String
     Dim g As Long
     Dim tmpData() As String
@@ -8713,15 +8626,17 @@ err_Handler:
 End Function
 
 &apos;&apos;&apos; &lt;summary&gt;
-&apos;&apos;&apos;     Receives the degrees of freedom and the confidence level to
-&apos;&apos;&apos;     compute the one-tailed or two-tailed t-value (Student t-value)
-&apos;&apos;&apos;     with up to 6 significant digits accuracy. Use the tOption
-&apos;&apos;&apos;     parameter to select from two and right one-tailed computation.
-&apos;&apos;&apos;     [(c) iCalculator™](https://www.icalculator.com/)
+&apos;&apos;&apos;     receives the degrees of freedom and the confidence level to
+&apos;&apos;&apos;     compute the one-tailed or two-tailed t-value (student t-value)
+&apos;&apos;&apos;     with full accuracy. use the toption parameter to select from
+&apos;&apos;&apos;     two and right one-tailed computation.
+&apos;&apos;&apos;
+&apos;&apos;&apos;     (c) david m. lane
+&apos;&apos;&apos;     https://onlinestatbook.com/2/calculators/inverse_t_dist.html
 &apos;&apos;&apos; &lt;/summary&gt;
-&apos;&apos;&apos; &lt;param name=&quot;confidence&quot;&gt;Confidence level.&lt;/param&gt;
-&apos;&apos;&apos; &lt;param name=&quot;dof&quot;&gt;Shape parameter alpha.&lt;/param&gt;
-&apos;&apos;&apos; &lt;param name=&quot;tOption&quot;&gt;Select from two and right one-tailed computation.&lt;/param&gt;
+&apos;&apos;&apos; &lt;param name=&quot;confidence&quot;&gt;confidence level.&lt;/param&gt;
+&apos;&apos;&apos; &lt;param name=&quot;dof&quot;&gt;shape parameter alpha.&lt;/param&gt;
+&apos;&apos;&apos; &lt;param name=&quot;toption&quot;&gt;select from two and right one-tailed computation.&lt;/param&gt;
 Private Function TINV(ByRef expression As String, ByRef fName As String) As String
     Dim argsCount As Long
     Dim tmpData() As String
@@ -8752,28 +8667,37 @@ err_Handler:
                                     d_lParenthesis &amp; err.Description &amp; d_rParenthesis
 End Function
 
-Private Function TINV_(confidence As Double, dof As Double, _
+Private Function TINV_(ByRef confidence As Double, dof As Double, _
                             Optional tOption As Single = 2) As Double
+    Dim x As Double
     Dim p As Double &apos;Probability
     
     If confidence &gt; 1 And confidence &lt; 100 Then &apos;Percentage entry
         confidence = confidence / 100
     End If
-    p = (1 - confidence)
+    p = 1 - confidence
     If tOption = 1 Then
-        TINV_ = subTINV_(dof, p)
+        x = iBETAINV(2 * p, 0.5 * dof, 0.5)
     Else
         If tOption = 2 Then
-            TINV_ = subTINV_(dof, p / 2)
+            x = iBETAINV(p, 0.5 * dof, 0.5)
         End If
+    End If
+    x = Round(Sqr(dof * (1 - x) / x), 8)
+    If confidence &gt; 0 Then
+        TINV_ = x
+    Else
+        TINV_ = -x
     End If
 End Function
 
 &apos;&apos;&apos; &lt;summary&gt;
 &apos;&apos;&apos;     Receives the degrees of freedom and the Probability to
-&apos;&apos;&apos;     compute the one-tailed t-value (Student t-value) with up
-&apos;&apos;&apos;     to 6 significant digits accuracy. Parameter p can be passed
-&apos;&apos;&apos;     as 0 &lt; p &lt; 1, or 1 &lt; p &lt; 100
+&apos;&apos;&apos;     compute the one-tailed t-value (Student t-value) with full
+&apos;&apos;&apos;     accuracy. Parameter p can be passed as 0 &lt; p &lt; 1, or 1 &lt; p &lt; 100
+&apos;&apos;&apos;
+&apos;&apos;&apos;     (c) David M. Lane
+&apos;&apos;&apos;     https://onlinestatbook.com/2/calculators/inverse_t_dist.html
 &apos;&apos;&apos; &lt;/summary&gt;
 &apos;&apos;&apos; &lt;param name=&quot;p&quot;&gt;Probability.&lt;/param&gt;
 &apos;&apos;&apos; &lt;param name=&quot;dof&quot;&gt;Degrees of freedom.&lt;/param&gt;
@@ -8807,21 +8731,14 @@ err_Handler:
                                     d_lParenthesis &amp; err.Description &amp; d_rParenthesis
 End Function
 
-Private Function TINV_1T_(p As Double, dof As Double) As Double
-    Dim confidence As Double
-    
-    If p &gt; 1 Then  &apos;Percentage entry
-        p = p / 100
-    End If
-    confidence = 1 - p
-    TINV_1T_ = TINV_(confidence, dof, 1)
-End Function
-
 &apos;&apos;&apos; &lt;summary&gt;
 &apos;&apos;&apos;     Receives the degrees of freedom and the Probability to
 &apos;&apos;&apos;     compute the two-tailed t-value (Student t-value) with full
 &apos;&apos;&apos;     significant digits accuracy. Parameter p can be passed
 &apos;&apos;&apos;     as 0 &lt; p &lt; 1, or 1 &lt; p &lt; 100
+&apos;&apos;&apos;
+&apos;&apos;&apos;     (c) David M. Lane
+&apos;&apos;&apos;     https://onlinestatbook.com/2/calculators/inverse_t_dist.html
 &apos;&apos;&apos; &lt;/summary&gt;
 &apos;&apos;&apos; &lt;param name=&quot;p&quot;&gt;Probability.&lt;/param&gt;
 &apos;&apos;&apos; &lt;param name=&quot;dof&quot;&gt;Degrees of freedom.&lt;/param&gt;
@@ -8838,7 +8755,7 @@ Private Function TINV_2T(ByRef expression As String, ByRef fName As String) As S
     argsCount = UB - LB + 1
     Select Case argsCount
         Case 2
-            tmpEval = TINV_2T_( _
+            tmpEval = TINV_( _
                             CDbl(tmpData(LB)), _
                             CDbl(tmpData(UB)) _
                             )
@@ -8852,21 +8769,6 @@ err_Handler:
     TINV_2T = e_ValueError
     BuildErrMessage errEvalError, d_lCurly &amp; fName &amp; d_rCurly &amp; &quot; | Error#: &quot; &amp; err.Number &amp; d_Space &amp; _
                                     d_lParenthesis &amp; err.Description &amp; d_rParenthesis
-End Function
-
-Private Function TINV_2T_(ByVal p As Double, dof As Long) As Double
-    Dim x As Double
-    
-    If p &gt; 1 Then &apos;Percentage entry
-        p = p / 100
-    End If
-    x = iBETAINV(p, 0.5 * dof, 0.5)
-    x = Sqr(dof * (1 - x) / x)
-    If p &gt; 0 Then
-        TINV_2T_ = x
-    Else
-        TINV_2T_ = -x
-    End If
 End Function
 
 Public Function ToDblArray(ByRef aArray As Variant) As Variant
