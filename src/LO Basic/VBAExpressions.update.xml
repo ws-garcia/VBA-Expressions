@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<description xmlns="https://openoffice.org/extensions/update/2006"
+  xmlns:xlink="https://www.w3.org/1999/xlink">
+  <identifier value="com.ecpsolutions.extensions.vbaexpressionslib"/>
+  <version value="1.0.6" />
+  <update-download>
+    <src xlink:href="https://github.com/ws-garcia/VBA-Expressions/releases/latest/download/VBAExpressions.oxt" />
+  </update-download>
+</description>
