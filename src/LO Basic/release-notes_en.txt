@@ -1,0 +1,5 @@
+# Reaffirmation!
+## Bug Fix
+- [x] Resolved several collisions when analysing expressions with implicit functions and multiplications.
+## Changes
+- [x] Added update functionality for the LO extension.
