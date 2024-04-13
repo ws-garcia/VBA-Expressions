@@ -4,6 +4,6 @@
   <identifier value="com.ecpsolutions.extensions.vbaexpressions.oxt"/>
   <version value="1.0.6"/>
   <update-download>
-    <src xlink:href="https://github.com/ws-garcia/VBA-Expressions/releases/download/v3.2.6/VBAExpressions.oxt"/>
+    <src xlink:href="https://extensions.libreoffice.org/assets/downloads/5960/1712469597/VBAExpression.oxt"/>
   </update-download>
 </description>
