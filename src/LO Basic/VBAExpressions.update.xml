@@ -1,9 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<description xmlns="https://openoffice.org/extensions/update/2006"
-  xmlns:xlink="https://www.w3.org/1999/xlink">
-  <identifier value="com.ecpsolutions.extensions.vbaexpressions.oxt"/>
-  <version value="1.0.6" />
-  <update-download>
-    <src xlink:href="https://downgit.github.io/#/home?url=https://github.com/ws-garcia/VBA-Expressions/blob/main/src/LO%20Basic/VBAExpressions.oxt" />
-  </update-download>
-</description>
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="https://www.w3.org/2005/Atom" xml:lang="en-US">
+
+  <title>Extension Update</title>
+  <link rel="alternate" type="https://github.com/ws-garcia/VBA-Expressions/releases/latest"/>
+  <updated>2024-13-04T10:57:00Z</updated>
+  <author>
+    <name>Wilfredo García</name>
+    <uri>https://github.com/ws-garcia/</uri>
+  </author>
+  <entry>
+    <title>VBAExpressions.oxt version 1.0.6 available</title>
+    <link rel="alternate" type="text/html"
+      href="https://github.com/ws-garcia/VBA-Expressions/releases/latest"/>
+    <category term="com.ecpsolutions.extensions.vbaexpressions.oxt" label="VBAExpressions.oxt" />
+    <updated>2024-13-04T10:57:00Z</updated>
+    <summary>Click here to go to the download page.</summary>
+    <content type="application/xml" src="https://raw.githubusercontent.com/ws-garcia/VBA-Expressions/main/src/LO%20Basic/VBAExpressions.update.xml" />
+  </entry>
+</feed>
