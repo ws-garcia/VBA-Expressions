@@ -342,6 +342,11 @@ Sub RunAllTests
 			&quot;ROUND(TINV(0.75;2;1);8)&quot;, _
 			&quot;0.81649658&quot; _
 		)
+	Run( _
+			&quot;IRR_ function test&quot;, _
+			&quot;FORMAT(IRR({{-70000;12000;15000}};true);&apos;Percent&apos;)&quot;, _
+			&quot;&apos;-44.35%&apos;&quot; _
+		)
 	SF_Exception.debugprint(&quot;Passed tests:&quot;,sAcum)	
 	SF_Exception.debugprint(&quot;Failed tests:&quot;,tTotal - sAcum)	
 	SF_Exception.debugprint(&quot;Passed tests Ratio:&quot;,Round(100*sAcum/tTotal,2) &amp;&quot;%&quot;)
@@ -454,10 +459,20 @@ TestFail:
     SF_Exception.debugprint(&quot;Test &quot; &amp; testName &amp; &quot; raised an error: #&quot; &amp; err.Number &amp; &quot; - &quot; &amp; err.Description)
     Resume TestExit			
 End Sub
-sub tesover
+sub testOver
 	&apos;msgbox (&quot;a{2}&quot; Like &quot;[A-Zaz]*{*}&quot;)
 	SF_Exception.consoleClear()
-	call VarOverload(&quot;Variables overloading: indirect assignment&quot;)
+&apos;	Run( _
+&apos;			&quot;IRR_ function test&quot;, _
+&apos;			&quot;FORMAT(IRR({{-70000;12000;15000}};true);&apos;Percent&apos;)&quot;, _
+&apos;			&quot;&apos;-44.35%&apos;&quot; _
+&apos;		)
+	Run( _
+			&quot;Variables overloading&quot;, _
+			&quot;SUM(C[0;0];C[1;1])&quot;, _
+			&quot;14&quot;, _
+			&quot;C = {{-1;13};{6;15}}&quot; _
+		)
 	SF_Exception.console()
 end sub
 </script:module>

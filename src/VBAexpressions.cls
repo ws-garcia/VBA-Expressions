@@ -2241,7 +2241,7 @@ Public Function Create(ByRef aExpression As Variant, Optional resetScope As Bool
             Else
                 ParseVariables ExprToEval
             End If
-            ExprToEval = SBracketsNotationToNominal(ExprToEval)
+            ExprToEval = SBracketsNotationToNominal(ReplaceImpliedMult(ExprToEval))
             Parse ExprToEval
         End If
         AssignedExpression = True
@@ -3121,13 +3121,12 @@ Private Function Floor(ByRef value As Double) As Double
 End Function
 
 Private Function FormatEntry(expression As String) As String
-    FormatEntry = ReplaceImpliedMult( _
-                                Replace( _
-                                    RemoveDupNegation( _
-                                        ApplyLawOfSigns( _
-                                        ReconstructLiteralStrings( _
-                                        expression, Join$(Split(expression, d_Space), vbNullString)))), _
-                                    "()", "('')"))
+    FormatEntry = Replace( _
+                            RemoveDupNegation( _
+                                ApplyLawOfSigns( _
+                                ReconstructLiteralStrings( _
+                                expression, Join$(Split(expression, d_Space), vbNullString)))), _
+                            "()", "('')")
 End Function
 
 Private Function FormatLiteralString(ByRef aString As String, _
@@ -3897,7 +3896,8 @@ Private Function GetFunctionName(ByRef expression As String) As String
     For EFjCounter = LBound(FunctionsId) To UBound(FunctionsId)
         tmpPos = InStrB(1, ExpCopy, FunctionsId(EFjCounter))
         If tmpPos Then
-            If ExpCopy = FunctionsId(EFjCounter) Then
+            If ExpCopy = FunctionsId(EFjCounter) Or _
+                    (ExpCopy Like FunctionsId(EFjCounter) & "[[]*[]]") Then
                 GFNbool = ValidFuntionName(ExpCopy, FunctionsId(EFjCounter), tmpPos)
                 If GFNbool Then
                     Exit For
@@ -3913,7 +3913,8 @@ Private Function GetFunctionName(ByRef expression As String) As String
         For I = 0 To UserDefFunctions.index
             tmpPos = InStrB(1, ExpCopy, UserDefFunctions.Storage(I).name)
             If tmpPos Then
-                If ExpCopy = UserDefFunctions.Storage(I).name Then
+                If ExpCopy = UserDefFunctions.Storage(I).name Or _
+                        (ExpCopy Like UserDefFunctions.Storage(I).name & "[[]*[]]") Then
                     GFNbool = ValidFuntionName(ExpCopy, UserDefFunctions.Storage(I).name, tmpPos)
                     If GFNbool Then
                         Exit For
@@ -3925,7 +3926,7 @@ Private Function GetFunctionName(ByRef expression As String) As String
         If GFNbool Then
             GetFunctionName = UserDefFunctions.Storage(I).name
         Else
-            If expression Like "[A-Zaz]*[[]*[]]" Then 'Not defined function bypass
+            If expression Like "[A-Za-z]*[[]*[]]" Then 'Not defined function bypass
                 tmpPos = InStrB(1, expression, d_lSquareB)
                 GetFunctionName = MidB$(expression, 1, tmpPos - 1)
             End If
@@ -7669,6 +7670,7 @@ Private Function ReplaceImpliedMult(expression As String) As String
     Dim tmpVarInitPos As Long
     Dim prevChar As String
     Dim reservedChar As Boolean
+    Dim tmpChar As String
     
     LookupPos = 1
     tmpStr = expression
@@ -7678,9 +7680,11 @@ Private Function ReplaceImpliedMult(expression As String) As String
             If InStr(1, op_AllItems, MidB(tmpStr, tmpPos - 2, 2)) = 0 Then
                 tmpVarInitPos = tmpPos
                 Do While tmpVarInitPos > 1
-                    If (InStrB(1, op_AllItems, MidB$(tmpStr, tmpVarInitPos - 2, 2)) <> 0) Then
-                        Exit Do
-                    End If
+                    tmpChar = MidB$(tmpStr, tmpVarInitPos - 2, 2)
+                    If (InStrB(1, op_AllItems, tmpChar) <> 0) Then Exit Do
+                    If tmpChar = d_lParenthesis Then Exit Do
+                    If tmpChar = d_rParenthesis Then Exit Do
+                    If tmpChar = P_SEPARATORCHAR Then Exit Do
                     tmpVarInitPos = tmpVarInitPos - 2
                 Loop
                 tmpVar = MidB$(tmpStr, tmpVarInitPos, tmpPos - tmpVarInitPos)

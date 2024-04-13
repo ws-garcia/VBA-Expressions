@@ -2212,15 +2212,15 @@ End Function
 Public Function Create(ByRef aExpression As Variant, Optional resetScope As Boolean = True) As Object
     If aExpression &lt;&gt; vbNullString Then
         ExprToEval = FormatEntry(CStr(aExpression))
-        If ExprToEval &lt;&gt; FormatEntry(P_EXPRESSION) Then
+        If (ExprToEval &lt;&gt; FormatEntry(P_EXPRESSION)) Then
             P_EXPRESSION = aExpression
             If resetScope Then
-                VariablesInit ExprToEval
+                VariablesInit(ExprToEval)
             Else
-            	ParseVariables ExprToEval
+                ParseVariables(ExprToEval)
             End If
-            ExprToEval = SBracketsNotationToNominal(ExprToEval)
-            Parse ExprToEval
+            ExprToEval = SBracketsNotationToNominal(ReplaceImpliedMult(ExprToEval))
+            Parse(ExprToEval)
         End If
         AssignedExpression = True
     End If
@@ -3213,13 +3213,12 @@ Private Function Floor(ByRef value As Double) As Double
 End Function
 
 Private Function FormatEntry(expression As String) As String
-    FormatEntry = ReplaceImpliedMult( _
-                                Replace( _
-                                    RemoveDupNegation( _
-                                        ApplyLawOfSigns( _
-                                        ReconstructLiteralStrings( _
-                                        expression, Join$(Split(expression, d_Space), vbNullString)))), _
-                                    &quot;()&quot;, &quot;(&apos;&apos;)&quot;))
+    FormatEntry = Replace( _
+                            RemoveDupNegation( _
+                                ApplyLawOfSigns( _
+                                ReconstructLiteralStrings( _
+                                expression, Join$(Split(expression, d_Space), vbNullString)))), _
+                            &quot;()&quot;, &quot;(&apos;&apos;)&quot;)
 End Function
 
 Private Function FormatLiteralString(ByRef aString As String, _
@@ -3991,11 +3990,14 @@ Private Function GetFunctionName(ByRef expression As String) As String
     Dim ExpCopy As String
     Dim tmpPos As Long
     
-    ExpCopy = LCase$(expression)
+    ExpCopy = Replace(Replace( _
+        						LCase$(expression),d_lSquareB,d_lCurly,1), _
+        						d_rSquareB,d_rCurly,1) &apos;Bypass LO Basic LIKE OP limitation 
     For EFjCounter = LBound(FunctionsId) To UBound(FunctionsId)
         tmpPos = strVBA.InStrB(1, ExpCopy, FunctionsId(EFjCounter))
         If tmpPos Then
-            If ExpCopy = FunctionsId(EFjCounter) Then
+        	If ExpCopy = FunctionsId(EFjCounter) Or _
+                    (ExpCopy Like (FunctionsId(EFjCounter) &amp; &quot;{*}&quot;)) Then
                 GFNbool = ValidFuntionName(ExpCopy, FunctionsId(EFjCounter), tmpPos)
                 If GFNbool Then
                     Exit For
@@ -4011,8 +4013,9 @@ Private Function GetFunctionName(ByRef expression As String) As String
         For i = 0 To UserDefFunctions.aindex
             tmpPos = strVBA.InStrB(1, ExpCopy, UserDefFunctions.Storage(i).aName)
             If tmpPos Then
-                If ExpCopy = UserDefFunctions.Storage(I).name Then
-                    GFNbool = ValidFuntionName(ExpCopy, UserDefFunctions.Storage(I).name, tmpPos)
+            	If ExpCopy = UserDefFunctions.Storage(I).aname Or _
+                        (ExpCopy Like (UserDefFunctions.Storage(I).aname &amp; &quot;{*}&quot;)) Then
+                    GFNbool = ValidFuntionName(ExpCopy, UserDefFunctions.Storage(I).aname, tmpPos)
                     If GFNbool Then
                         Exit For
                     End If
@@ -4023,10 +4026,7 @@ Private Function GetFunctionName(ByRef expression As String) As String
         If GFNbool Then
             GetFunctionName = UserDefFunctions.Storage(i).aName
         Else
-        	ExpCopy = Replace(Replace( _
-        						expression,d_lSquareB,d_lCurly,1), _
-        						d_rSquareB,d_rCurly,1) &apos;Bypass LO Basic LIKE OP limitation 
-            If (ExpCopy Like &quot;[A-Zaz]*{*}&quot;) Then &apos;Not defined function bypass
+            If (ExpCopy Like &quot;[A-Za-z]*{*}&quot;) Then &apos;Not defined function bypass
                 tmpPos = strVBA.InStrB(1, expression, d_lSquareB)
                 GetFunctionName = strVBA.MidB(expression, 1, tmpPos - 1)
             End If
@@ -7799,25 +7799,28 @@ Private Function ReplaceImpliedMult(expression As String) As String
     Dim tmpVarInitPos As Long
     Dim prevChar As String
     Dim reservedChar As Boolean
+    Dim tmpChar As String
     
     LookupPos = 1
     tmpStr = expression
     tmpPos = strVBA.InStrB(LookupPos, tmpStr, d_lParenthesis)
     Do While tmpPos
         If tmpPos &gt; 2 Then
-            If InStr(1, op_AllItems, strVBA.MidB(tmpStr, tmpPos - 2, 2)) = 0 Then
+            If strVBA.InStrB(1, op_AllItems, strVBA.MidB(tmpStr, tmpPos - 2, 2)) = 0 Then
                 tmpVarInitPos = tmpPos
                 Do While tmpVarInitPos &gt; 1
-                    If (strVBA.InStrB(1, op_AllItems, strVBA.MidB(tmpStr, tmpVarInitPos - 2, 2)) &lt;&gt; 0) Then
-                        Exit Do
-                    End If
+                    tmpChar = strVBA.MidB(tmpStr, tmpVarInitPos - 2, 2)
+                    If (strVBA.InStrB(1, op_AllItems, tmpChar) &lt;&gt; 0) Then Exit Do
+                    If tmpChar = d_lParenthesis Then Exit Do
+                    If tmpChar = d_rParenthesis Then Exit Do
+                    If tmpChar = P_SEPARATORCHAR Then Exit Do
                     tmpVarInitPos = tmpVarInitPos - 2
                 Loop
                 tmpVar = strVBA.MidB(tmpStr, tmpVarInitPos, tmpPos - tmpVarInitPos)
                 prevChar = strVBA.MidB(tmpStr, tmpPos - 2, 2)
                 reservedChar = (prevChar = d_lParenthesis Or strVBA.InStrB(1, op_AllItems, prevChar))
                 If Not reservedChar Then
-                    If GetFunctionName(LCase$(tmpVar)) = vbNullString Then  &apos;Implied multiplication found
+                    If GetFunctionName(LCase(tmpVar)) = vbNullString Then  &apos;Implied multiplication found
                         tmpStr = strVBA.MidB(tmpStr, 1, tmpPos - 1) &amp; op_mult &amp; strVBA.MidB(tmpStr, tmpPos)
                     End If
                 End If
