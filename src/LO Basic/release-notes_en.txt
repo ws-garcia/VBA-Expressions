@@ -1,3 +1,6 @@
 # A note on!
 ## Bug Fix
 - [x] Resolved error when parsing literal strings with reserved grammar tokens.
+
+## Download 
+https://github.com/ws-garcia/VBA-Expressions/releases/download/v3.2.7/VBAExpressions.oxt
