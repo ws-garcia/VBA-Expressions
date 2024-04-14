@@ -3,8 +3,8 @@
 <library:library xmlns:library="http://openoffice.org/2000/library" library:name="VBAExpressionsLib" library:readonly="false" library:passwordprotected="false">
  <library:element library:name="VBAexpressionsScope"/>
  <library:element library:name="VBAstrHelper"/>
- <library:element library:name="TestVBAExpr"/>
+ <library:element library:name="UDFunctions"/>
  <library:element library:name="VBAexpressions"/>
  <library:element library:name="VBAcallBack"/>
- <library:element library:name="UDFunctions"/>
+ <library:element library:name="TestRunner"/>
 </library:library>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE script:module PUBLIC "-//OpenOffice.org//DTD OfficeDocument 1.0//EN" "module.dtd">
-<script:module xmlns:script="http://openoffice.org/2000/script" script:name="TestVBAExpr" script:language="StarBasic">Option Explicit
+<script:module xmlns:script="http://openoffice.org/2000/script" script:name="TestRunner" script:language="StarBasic">Option Explicit
 Private Evaluator As Object
 Private actual As String
 Private sAcum As Long
@@ -459,20 +459,4 @@ TestFail:
     SF_Exception.debugprint(&quot;Test &quot; &amp; testName &amp; &quot; raised an error: #&quot; &amp; err.Number &amp; &quot; - &quot; &amp; err.Description)
     Resume TestExit			
 End Sub
-sub testOver
-	&apos;msgbox (&quot;a{2}&quot; Like &quot;[A-Zaz]*{*}&quot;)
-	SF_Exception.consoleClear()
-&apos;	Run( _
-&apos;			&quot;IRR_ function test&quot;, _
-&apos;			&quot;FORMAT(IRR({{-70000;12000;15000}};true);&apos;Percent&apos;)&quot;, _
-&apos;			&quot;&apos;-44.35%&apos;&quot; _
-&apos;		)
-	Run( _
-			&quot;Variables overloading&quot;, _
-			&quot;SUM(C[0;0];C[1;1])&quot;, _
-			&quot;14&quot;, _
-			&quot;C = {{-1;13};{6;15}}&quot; _
-		)
-	SF_Exception.console()
-end sub
 </script:module>

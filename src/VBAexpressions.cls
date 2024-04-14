@@ -2241,7 +2241,8 @@ Public Function Create(ByRef aExpression As Variant, Optional resetScope As Bool
             Else
                 ParseVariables ExprToEval
             End If
-            ExprToEval = SBracketsNotationToNominal(ReplaceImpliedMult(ExprToEval))
+            ExprToEval = ReconstructLiteralStrings(P_EXPRESSION, _
+                                SBracketsNotationToNominal(ReplaceImpliedMult(ExprToEval)))
             Parse ExprToEval
         End If
         AssignedExpression = True
