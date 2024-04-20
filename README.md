@@ -7,6 +7,8 @@ VBA Expressions is a powerful string expression evaluator for VBA and [LO Basic]
 
 Although the main development goal of the class was the integration with [CSV Interface](https://github.com/ws-garcia/VBA-CSV-interface), VBA Expressions has evolved to become a support tool for students and teachers of science, accounting, statistics and engineering; this due to the added capability to solve systems of equations and non-linear equations in one variable.
 
+## ![User Manual](/docs/assets/img/VBAExprManual.pdf)
+
 ## Advantages
 * __Easy to use and integrate__.
 * __Basic math operators__: `+` `-` `*` `/` `\` `^` `!`
