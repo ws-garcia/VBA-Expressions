@@ -339,7 +339,7 @@ End Sub
 '@------------------------------------------------------
 ```
 ## Credits
-- [x] Inquisitive knight: new logo design. Awesome job!
+- [x] **Inquisitive knight**: new logo design. Awesome job!
 
 ## Tested 
 [![Rubberduck](https://user-images.githubusercontent.com/5751684/48656196-a507af80-e9ef-11e8-9c09-1ce3c619c019.png)](https://github.com/rubberduck-vba/Rubberduck/) 
