@@ -338,8 +338,12 @@ End Sub
 ''' SWITCH(x='Asia';1;x='Africa';2;x='Oceania';3) = 1 for x = 'Asia'
 '@------------------------------------------------------
 ```
+## Credits
+- [x] Inquisitive knight: new logo design. Awesome job!
+
 ## Tested 
 [![Rubberduck](https://user-images.githubusercontent.com/5751684/48656196-a507af80-e9ef-11e8-9c09-1ce3c619c019.png)](https://github.com/rubberduck-vba/Rubberduck/) 
+
 ## Licence
 
 Copyright: &copy; 2022-2024  [W. García](https://github.com/ws-garcia/).
