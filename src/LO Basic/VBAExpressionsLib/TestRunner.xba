@@ -29,6 +29,7 @@ Private Function GetResult(expression As String _
 End Function
 
 Sub RunAllTests
+	GlobalScope.BasicLibraries.loadLibrary(&quot;VBAExpressionsLib&quot;)
 	GlobalScope.BasicLibraries.loadLibrary(&quot;ScriptForge&quot;)
 	createscriptservice(&quot;Exception&quot;)
 	SF_Exception.consoleClear()
