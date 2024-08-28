@@ -1,6 +1,6 @@
 # Loving spreadsheet formulas!
 ## New Functions
-- [x] Added Excel `BETA.DIST` for the cumulative distribution function (CDF) and the probabilistic distribution function (PDF) of the Beta distribution.
+- [x] Added Excel `BETA.DIST` function for the cumulative distribution function (CDF) and the probabilistic distribution function (PDF) of the Beta distribution.
 
 ## Download 
 https://github.com/ws-garcia/VBA-Expressions/releases/download/v3.2.8/VBAExpressions.oxt
