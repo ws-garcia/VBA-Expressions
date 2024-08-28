@@ -313,7 +313,7 @@ Private Sub Class_Initialize()
     AscDecSymbol = 46
     P_GALLOPING_MODE = True
     P_FORMATRESULT = False
-    BuildinFunctIDList = &quot;abs;floor;achisq;asin;acos;aerf;afishf;agauss;asc;anorm;atn;astudt;array;avg&quot; &amp; _
+    BuildinFunctIDList = &quot;abs;floor;achisq;asin;acos;aerf;afishf;agauss;asc;anorm;atn;astudt;array;avg;beta.dist&quot; &amp; _
                             &quot;;betainv;ceil;chisq;cholesky;cholinverse;cholsolve;chr;cos;choose;date;dateadd;datediff&quot; &amp; _
                             &quot;;datepart;dateserial;datevalue;day;ddb;det;erf;exp;fishf;fit;format;fv;fzero&quot; &amp; _
                             &quot;;gamma;gammaln;gauss;get;hour;ibeta;iff;inverse;ipmt;irr;lcase;left;len;log;lgn&quot; &amp; _
@@ -323,7 +323,7 @@ Private Sub Class_Initialize()
                             &quot;;syd;tan;timeserial;timevalue;tinv;tinv_1t;tinv_2t;trim;ucase;weekday&quot; &amp; _
                             &quot;;weekdayname;year&quot;
     BuildinFunctNameList = &quot;Absolute;aFloor;ACHISQ;ArcSin;ArcCos;AERF;AFISHF;AGAUSS;ASCII;ANORM;ArcTan&quot; &amp; _
-                            &quot;;ASTUDT;strArray;Average;BETAINV;aCeiling;CHISQ;CholeskyDec;CholeskyInverseMatrix&quot; &amp; _
+                            &quot;;ASTUDT;strArray;Average;Beta_Distribution;BETAINV;aCeiling;CHISQ;CholeskyDec;CholeskyInverseMatrix&quot; &amp; _
                             &quot;;CholeskySolve;ASCIIchr;Cosin;aChoose;aDate;aDateAdd;aDateDiff;aDatePart;aDateSerial&quot; &amp; _
                             &quot;;aDateValue;aDay;aDDB;MatrixDeterminant;ERF;ExpEuler;FISHF;CurveFit&quot; &amp; _
                             &quot;;aFormat;aFV;FunctionZero;Gamma;GammaLN;GAUSS;GET;aHour;iBETA;aIff;InverseMatrix&quot; &amp; _
@@ -1537,6 +1537,102 @@ Private Function BETAINV_(p As Double, A As Double, B As Double) As Double
     BETAINV_ = x
 End Function
 
+&apos;&apos;&apos; &lt;summary&gt;
+&apos;&apos;&apos;     Returns the beta distribution.
+&apos;&apos;&apos; &lt;/summary&gt;
+&apos;&apos;&apos; &lt;param name=&quot;x&quot;&gt;The value between A and B at which to evaluate the function.&lt;/param&gt;
+&apos;&apos;&apos; &lt;param name=&quot;alpha&quot;&gt;Shape parameter alpha.&lt;/param&gt;
+&apos;&apos;&apos; &lt;param name=&quot;beta&quot;&gt;Shape parameter beta.&lt;/param&gt;
+&apos;&apos;&apos; &lt;param name=&quot;Cumulative&quot;&gt;
+&apos;&apos;&apos;     A logical value that determines the form of the function. If cumulative is TRUE,
+&apos;&apos;&apos;     BETADIST returns the cumulative distribution function; if FALSE, it returns
+&apos;&apos;&apos;     the probability density function (PDF).
+&apos;&apos;&apos; &lt;/param&gt;
+&apos;&apos;&apos; &lt;param name=&quot;A&quot;&gt;Optional. A lower bound to the interval of x.&lt;/param&gt;
+&apos;&apos;&apos; &lt;param name=&quot;B&quot;&gt;Optional. An upper bound to the interval of x.&lt;/param&gt;
+Private Function BETADIST(ByRef expression As String, ByRef fName As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    On Error GoTo err_Handler
+    tmpData() = SplitArgs(expression)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 4
+            tmpEval = BETAPDF_EXCEL( _
+                                CDbl(tmpData(LB)), _
+                                CDbl(tmpData(LB + 1)), _
+                                CDbl(tmpData(LB + 2)), _
+                                CBool(tmpData(LB + 3)), _
+                                0, 1)
+        Case 6
+            tmpEval = BETAPDF_EXCEL( _
+                                CDbl(tmpData(LB)), _
+                                CDbl(tmpData(LB + 1)), _
+                                CDbl(tmpData(LB + 2)), _
+                                CBool(tmpData(LB + 3)), _
+                                CDbl(tmpData(LB + 4)), _
+                                CDbl(tmpData(UB)))
+        Case Else
+            tmpEval = e_ValueError
+            BuildErrMessage errMissingArgsOrTooManyArgs, d_lCurly &amp; fName &amp; d_rCurly
+    End Select
+    BETADIST = tmpEval: Erase tmpData
+    Exit Function
+err_Handler:
+    BETADIST = e_ValueError
+    BuildErrMessage errEvalError, d_lCurly &amp; fName &amp; d_rCurly &amp; &quot; | Error#: &quot; &amp; err.Number &amp; d_Space &amp; _
+                                    d_lParenthesis &amp; err.Description &amp; d_rParenthesis
+End Function
+
+Private Function BETALN_(x As Double, y As Double) As Double
+    BETALN_ = GAMMALN_(x) + GAMMALN_(y) - GAMMALN_(x + y)
+End Function
+
+Private Function BETAPDF_(x As Double, Alpha As Double, Beta As Double) As Double
+    BETAPDF_ = Exp((Alpha - 1) * Log(x) + (Beta - 1) * Log(1 - x) - BETALN_(Alpha, Beta))
+End Function
+
+Private Function BETAPDF_EXCEL(x As Double, Alpha As Double, _
+                                    Beta As Double, Cumulative As Boolean, _
+                                    Lower_Bound As Double, _
+                                    Upper_Bound As Double) As Variant
+    Dim z As Double
+    Dim range_ As Double
+    
+    If Upper_Bound &gt; Lower_Bound Then
+        If x &gt; Lower_Bound And x &lt; Upper_Bound Then
+            range_ = (Upper_Bound - Lower_Bound)
+            z = (x - Lower_Bound) / range_
+            If Cumulative Then
+                BETAPDF_EXCEL = iBETA_(z, Alpha, Beta)
+            Else
+                BETAPDF_EXCEL = BETAPDF_(z, Alpha, Beta) / range_
+            End If
+        Else
+            If x = Lower_Bound Or x = Upper_Bound Then
+                If Cumulative Then
+                    If x = Upper_Bound Then
+                        BETAPDF_EXCEL = 1
+                    Else
+                        BETAPDF_EXCEL = 0
+                    End If
+                Else
+                    BETAPDF_EXCEL = 0
+                End If
+            Else
+                BETAPDF_EXCEL = &quot;#NUM!&quot;
+            End If
+        End If
+    Else
+        BETAPDF_EXCEL = &quot;#NUM!&quot;
+    End If
+End Function
+
 Private Sub BottomLevelEval(ByRef aToken As token)
     On Error GoTo BLevelEval_errHanlder
     If aToken.OperationToken &lt; 100 Then &apos;Arithmetic operators
@@ -2728,6 +2824,8 @@ Private Function EvalFunction(ByRef Argument As String, ByRef FunctionName As St
                 EvalFunction = Asc_(Argument, FunctionName)
             Case &quot;Average&quot;
                 EvalFunction = average(Argument, FunctionName)
+            Case &quot;Beta_Distribution&quot;
+            	EvalFunction = BETADIST(Argument, FunctionName)
             Case &quot;BETAINV&quot;
                 EvalFunction = BETAINV(Argument, FunctionName)
             Case &quot;Cosin&quot;

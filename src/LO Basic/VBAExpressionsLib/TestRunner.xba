@@ -236,6 +236,11 @@ Sub RunAllTests
 			&quot;ROUND(BETAINV(0.5;1;3);8)&quot;, _
 			&quot;0.20629947&quot; _
 		)
+	Run( _
+			&quot;Statistical Functions: BETA.DIST&quot;, _
+			&quot;ROUND(BETA.DIST(2;8;10;False;1;3);7)&quot;, _
+			&quot;1.4837646&quot; _
+		)
 	QRdec(&quot;Linear Algebra Functions: QR decomposition&quot;)
 	Run( _
 			&quot;Linear Algebra Functions: Cholesky&quot;, _

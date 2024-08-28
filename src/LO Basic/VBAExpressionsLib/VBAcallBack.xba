@@ -33,5 +33,4 @@ option ClassModule
 &apos;@--------------------------------------------------------------------
 &apos; Expose functions defined in the UDFunctions.cls
 Public UserDefFunctions As New UDFunctions
-Public SimpleMath As New clsSimpleMath
 </script:module>
