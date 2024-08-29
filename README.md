@@ -1,6 +1,6 @@
 # VBA Expressions
 ## ![VBA Expressions](/docs/assets/img/VBA%20Expressions-NewLogo.png)
-[![GitHub](https://img.shields.io/github/license/ws-garcia/VBA-Expressions?style=plastic)](https://github.com/ws-garcia/VBA-Expressions/blob/master/LICENSE) [![GitHub release (latest by date)](https://img.shields.io/github/v/release/ws-garcia/VBA-Expressions?style=plastic)](https://github.com/ws-garcia/VBA-Expressions/releases/latest)
+[![GitHub](https://img.shields.io/github/license/ws-garcia/VBA-Expressions?style=plastic)](https://github.com/ws-garcia/VBA-Expressions/blob/master/LICENSE) [![GitHub release (latest by date)](https://img.shields.io/github/v/release/ws-garcia/VBA-Expressions?style=plastic)](https://github.com/ws-garcia/VBA-Expressions/releases/latest) [![Mentioned in Awesome VBA](https://awesome.re/mentioned-badge.svg)](https://github.com/sancarn/awesome-vba)
 
 ## Introductory words
 VBA Expressions is a powerful string expression evaluator for VBA and [LO Basic](https://extensions.libreoffice.org/en/extensions/show/70059), which puts more than 100 mathematical, statistical, financial, date-time, logic and text manipulation functions at the user's fingertips. The `VBAexpressions.cls` class mediates almost all VBA functions as well as custom functions exposed through it. 
