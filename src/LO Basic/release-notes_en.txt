@@ -1,6 +1,6 @@
-# Loving spreadsheet formulas!
-## New Functions
-- [x] Added Excel `BETA.DIST` function for the cumulative distribution function (CDF) and the probabilistic distribution function (PDF) of the Beta distribution.
+# Approaching scripts!
+## New features
+- [x] Support for double equality symbol (`==`): the library is able to evaluate comparisons using the double equality symbol, commonly used in modern scripting languages. With this addition, it is possible to evaluate expressions such as `(a + b == c) & (a + b = c)`.
 
 ## Download 
-https://github.com/ws-garcia/VBA-Expressions/releases/download/v3.2.8/VBAExpressions.oxt
+https://github.com/ws-garcia/VBA-Expressions/releases/download/v3.2.9/VBAExpressions.oxt

@@ -124,6 +124,12 @@ Sub RunAllTests
 			&quot;Implied Multiplication&quot;, _
 			&quot;5(2)(3)(4)&quot;, _
 			&quot;120&quot; _
+		)	
+	Run( _
+			&quot;Support of equality == symbol&quot;, _
+			&quot;(a + b == c) &amp; (a + b = c)&quot;, _
+			&quot;True&quot;, _
+			&quot;a = -1; b = -2; c = -3&quot; _
 		)
 	ArrayConstructorsAndParsers (&quot;Array Constructors And Parsers&quot;)
 	Run( _
