@@ -13,7 +13,7 @@ Although the main development goal of the class was the integration with [CSV In
 * __Easy to use and integrate__.
 * __Basic math operators__: `+` `-` `*` `/` `\` `^` `!`
 * __Logical expressions__: `&` (AND), `|` (OR), `||` (XOR)
-* __Binary relations__: `<`, `<=`, `<>`, `>=`, `=`, `>`, `$` (LIKE)
+* __Binary relations__: `<`, `<=`, `<>`, `>=`, `=`, `==`, `>`, `$` (LIKE)
 * __Outstanding matrix and statistical functions__: `CHOLESKY`, `MLR` (Multivariate Linear Regression), `FIT` (Curve fitting), `INVERSE`, and a lot more!
 * __More than 100 built-in functions__: `Max`, `Sin`, `IRR`, `GAUSS`, `LSQRSOLVE`, `Switch`, `Iff`, `DateDiff`, `Solve`, `fZero`, `Format`...
 * __Very flexible and powerful__: variables, constants and user-defined functions (UDFs) support.
@@ -56,16 +56,16 @@ Function      =     "abs" | "sin" | "cos" | "min" |...|[UDF]
 ## Operators precedence
 VBA expressions uses the following precedence rules to evaluate mathematical expressions:
 
-1. `()`               Grouping: evaluates functions arguments as well.
-2. `! - +`            Unary operators: exponentiation is the only operation that violates this. Ex.: `-2 ^ 2 = -4 | (-2) ^ 2 = 4`.
-3. `^`                Exponentiation: Although Excel and Matlab evaluate nested exponentiations from left to right, Google, mathematicians and several modern programming languages, such as Perl, Python and Ruby, evaluate this operation from right to left. VBA expressions also evals in Python way: a^b^c = a^(b^c).
-4. `\* / % `          Multiplication, division, modulo: from left to right.
-5. `+ -`              Addition and subtraction: from left to right.
-6. `< <= <> >= = > $` Binary relations.
-7. `~`                Logical negation.
-8. `&`                Logical AND.
-9. `||`               Logical XOR.
-10. `|`               Logical OR.
+1. `()`                  Grouping: evaluates functions arguments as well.
+2. `! - +`               Unary operators: exponentiation is the only operation that violates this. Ex.: `-2 ^ 2 = -4 | (-2) ^ 2 = 4`.
+3. `^`                   Exponentiation: Although Excel and Matlab evaluate nested exponentiations from left to right, Google, mathematicians and several modern programming languages, such as Perl, Python and Ruby, evaluate this operation from right to left. VBA expressions also evals in Python way: a^b^c = a^(b^c).
+4. `\* / % `             Multiplication, division, modulo: from left to right.
+5. `+ -`                 Addition and subtraction: from left to right.
+6. `< <= <> >= = == > $` Binary relations.
+7. `~`                   Logical negation.
+8. `&`                   Logical AND.
+9. `||`                  Logical XOR.
+10. `|`                  Logical OR.
 
 ## Variables
 Users can enter variables and set/assign their values for the calculations. Variable names must meet the following requirements:
