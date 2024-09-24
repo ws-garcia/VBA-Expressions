@@ -119,7 +119,7 @@ Option Base 0
 '
 '///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ' CONSTANTS:
-Private pi As Double
+Private PI As Double
 Private PID2 As Double
 Private e As Double
 Private Const op_plus As String = "+"
@@ -131,6 +131,7 @@ Private Const op_Factorial As String = "!"
 Private Const op_mod As String = "%"
 Private Const op_power As String = "^"
 Private Const op_equal As String = "="
+Private Const op_equal_ As String = "=="
 Private Const op_inequality As String = "<>"
 Private Const op_gt As String = ">"
 Private Const op_lt As String = "<"
@@ -217,12 +218,13 @@ Public Enum OperatorToken
     otPower = 6                  '^
     otMod = 7                    '%
     otEqual = 101                '=
-    otNotEqual = 102             '<>
-    otGreaterThan = 103          '>
-    otLessThan = 104             '<
-    otGreaterThanOrEqual = 105   '>=
-    otLessThanOrEqual = 106      '<=
-    otLike = 107                 '$
+    otEqual_ = 102               '==
+    otNotEqual = 103             '<>
+    otGreaterThan = 104          '>
+    otLessThan = 105             '<
+    otGreaterThanOrEqual = 106   '>=
+    otLessThanOrEqual = 107      '<=
+    otLike = 108                 '$
     otLogicalAND = 201           '&
     otLogicalOR = 202            '|
     otLogicalXOR = 203           '||
@@ -1705,7 +1707,7 @@ Private Sub BottomLevelEval(ByRef aToken As token)
     Else
         If aToken.OperationToken < 200 Then 'Comparison operators
             Select Case aToken.OperationToken
-                Case OperatorToken.otEqual
+                Case OperatorToken.otEqual, OperatorToken.otEqual_
                     aToken.EvalResult = (CastOPtype(aToken.Arg1.Operand, aToken.Arg1.NegationFlagOn) = _
                                         CastOPtype(aToken.Arg2.Operand, aToken.Arg2.NegationFlagOn))
                 Case OperatorToken.otNotEqual
@@ -4053,6 +4055,7 @@ Private Function GetLCOpInfo(ByRef expression As String) As TokenInfo
     Dim GreatterOrEqualSymbolPos As Long
     Dim LessOrEqualSymbolPos As Long
     Dim EqualSymbolPos As Long
+    Dim EqualSymbolPos_ As Long
     Dim LessThanSymbolPos As Long
     Dim GreatterThanSymbolPos As Long
     Dim LogANDSymbolPos As Long
@@ -4060,6 +4063,7 @@ Private Function GetLCOpInfo(ByRef expression As String) As TokenInfo
     Dim LogXORSymbolPos As Long
     Dim LikeSymbolPos As Long
     Dim testChar As String
+    Dim testChar2 As String
     
     '@--------------------------------------------------------------------
     ' Comparisons first
@@ -4067,10 +4071,13 @@ Private Function GetLCOpInfo(ByRef expression As String) As TokenInfo
         EqualSymbolPos = GetOPeratorSymbolPos(expression, op_equal, EqualSymbolPos + 1)
         If EqualSymbolPos > 2 Then
             testChar = MidB$(expression, EqualSymbolPos - 2, 2)
+            testChar2 = MidB$(expression, EqualSymbolPos + 2, 2) 'Check ahead for "=="
         Else
             testChar = vbNullString
+            testChar2 = vbNullString
         End If
-    Loop While EqualSymbolPos > 0 And testChar Like "[<>]"
+    Loop While EqualSymbolPos > 0 And (testChar Like "[<>=]" Or testChar2 = op_equal)
+    EqualSymbolPos_ = GetOPeratorSymbolPos(expression, op_equal_)
     NotEqualSymbolPos = GetOPeratorSymbolPos(expression, op_inequality)
     Do
         GreatterThanSymbolPos = GetOPeratorSymbolPos(expression, op_gt, GreatterThanSymbolPos + 1)
@@ -4091,15 +4098,18 @@ Private Function GetLCOpInfo(ByRef expression As String) As TokenInfo
     GreatterOrEqualSymbolPos = GetOPeratorSymbolPos(expression, op_gtequal)
     LessOrEqualSymbolPos = GetOPeratorSymbolPos(expression, op_ltequal)
     LikeSymbolPos = InStrB(LessThanSymbolPos + 1, expression, op_like)
-    If NonZero(EqualSymbolPos, NotEqualSymbolPos, GreatterThanSymbolPos, _
+    If NonZero(EqualSymbolPos, EqualSymbolPos_, NotEqualSymbolPos, GreatterThanSymbolPos, _
                 LessThanSymbolPos, GreatterOrEqualSymbolPos, LessOrEqualSymbolPos, LikeSymbolPos) Then
-        GetLCOpInfo.Position = MinNonZero(EqualSymbolPos, NotEqualSymbolPos, GreatterThanSymbolPos, _
+        GetLCOpInfo.Position = MinNonZero(EqualSymbolPos, EqualSymbolPos_, NotEqualSymbolPos, GreatterThanSymbolPos, _
                                     LessThanSymbolPos, GreatterOrEqualSymbolPos, LessOrEqualSymbolPos, _
                                     LikeSymbolPos)                                                         'Priority to the first operator
         Select Case GetLCOpInfo.Position
             Case EqualSymbolPos
                 GetLCOpInfo.OperationToken = otEqual
                 GetLCOpInfo.OperatorLen = LenB(op_equal)
+            Case EqualSymbolPos_
+                GetLCOpInfo.OperationToken = otEqual_
+                GetLCOpInfo.OperatorLen = LenB(op_equal_)
             Case NotEqualSymbolPos
                 GetLCOpInfo.OperationToken = otNotEqual
                 GetLCOpInfo.OperatorLen = LenB(op_inequality)
@@ -4287,6 +4297,7 @@ Private Function GetOpSymbol(ByRef OPtoken As OperatorToken) As String
         Case OperatorToken.otMod: GetOpSymbol = op_mod
         Case OperatorToken.otPower: GetOpSymbol = op_power
         Case OperatorToken.otEqual: GetOpSymbol = op_equal
+        Case OperatorToken.otEqual_: GetOpSymbol = op_equal_
         Case OperatorToken.otNotEqual: GetOpSymbol = op_inequality
         Case OperatorToken.otGreaterThan: GetOpSymbol = op_gt
         Case OperatorToken.otLessThan: GetOpSymbol = op_lt
@@ -9098,5 +9109,3 @@ err_Handler:
     BuildErrMessage errEvalError, d_lCurly & fName & d_rCurly & " | Error#: " & err.Number & d_Space & _
                                     d_lParenthesis & err.Description & d_rParenthesis
 End Function
-
-
