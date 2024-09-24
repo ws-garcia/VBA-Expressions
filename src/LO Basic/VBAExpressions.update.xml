@@ -2,7 +2,7 @@
 <description xmlns="https://openoffice.org/extensions/update/2006"
   xmlns:xlink="https://www.w3.org/1999/xlink">
   <identifier value="com.ecpsolutions.extensions.vbaexpressions.oxt"/>
-  <version value="1.0.10"/>
+  <version value="1.1.0"/>
   <update-download>
     <src xlink:href="https://github.com/ws-garcia/VBA-Expressions/releases/download/v3.2.9/VBAExpressions.oxt"/>
   </update-download>
