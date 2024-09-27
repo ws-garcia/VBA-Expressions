@@ -108,7 +108,7 @@ However, user-defined array functions need to take care of creating arrays from 
 ## Using the code
 VBA Expressions is an easy-to-use library, this section shows some examples of how to use the most common properties and methods
 
-$\color{#D29922}\textsf{\Large\&#x26A0;\kern{0.2cm}\normalsize Warning:}$  
+$\color{D29922}\textsf{\Large Warning:}$  
 >[The library](https://extensions.libreoffice.org/en/extensions/show/70059) only works on LibreOffice version 7.5 or higher and, since there is no 1-1 compatibility between VBA and LO Basic, users must be aware of certain changes required to recover some properties functionality. This applies mainly to those properties related to accessing variables, which were converted into functions to overcome the one-parameter limitation imposed by LO Basic when accessing them, as well as to other properties deprecated due to LO Basic's behaviour in handling class modules. An example of this is the `VarValue` property which was split into two procedures: `GetVarValue` and `LetVarValue`. The rest of the syntax is shared between the two implementations.
 
 ```
